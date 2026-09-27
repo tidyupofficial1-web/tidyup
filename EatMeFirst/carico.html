@@ -6,7 +6,7 @@
     <title>EatMeFirst - Carico Articolo</title>
     <!-- Collegamento al file centrale delle 5 lingue -->
     <script src="i18n.js"></script>
-    <!-- Libreria per leggere il codice a barre dalla foto scattata -->
+    <!-- Libreria per la scansione video in tempo reale -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     <style>
         body {
@@ -86,7 +86,7 @@
         .btn-off:hover {
             background: #388bfd;
         }
-        /* Stile per il pulsante della fotocamera nativa */
+        /* Stile per il pulsante di attivazione camera */
         .btn-native-cam {
             background: #238636;
             border: none;
@@ -104,6 +104,14 @@
         }
         .btn-native-cam:hover {
             background: #2ea043;
+        }
+        /* Contenitore video per la scansione live */
+        #reader {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            display: none;
         }
         .checkbox-group {
             display: flex;
@@ -154,10 +162,10 @@
         <div id="msgSuccesso" class="success-msg">Articolo salvato con successo!</div>
         <div id="msgInfo" class="info-msg">Elaborazione codice in corso...</div>
 
-        <!-- Input nativo invisibile ma attivato dal pulsante grafico -->
-        <input type="file" id="inputScattoNativo" accept="image/*" capture="environment" style="display: none;" onchange="scansionaFotoScattata(event)">
+        <!-- Riquadro video in tempo reale per la scansione continua -->
+        <div id="reader"></div>
         
-        <button type="button" class="btn-native-cam" onclick="document.getElementById('inputScattoNativo').click()">📷 Scatta Foto Codice a Barre</button>
+        <button type="button" class="btn-native-cam" id="btnAvviaScanner" onclick="avviaScannerLive()">📷 Avvia Scanner Live</button>
 
         <form id="formCarico" onsubmit="salvaArticolo(event)">
             
@@ -216,6 +224,8 @@
     </div>
 
     <script>
+        let html5QrCodeScanner = null;
+
         document.addEventListener('DOMContentLoaded', () => {
             const containerLang = document.getElementById('header-lang');
             if (containerLang) {
@@ -245,31 +255,54 @@
             applicaTraduzioniInterfaccia();
         });
 
-        // Legge la foto scattata dalla fotocamera nativa e la decodifica
-        async function scansionaFotoScattata(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+        // Avvia la fotocamera in streaming live continuo per leggere il codice a barre
+        function avviaScannerLive() {
+            const readerDiv = document.getElementById('reader');
+            readerDiv.style.display = 'block';
+            document.getElementById('btnAvviaScanner').style.display = 'none';
 
-            let msgInfo = document.getElementById('msgInfo');
-            msgInfo.textContent = "Lettura codice dalla foto in corso...";
-            msgInfo.style.display = 'block';
+            html5QrCodeScanner = new Html5Qrcode("reader");
+            
+            const config = { fps: 10, qrbox: { width: 250, height: 150 } };
 
-            try {
-                const html5QrCode = new Html5Qrcode("formCarico"); // Contenitore temporaneo
-                const decodedText = await html5QrCode.scanFile(file, true);
-                
-                document.getElementById('codiceBarre').value = decodedText;
-                msgInfo.style.display = 'none';
+            html5QrCodeScanner.start(
+                { facingMode: "environment" }, 
+                config, 
+                (decodedText, decodedResult) => {
+                    // Codice a barre trovato con successo!
+                    document.getElementById('codiceBarre').value = decodedText;
+                    
+                    // Spegne la fotocamera e ripristina la schermata
+                    fermaScannerLive();
 
-                // Avvia automaticamente la ricerca su Open Food Facts
-                cercaSuOpenFoodFacts();
-            } catch (err) {
-                msgInfo.style.display = 'none';
-                alert("Impossibile leggere il codice a barre dalla foto. Riprova inquadrando meglio.");
+                    // Avvia la ricerca su Open Food Facts
+                    cercaSuOpenFoodFacts();
+                },
+                (errorMessage) => {
+                    // Errori di scansione frame ignorati per permettere la continuità della lettura
+                }
+            ).catch(err => {
+                alert("Impossibile accedere alla fotocamera. Verifica i permessi del browser.");
+                fermaScannerLive();
+            });
+        }
+
+        function fermaScannerLive() {
+            if (html5QrCodeScanner) {
+                html5QrCodeScanner.stop().then(() => {
+                    document.getElementById('reader').style.display = 'none';
+                    document.getElementById('btnAvviaScanner').style.display = 'block';
+                }).catch(err => {
+                    document.getElementById('reader').style.display = 'none';
+                    document.getElementById('btnAvviaScanner').style.display = 'block';
+                });
+            } else {
+                document.getElementById('reader').style.display = 'none';
+                document.getElementById('btnAvviaScanner').style.display = 'block';
             }
         }
 
-        // Interroga Open Food Facts unendo Marca e Nome
+        // Interroga Open Food Facts
         async function cercaSuOpenFoodFacts() {
             let barcode = document.getElementById('codiceBarre').value.trim();
             if (!barcode) {
