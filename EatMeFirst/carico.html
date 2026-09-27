@@ -51,7 +51,7 @@
             font-size: 0.95rem;
             color: #8b949e;
         }
-        input, select {
+        input, select, textarea {
             width: 100%;
             background: #0d1117;
             color: #f0f6fc;
@@ -60,6 +60,10 @@
             border-radius: 6px;
             font-size: 1rem;
             box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            height: 70px;
         }
         .row {
             display: flex;
@@ -96,13 +100,31 @@
             font-weight: bold;
             cursor: pointer;
             font-size: 1.05rem;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             text-align: center;
             display: block;
             box-sizing: border-box;
         }
         .btn-native-cam:hover {
             background: #2ea043;
+        }
+        .btn-manual-prod {
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #f0f6fc;
+            padding: 10px;
+            width: 100%;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            text-align: center;
+            display: block;
+            box-sizing: border-box;
+        }
+        .btn-manual-prod:hover {
+            background: #30363d;
         }
         #reader {
             width: 100%;
@@ -126,7 +148,44 @@
             border-radius: 6px;
             object-fit: contain;
         }
-        /* Stile specifico per le 3 caselle della data */
+        
+        /* Selettore Tipo di Scadenza */
+        .scadenza-type-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .scadenza-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            background: #161b22;
+            color: #8b949e;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .scadenza-btn.active-tassativa {
+            background: #da3633;
+            color: white;
+            border-color: #f85149;
+        }
+        .scadenza-btn.active-consigliata {
+            background: #9e6a03;
+            color: white;
+            border-color: #bb8009;
+        }
+        .scadenza-btn.active-senza {
+            background: #30363d;
+            color: white;
+        }
+
+        /* Caselle della data dinamiche */
+        #containerDateInputs {
+            transition: all 0.3s ease;
+        }
         .date-inputs-row {
             display: flex;
             gap: 8px;
@@ -137,41 +196,76 @@
             font-size: 1.1rem;
             letter-spacing: 2px;
         }
+        /* Bordi colorati in base al tipo di scadenza */
+        .border-tassativa { border-color: #f85149 !important; background: #2d1517 !important; }
+        .border-consigliata { border-color: #bb8009 !important; background: #262114 !important; }
+
         .date-separator {
             color: #8b949e;
             font-weight: bold;
             font-size: 1.2rem;
         }
-        /* Box di conferma scadenza */
         .confirm-date-box {
             display: none;
             background: #1f242c;
             border: 1px solid #388bfd;
-            padding: 10px;
+            padding: 8px;
             border-radius: 6px;
-            margin-top: 8px;
+            margin-top: 6px;
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         .confirm-date-box button {
             background: #238636;
             color: white;
             border: none;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 4px;
             font-weight: bold;
             cursor: pointer;
-            margin-left: 10px;
+            margin-left: 8px;
         }
+
+        /* Stile per Ubicazione Dinamica */
+        .ubicazione-box {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-crea-ubicazione {
+            background: #238636;
+            border: none;
+            color: white;
+            padding: 0 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .btn-crea-ubicazione:hover { background: #2ea043; }
+
+        /* Stile Popup Guida */
+        .popup-guida {
+            display: none;
+            background: #1f242c;
+            border: 1px solid #388bfd;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            position: relative;
+        }
+        .popup-guida p { margin: 0 0 8px 0; color: #f0f6fc; line-height: 1.4; }
+        .popup-guida label { display: inline; color: #8b949e; cursor: pointer; font-size: 0.8rem; }
+        .popup-guida input[type="checkbox"] { width: auto; margin-right: 5px; }
+
         .checkbox-group {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-top: 15px;
         }
-        .checkbox-group input {
-            width: auto;
-        }
+        .checkbox-group input { width: auto; }
         .btn-submit {
             background: #238636;
             border: none;
@@ -184,9 +278,7 @@
             cursor: pointer;
             margin-top: 15px;
         }
-        .btn-submit:hover {
-            background: #2ea043;
-        }
+        .btn-submit:hover { background: #2ea043; }
         .success-msg, .info-msg {
             padding: 10px;
             border-radius: 6px;
@@ -212,19 +304,26 @@
         <div id="msgSuccesso" class="success-msg">Articolo salvato con successo!</div>
         <div id="msgInfo" class="info-msg">Elaborazione codice in corso...</div>
 
-        <!-- Riquadro video in tempo reale per la scansione continua -->
+        <!-- Riquadro video live scanner -->
         <div id="reader"></div>
         
         <button type="button" class="btn-native-cam" id="btnAvviaScanner" onclick="avviaScannerLive()">📷 Avvia Scanner Live</button>
+        <button type="button" class="btn-manual-prod" id="btnProdottoManuale" onclick="attivaProdottoSenzaCodice()">🏷️ Prodotto senza codice (Mercato / Fatti in casa)</button>
 
-        <!-- Box anteprima immagine del prodotto -->
+        <!-- Popup Guida Intelligente (Note) -->
+        <div id="popupNoteGuida" class="popup-guida">
+            <p>💡 <b>A cosa serve il campo Note?</b> Puoi scriverci offerte (es. <i>"Preso da MD"</i>) o promemoria per eventi speciali inserendo una data e i giorni di preavviso (es. <i>"Picnic del 15 agosto, avvisa 5 giorni prima"</i>).</p>
+            <label><input type="checkbox" id="chkNonMostrareNote" onclick="salvaPreferenzaPopup('note')"> Non mostrare più questo avviso</label>
+        </div>
+
+        <!-- Box anteprima immagine prodotto -->
         <div id="boxAnteprima" class="preview-container">
             <img id="imgProdotto" src="" alt="Anteprima prodotto">
         </div>
 
         <form id="formCarico" onsubmit="salvaArticolo(event)">
             
-            <div class="form-group">
+            <div class="form-group" id="groupBarcode">
                 <label id="lbl-barcode" for="codiceBarre">Codice a Barre / EAN</label>
                 <div class="barcode-row">
                     <input type="text" id="codiceBarre" inputmode="numeric" placeholder="Codice EAN...">
@@ -233,13 +332,39 @@
             </div>
 
             <div class="form-group">
-                <label id="lbl-nome" for="nomeProdotto">Nome Prodotto *</label>
-                <input type="text" id="nomeProdotto" required placeholder="Es. Latte, Pasta...">
+                <label id="lbl-nome" for="nomeProdotto">Descrizione / Nome Prodotto *</label>
+                <input type="text" id="nomeProdotto" required placeholder="Es. Latte, Marmellata di fichi...">
+            </div>
+
+            <!-- Selezione Tipo di Scadenza -->
+            <div class="form-group">
+                <label id="lbl-tipo-scad">Tipo di Scadenza *</label>
+                <div class="scadenza-type-row">
+                    <button type="button" class="scadenza-btn active-tassativa" id="btnTassativa" onclick="impostaTipoScadenza('tassativa')">🔴 Tassativa (Fresco)</button>
+                    <button type="button" class="scadenza-btn" id="btnConsigliata" onclick="impostaTipoScadenza('consigliata')">🟡 Consigliata</button>
+                    <button type="button" class="scadenza-btn" id="btnSenza" onclick="impostaTipoScadenza('senza')">⚪ Senza Scadenza</button>
+                </div>
+            </div>
+
+            <!-- Caselle Data di Scadenza dinamiche -->
+            <div class="form-group" id="containerDateInputs">
+                <label id="lbl-scadenza" for="giornoScad">Data di Scadenza (GG / MM / AA) *</label>
+                <div class="date-inputs-row" id="rowDateBox">
+                    <input type="text" id="giornoScad" placeholder="GG" maxlength="2" inputmode="numeric" oninput="gestisciSaltoData(this, 'meseScad', 2)">
+                    <span class="date-separator">/</span>
+                    <input type="text" id="meseScad" placeholder="MM" maxlength="2" inputmode="numeric" oninput="gestisciSaltoData(this, 'annoScad', 2)">
+                    <span class="date-separator">/</span>
+                    <input type="text" id="annoScad" placeholder="AA" maxlength="2" inputmode="numeric" oninput="gestisciSaltoData(this, null, 2)">
+                </div>
+                <div id="boxConfermaData" class="confirm-date-box">
+                    Conferma Data: <span id="testoDataConferma" style="font-weight: bold; color: #58a6ff;"></span> 
+                    <button type="button" onclick="confermaDataInserita()">OK</button>
+                </div>
             </div>
 
             <div class="row">
                 <div class="form-group">
-                    <label id="lbl-qta" for="qtaProdotto">Quantità</label>
+                    <label id="lbl-qta" for="qtaProdotto">Quantità / Misura</label>
                     <input type="number" id="qtaProdotto" value="1" min="1" required>
                 </div>
                 <div class="form-group">
@@ -250,35 +375,26 @@
                         <option value="g">Grammi (g)</option>
                         <option value="litri">Litri (l)</option>
                         <option value="ml">Millilitri (ml)</option>
+                        <option value="metri">Metri (m)</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Nuova gestione Scadenza con 3 caselle numeriche e salto automatico -->
+            <!-- Ubicazione Dinamica -->
             <div class="form-group">
-                <label id="lbl-scadenza" for="giornoScad">Data di Scadenza (GG / MM / AAAA) *</label>
-                <div class="date-inputs-row">
-                    <input type="text" id="giornoScad" placeholder="GG" maxlength="2" inputmode="numeric" oninput="gestisciSaltoData(this, 'meseScad', 2)" required>
-                    <span class="date-separator">/</span>
-                    <input type="text" id="meseScad" placeholder="MM" maxlength="2" inputmode="numeric" oninput="gestisciSaltoData(this, 'annoScad', 2)" required>
-                    <span class="date-separator">/</span>
-                    <input type="text" id="annoScad" placeholder="AA" maxlength="2" inputmode="numeric" oninput="gestisciSaltoData(this, null, 2)" required>
-                </div>
-                <!-- Box di controllo/conferma rapida della data inserita -->
-                <div id="boxConfermaData" class="confirm-date-box">
-                    Scadenza: <span id="testoDataConferma" style="font-weight: bold; color: #58a6ff;"></span> 
-                    <button type="button" onclick="confermaDataInserita()">OK</button>
+                <label id="lbl-ubicazione" for="ubicazioneProdotto">Ubicazione *</label>
+                <div class="ubicazione-box">
+                    <select id="ubicazioneProdotto" required>
+                        <option value="" disabled selected id="opt-sel-ubicazione">-- Seleziona o crea ubicazione --</option>
+                    </select>
+                    <button type="button" class="btn-crea-ubicazione" onclick="creaNuovaUbicazione()" id="btn-crea-ub">+ Crea</button>
                 </div>
             </div>
 
+            <!-- Campo Note Multifunzione -->
             <div class="form-group">
-                <label id="lbl-ubicazione" for="ubicazioneProdotto">Ubicazione *</label>
-                <select id="ubicazioneProdotto" required>
-                    <option value="" disabled selected id="opt-sel-ubicazione">-- Seleziona ubicazione --</option>
-                    <option value="Dispensa Cucina">Dispensa Cucina</option>
-                    <option value="Frigorifero">Frigorifero</option>
-                    <option value="Cantina">Cantina</option>
-                </select>
+                <label id="lbl-note" for="notaArticolo">Note (Prezzi, Offerte o Eventi / Promemoria)</label>
+                <textarea id="notaArticolo" placeholder="Es. Preso a MD a 1.20€ oppure Picnic 15 agosto, avvisa 5 gg prima"></textarea>
             </div>
 
             <div class="checkbox-group">
@@ -294,6 +410,7 @@
         let html5QrCodeScanner = null;
         let urlImmagineCorrente = ""; 
         let dataConfermataValida = false;
+        let tipoScadenzaSelezionato = "tassativa"; // di default fresco/rosso
 
         document.addEventListener('DOMContentLoaded', () => {
             const containerLang = document.getElementById('header-lang');
@@ -301,6 +418,15 @@
                 containerLang.innerHTML = creaSelettoreLinguaHTML();
             }
             applicaTraduzioniInterfaccia();
+            aggiornaElencoUbicazioni();
+            controllaPopupMostrati();
+
+            // Attiva listener sul campo note per mostrare la guida la prima volta
+            document.getElementById('notaArticolo').addEventListener('focus', () => {
+                if (localStorage.getItem('eat_popup_note') !== 'nascondi') {
+                    document.getElementById('popupNoteGuida').style.display = 'block';
+                }
+            });
         });
 
         function applicaTraduzioniInterfaccia() {
@@ -311,31 +437,109 @@
             document.getElementById('txt-carico-title').textContent = t.caricoArticolo || "Carica Nuovo Articolo";
             document.getElementById('lbl-barcode').textContent = t.barcodeLbl || "Codice a Barre / EAN";
             document.getElementById('btn-cerca-off').textContent = t.btnCercaOFF || "Cerca";
-            document.getElementById('lbl-nome').textContent = t.nomeProdottoLbl || "Nome Prodotto";
-            document.getElementById('lbl-qta').textContent = t.qtaLbl || "Quantità";
+            document.getElementById('lbl-nome').textContent = t.nomeProdottoLbl || "Descrizione / Nome Prodotto";
+            document.getElementById('lbl-qta').textContent = t.qtaLbl || "Quantità / Misura";
             document.getElementById('lbl-scadenza').textContent = t.scadenzaLbl || "Data di Scadenza (GG / MM / AA)";
             document.getElementById('lbl-ubicazione').textContent = t.ubicazioneLbl || "Ubicazione";
             document.getElementById('lbl-check-spesa').textContent = t.checkSpesaLbl || "Aggiungi anche alla spesa";
             document.getElementById('txt-btn-salva').textContent = t.btnSalvaDispensa || "Salva in Dispensa";
-            document.getElementById('opt-sel-ubicazione').textContent = t.selUbicazionePlaceholder || "-- Seleziona ubicazione --";
+            document.getElementById('opt-sel-ubicazione').textContent = t.selUbicazionePlaceholder || "-- Seleziona o crea ubicazione --";
+            document.getElementById('btn-crea-ub').textContent = t.btnCreaUbicazione || "+ Crea";
+            document.getElementById('btnProdottoManuale').textContent = t.btnManuale || "🏷️ Prodotto senza codice (Mercato / Fatti in casa)";
         }
 
         window.addEventListener('linguaCambiata', () => {
             applicaTraduzioniInterfaccia();
         });
 
-        // Funzione per il salto automatico tra le caselle della data
+        function controllaPopupMostrati() {
+            if (localStorage.getItem('eat_popup_note') === 'nascondi') {
+                document.getElementById('chkNonMostrareNote').checked = true;
+            }
+        }
+
+        function salvaPreferenzaPopup(tipo) {
+            localStorage.setItem('eat_popup_note', 'nascondi');
+            document.getElementById('popupNoteGuida').style.display = 'none';
+        }
+
+        // Gestione Ubicazioni dinamiche salvate in localStorage
+        function aggiornaElencoUbicazioni(selezionaUltima = false) {
+            let select = document.getElementById('ubicazioneProdotto');
+            let ubicazioni = JSON.parse(localStorage.getItem('eat_ubicazioni')) || ["Dispensa Cucina", "Frigorifero", "Cantina", "Freezer"];
+            
+            // Pantiene il placeholder
+            select.innerHTML = `<option value="" disabled selected id="opt-sel-ubicazione">-- Seleziona o crea ubicazione --</option>`;
+            
+            ubicazioni.forEach(ub => {
+                let opt = document.createElement('option');
+                opt.value = ub;
+                opt.textContent = ub;
+                select.appendChild(opt);
+            });
+
+            if (selezionaUltima && ubicazioni.length > 0) {
+                select.value = ubicazioni[ubicazioni.length - 1];
+            }
+        }
+
+        function creaNuovaUbicazione() {
+            let nuovaUb = prompt("Inserisci il nome della nuova ubicazione (es. Garage, Ripostiglio):");
+            if (nuovaUb && nuovaUb.trim() !== "") {
+                nuovaUb = nuovaUb.trim();
+                let ubicazioni = JSON.parse(localStorage.getItem('eat_ubicazioni')) || ["Dispensa Cucina", "Frigorifero", "Cantina", "Freezer"];
+                if (!ubicazioni.includes(nuovaUb)) {
+                    ubicazioni.push(nuovaUb);
+                    localStorage.setItem('eat_ubicazioni', JSON.stringify(ubicazioni));
+                }
+                aggiornaElencoUbicazioni();
+                document.getElementById('ubicazioneProdotto').value = nuovaUb;
+            }
+        }
+
+        // Gestione Tipo Scadenza (Tassativa, Consigliata, Senza)
+        function impostaTipoScadenza(tipo) {
+            tipoScadenzaSelezionato = tipo;
+            let btnT = document.getElementById('btnTassativa');
+            let btnC = document.getElementById('btnConsigliata');
+            let btnS = document.getElementById('btnSenza');
+            let containerDate = document.getElementById('containerDateInputs');
+            let rowBox = document.getElementById('rowDateBox');
+            let ggInput = document.getElementById('giornoScad');
+            let mmInput = document.getElementById('meseScad');
+            let aaInput = document.getElementById('annoScad');
+
+            btnT.className = "scadenza-btn";
+            btnC.className = "scadenza-btn";
+            btnS.className = "scadenza-btn";
+            rowBox.className = "date-inputs-row";
+
+            if (tipo === 'tassativa') {
+                btnT.className = "scadenza-btn active-tassativa";
+                containerDate.style.display = 'block';
+                rowBox.classList.add('border-tassativa');
+                ggInput.required = true; mmInput.required = true; aaInput.required = true;
+            } else if (tipo === 'consigliata') {
+                btnC.className = "scadenza-btn active-consigliata";
+                containerDate.style.display = 'block';
+                rowBox.classList.add('border-consigliata');
+                ggInput.required = true; mmInput.required = true; aaInput.required = true;
+            } else if (tipo === 'senza') {
+                btnS.className = "scadenza-btn active-senza";
+                containerDate.style.display = 'none';
+                ggInput.required = false; mmInput.required = false; aaInput.required = false;
+                dataConfermataValida = true; // Non serve data
+            }
+        }
+
         function gestisciSaltoData(elementoCorrente, prossimoId, limiteCifre) {
             dataConfermataValida = false;
-            // Rimuove eventuali caratteri non numerici
             elementoCorrente.value = elementoCorrente.value.replace(/\D/g, '');
 
-            // Se raggiunge il numero massimo di cifre (2), passa al campo successivo
             if (elementoCorrente.value.length >= limiteCifre && prossimoId) {
                 document.getElementById(prossimoId).focus();
             }
 
-            // Se l'anno (l'ultimo campo) ha 2 cifre, mostra il box di controllo e conferma
             let gg = document.getElementById('giornoScad').value;
             let mm = document.getElementById('meseScad').value;
             let aa = document.getElementById('annoScad').value;
@@ -353,16 +557,22 @@
         function confermaDataInserita() {
             let gg = document.getElementById('giornoScad').value.padStart(2, '0');
             let mm = document.getElementById('meseScad').value.padStart(2, '0');
-            let aa = document.getElementById('annoScad').value;
-
+            
             if (gg > 31 || mm > 12 || gg == 0 || mm == 0) {
-                alert("Verifica i valori di giorno o mese inseriti, sembrano non validi.");
+                alert("Verifica i valori di giorno o mese inseriti.");
                 return;
             }
 
             dataConfermataValida = true;
             document.getElementById('boxConfermaData').style.background = '#1b3a2b';
             document.getElementById('testoDataConferma').textContent += " (Confermata ✅)";
+        }
+
+        function attivaProdottoSenzaCodice() {
+            document.getElementById('groupBarcode').style.display = 'none';
+            document.getElementById('codiceBarre').value = "SENZA_CODICE";
+            document.getElementById('nomeProdotto').focus();
+            alert("Modalità prodotto artigianale / senza codice attivata. Inserisci la descrizione e imposta la scadenza desiderata.");
         }
 
         function avviaScannerLive() {
@@ -383,32 +593,22 @@
                 },
                 (errorMessage) => {}
             ).catch(err => {
-                alert("Impossibile accedere alla fotocamera. Verifica i permessi del browser.");
+                alert("Impossibile accedere alla fotocamera.");
                 fermaScannerLive();
             });
         }
 
         function fermaScannerLive() {
             if (html5QrCodeScanner) {
-                html5QrCodeScanner.stop().then(() => {
-                    document.getElementById('reader').style.display = 'none';
-                    document.getElementById('btnAvviaScanner').style.display = 'block';
-                }).catch(err => {
-                    document.getElementById('reader').style.display = 'none';
-                    document.getElementById('btnAvviaScanner').style.display = 'block';
-                });
-            } else {
-                document.getElementById('reader').style.display = 'none';
-                document.getElementById('btnAvviaScanner').style.display = 'block';
+                html5QrCodeScanner.stop().catch(err => {});
             }
+            document.getElementById('reader').style.display = 'none';
+            document.getElementById('btnAvviaScanner').style.display = 'block';
         }
 
         async function cercaSuOpenFoodFacts() {
             let barcode = document.getElementById('codiceBarre').value.trim();
-            if (!barcode) {
-                alert("Inserisci un codice a barre.");
-                return;
-            }
+            if (!barcode) return;
 
             let msgInfo = document.getElementById('msgInfo');
             msgInfo.textContent = "Interrogazione Open Food Facts in corso...";
@@ -417,37 +617,29 @@
             try {
                 let response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
                 let data = await response.json();
-
                 msgInfo.style.display = 'none';
 
                 if (data.status === 1 && data.product) {
                     let nome = data.product.product_name_it || data.product.product_name || "";
                     let marca = data.product.brands || "";
-                    
-                    let descrizioneCompleta = "";
-                    if (marca && nome) {
-                        descrizioneCompleta = `${marca} - ${nome}`;
-                    } else {
-                        descrizioneCompleta = nome || marca || "Prodotto senza nome";
-                    }
+                    document.getElementById('nomeProdotto').value = (marca && nome) ? `${marca} - ${nome}` : (nome || marca);
 
-                    document.getElementById('nomeProdotto').value = descrizioneCompleta;
+                    // Proposta automatica tipo scadenza in base a categorie o tags
+                    let categorie = (data.product.categories_tags || []).join(" ").toLowerCase();
+                    if (categorie.includes("fresh") || categorie.includes("fresco") || categorie.includes("milk") || categorie.includes("latte") || categorie.includes("meat") || categorie.includes("carne")) {
+                        impostaTipoScadenza('tassativa');
+                    } else if (categorie.includes("biscuit") || categorie.includes("biscotti") || categorie.includes("pasta") || categorie.includes("canned") || categorie.includes("scatolame")) {
+                        impostaTipoScadenza('consigliata');
+                    }
 
                     urlImmagineCorrente = data.product.image_front_small_url || data.product.image_front_url || "";
                     let boxAnteprima = document.getElementById('boxAnteprima');
-                    let imgProdotto = document.getElementById('imgProdotto');
-
                     if (urlImmagineCorrente) {
-                        imgProdotto.src = urlImmagineCorrente;
+                        document.getElementById('imgProdotto').src = urlImmagineCorrente;
                         boxAnteprima.style.display = 'block';
-                    } else {
-                        boxAnteprima.style.display = 'none';
                     }
-
                 } else {
-                    alert("Prodotto non trovato in Open Food Facts. Inserisci il nome manualmente.");
-                    urlImmagineCorrente = "";
-                    document.getElementById('boxAnteprima').style.display = 'none';
+                    alert("Prodotto non trovato in Open Food Facts. Inserisci i dati manualmente.");
                 }
             } catch (error) {
                 msgInfo.style.display = 'none';
@@ -458,33 +650,50 @@
         function salvaArticolo(e) {
             e.preventDefault();
 
-            let barcode = document.getElementById('codiceBarre').value.trim();
+            let barcode = document.getElementById('codiceBarre').value.trim() || "MANUALE";
             let nome = document.getElementById('nomeProdotto').value.trim();
             let quantita = document.getElementById('qtaProdotto').value;
             let unita = document.getElementById('unitaProdotto').value;
             let ubicazione = document.getElementById('ubicazioneProdotto').value;
+            let nota = document.getElementById('notaArticolo').value.trim();
             let spesaCheck = document.getElementById('aggiungiSpesaCheck').checked;
             let immagine = urlImmagineCorrente;
 
-            let gg = document.getElementById('giornoScad').value.padStart(2, '0');
-            let mm = document.getElementById('meseScad').value.padStart(2, '0');
-            let aa = document.getElementById('annoScad').value;
+            let scadenza = "NESSUNA";
+            if (tipoScadenzaSelezionato !== 'senza') {
+                let gg = document.getElementById('giornoScad').value.padStart(2, '0');
+                let mm = document.getElementById('meseScad').value.padStart(2, '0');
+                let aa = document.getElementById('annoScad').value;
 
-            if (!nome || !ubicazione || gg.length < 2 || mm.length < 2 || aa.length < 2) {
-                alert("Per favore, compila tutti i campi obbligatori (*) e la data completa.");
+                if (gg.length < 2 || mm.length < 2 || aa.length < 2) {
+                    alert("Inserisci una data di scadenza completa.");
+                    return;
+                }
+                if (!dataConfermataValida) {
+                    if (!confirm("Non hai confermato la data con 'OK'. Vuoi procedere comunque?")) return;
+                }
+                scadenza = `20${aa}-${mm}-${gg}`;
+            }
+
+            if (!nome || !ubicazione) {
+                alert("Compila tutti i campi obbligatori (*).");
                 return;
             }
 
-            if (!dataConfermataValida) {
-                let conferma = confirm("Non hai cliccato su 'OK' per confermare la data di scadenza. Vuoi procedere comunque?");
-                if (!conferma) return;
-            }
-
-            // Ricostruisce la data standard per il salvataggio (AAAA-MM-GG)
-            let scadenza = `20${aa}-${mm}-${gg}`;
+            let articolo = {
+                barcode,
+                nome,
+                quantita,
+                unita,
+                tipoScadenza: tipoScadenzaSelezionato,
+                scadenza,
+                ubicazione,
+                nota,
+                immagine
+            };
 
             let dispensa = JSON.parse(localStorage.getItem('eat_dispensa')) || [];
-            dispensa.push({ barcode, nome, quantita, unita, scadenza, ubicazione, immagine });
+            dispensa.push(articolo);
             localStorage.setItem('eat_dispensa', JSON.stringify(dispensa));
 
             if (spesaCheck) {
@@ -496,17 +705,16 @@
             let msg = document.getElementById('msgSuccesso');
             msg.style.display = 'block';
             
-            // Resetta form, caselle data e anteprima
+            // Reset form
             document.getElementById('formCarico').reset();
             document.getElementById('boxAnteprima').style.display = 'none';
             document.getElementById('boxConfermaData').style.display = 'none';
-            document.getElementById('boxConfermaData').style.background = '#1f242c';
+            document.getElementById('groupBarcode').style.display = 'block';
             urlImmagineCorrente = "";
             dataConfermataValida = false;
+            impostaTipoScadenza('tassativa');
 
-            setTimeout(() => {
-                msg.style.display = 'none';
-            }, 3000);
+            setTimeout(() => { msg.style.display = 'none'; }, 3000);
         }
     </script>
 </body>
