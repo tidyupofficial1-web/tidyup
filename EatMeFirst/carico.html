@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EatMeFirst - Carico Articoli</title>
+    <!-- Libreria Html5-Qrcode per la scansione da fotocamera -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="i18n.js" onerror="console.log('i18n.js non trovato')"></script>
     <style>
         :root {
@@ -14,6 +16,7 @@
             --text-muted: #8b949e;
             --accent-blue: #1f6feb;
             --accent-green: #238636;
+            --accent-red: #da3633;
         }
 
         body { 
@@ -67,12 +70,24 @@
             width: 100%;
         }
         .btn:hover { opacity: 0.9; }
+        .btn-secondary { background-color: var(--accent-blue); margin-top: 8px; }
 
         #msgInfo {
             font-size: 0.85rem;
             color: #58a6ff;
             margin-top: 5px;
             display: none;
+        }
+
+        /* Box Anteprima Fotocamera */
+        #reader {
+            width: 100%;
+            max-width: 400px;
+            margin: 10px auto;
+            display: none;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
 
         #boxAnteprima {
@@ -85,6 +100,7 @@
             max-height: 100px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
+            object-fit: cover;
         }
 
         .back-link { display: block; text-align: center; margin-top: 25px; color: #58a6ff; text-decoration: none; font-weight: bold; }
@@ -95,11 +111,17 @@
 <div class="container">
     <h1>📥 Carico Articolo</h1>
 
+    <!-- Sezione Codice a Barre & Fotocamera -->
     <div class="form-group">
         <label for="codiceBarre">Codice a Barre</label>
         <div style="display: flex; gap: 10px;">
             <input type="text" id="codiceBarre" placeholder="Scansiona o digita il codice..." onblur="cercaSuOpenFoodFactsMultipli()">
         </div>
+        <button type="button" class="btn btn-secondary" onclick="avviaScannerFotocamera()">📷 Avvia Fotocamera per Scansione</button>
+        
+        <!-- Finestra video della fotocamera -->
+        <div id="reader"></div>
+
         <div id="msgInfo">Interrogazione database in corso...</div>
         <div id="boxAnteprima">
             <img id="imgProdotto" src="" alt="Anteprima prodotto">
@@ -122,6 +144,11 @@
         <div id="tipoScadenzaLabel" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Scadenza consigliata</div>
     </div>
 
+    <div class="form-group">
+        <label for="ubicazione">Ubicazione / Luogo</label>
+        <input type="text" id="ubicazione" placeholder="Es. Frigo, Dispensa, Cantina...">
+    </div>
+
     <button class="btn" onclick="salvaArticolo()">Registra Carico</button>
 
     <a href="menu.html" class="back-link">⬅ Torna al Menu Principale</a>
@@ -129,6 +156,7 @@
 
 <script>
     let urlImmagineCorrente = "";
+    let html5QrCode = null;
 
     function impostaTipoScadenza(tipo) {
         let lbl = document.getElementById('tipoScadenzaLabel');
@@ -141,24 +169,61 @@
         }
     }
 
-    // Sistema ibrido: Memoria Locale (per No-Food e articoli personali) + Database Online
+    // Attivazione della fotocamera tramite la libreria html5-qrcode
+    function avviaScannerFotocamera() {
+        let readerDiv = document.getElementById('reader');
+        readerDiv.style.display = 'block';
+
+        if (!html5QrCode) {
+            html5QrCode = new Html5Qrcode("reader");
+        }
+
+        html5QrCode.start(
+            { facingMode: "environment" }, 
+            { fps: 10, qrbox: { width: 250, height: 150 } },
+            (decodedText) => {
+                // Codice trovato con successo
+                document.getElementById('codiceBarre').value = decodedText;
+                fermaScannerFotocamera();
+                cercaSuOpenFoodFactsMultipli();
+            },
+            (errorMessage) => {
+                // Errori di scansione frame per frame (ignorabili finché non inquadra)
+            }
+        ).catch((err) => {
+            alert("Impossibile avviare la fotocamera. Verifica i permessi del browser.");
+            readerDiv.style.display = 'none';
+        });
+    }
+
+    function fermaScannerFotocamera() {
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => {
+                document.getElementById('reader').style.display = 'none';
+            }).catch(err => {
+                console.log("Errore arresto scanner:", err);
+            });
+        }
+    }
+
+    // Sistema ibrido: Memoria Locale (No-Food/Custom) + Database Online (OpenFood/Beauty)
     async function cercaSuOpenFoodFactsMultipli() {
         let barcode = document.getElementById('codiceBarre').value.trim();
         if (!barcode) return;
 
         let msgInfo = document.getElementById('msgInfo');
 
-        // 1. Controllo immediato nella memoria locale dei prodotti No-Food / personalizzati già usati in precedenza
+        // 1. Controllo immediato nella memoria locale dei prodotti No-Food / personalizzati
         let prodottiSalvatiLocali = JSON.parse(localStorage.getItem('eat_nofood_custom')) || {};
         if (prodottiSalvatiLocali[barcode]) {
             let p = prodottiSalvatiLocali[barcode];
             document.getElementById('nomeProdotto').value = p.nome;
-            impostaTipoScadenza('consigliata'); // I prodotti non alimentari non hanno scadenza tassativa
+            impostaTipoScadenza('consigliata');
             msgInfo.style.display = 'none';
             return;
         }
 
-        // 2. Se non è in locale, interroghiamo i database ufficiali (Food & Beauty)
+        // 2. Interrogazione database ufficiali online (Food & Beauty)
         msgInfo.textContent = "Interrogazione database in corso...";
         msgInfo.style.display = 'block';
 
@@ -214,13 +279,14 @@
         let nome = document.getElementById('nomeProdotto').value.trim();
         let quantita = parseInt(document.getElementById('quantita').value) || 1;
         let scadenza = document.getElementById('scadenza').value;
+        let ubicazione = document.getElementById('ubicazione').value.trim() || "Dispensa";
 
         if (!nome) {
             alert("Inserisci o cerca il nome del prodotto.");
             return;
         }
 
-        // Se è un articolo personalizzato o no-food senza barcode online, lo salviamo in locale
+        // Se è un articolo nuovo senza riscontro online, lo salviamo in locale per le prossime volte
         if (barcode) {
             let prodottiSalvatiLocali = JSON.parse(localStorage.getItem('eat_nofood_custom')) || {};
             if (!prodottiSalvatiLocali[barcode]) {
@@ -235,8 +301,8 @@
             nome: nome,
             quantita: quantita,
             scadenza: scadenza,
-            immagine: urlImmagineCorrente,
-            categoriagenerale: "Generale"
+            ubicazione: ubicazione,
+            immagine: urlImmagineCorrente
         };
 
         let dispensa = JSON.parse(localStorage.getItem('eatMeFirst_dispensa')) || [];
