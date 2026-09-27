@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Carico Articolo</title>
+    <!-- Collegamento al file centrale delle 5 lingue -->
+    <script src="i18n.js"></script>
+    <!-- Libreria per leggere il codice a barre dalla foto scattata -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #f0f6fc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .btn-back {
+            background: #161b22;
+            border: 1px solid #30363d;
+            color: #f0f6fc;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .btn-back:hover {
+            background: #30363d;
+        }
+        .form-container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+            color: #8b949e;
+        }
+        input, select {
+            width: 100%;
+            background: #0d1117;
+            color: #f0f6fc;
+            border: 1px solid #30363d;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+        .row .form-group {
+            flex: 1;
+        }
+        .barcode-row {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-off {
+            background: #1f6feb;
+            border: none;
+            color: white;
+            padding: 0 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        .btn-off:hover {
+            background: #388bfd;
+        }
+        /* Stile per il pulsante della fotocamera nativa */
+        .btn-native-cam {
+            background: #238636;
+            border: none;
+            color: white;
+            padding: 14px;
+            width: 100%;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.05rem;
+            margin-bottom: 15px;
+            text-align: center;
+            display: block;
+            box-sizing: border-box;
+        }
+        .btn-native-cam:hover {
+            background: #2ea043;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .checkbox-group input {
+            width: auto;
+        }
+        .btn-submit {
+            background: #238636;
+            border: none;
+            color: white;
+            font-weight: bold;
+            padding: 12px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .btn-submit:hover {
+            background: #2ea043;
+        }
+        .success-msg, .info-msg {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+            font-size: 0.9rem;
+        }
+        .success-msg { background: #238636; color: white; }
+        .info-msg { background: #1f6feb; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <a href="menu.html" class="btn-back" id="txt-back">Indietro</a>
+        <div id="header-lang"></div>
+    </div>
+
+    <div class="form-container">
+        <h1 id="txt-carico-title" style="margin-top: 0; font-size: 1.5rem;">Carica Nuovo Articolo</h1>
+        
+        <div id="msgSuccesso" class="success-msg">Articolo salvato con successo!</div>
+        <div id="msgInfo" class="info-msg">Elaborazione codice in corso...</div>
+
+        <!-- Input nativo invisibile ma attivato dal pulsante grafico -->
+        <input type="file" id="inputScattoNativo" accept="image/*" capture="environment" style="display: none;" onchange="scansionaFotoScattata(event)">
+        
+        <button type="button" class="btn-native-cam" onclick="document.getElementById('inputScattoNativo').click()">📷 Scatta Foto Codice a Barre</button>
+
+        <form id="formCarico" onsubmit="salvaArticolo(event)">
+            
+            <div class="form-group">
+                <label id="lbl-barcode" for="codiceBarre">Codice a Barre / EAN</label>
+                <div class="barcode-row">
+                    <input type="text" id="codiceBarre" inputmode="numeric" placeholder="Codice EAN...">
+                    <button type="button" class="btn-off" onclick="cercaSuOpenFoodFacts()" id="btn-cerca-off">Cerca</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label id="lbl-nome" for="nomeProdotto">Nome Prodotto *</label>
+                <input type="text" id="nomeProdotto" required placeholder="Es. Latte, Pasta...">
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label id="lbl-qta" for="qtaProdotto">Quantità</label>
+                    <input type="number" id="qtaProdotto" value="1" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label id="lbl-unita" for="unitaProdotto">Unità</label>
+                    <select id="unitaProdotto">
+                        <option value="pz">Pezzi (pz)</option>
+                        <option value="kg">Chilogrammi (kg)</option>
+                        <option value="g">Grammi (g)</option>
+                        <option value="litri">Litri (l)</option>
+                        <option value="ml">Millilitri (ml)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label id="lbl-scadenza" for="dataScadenza">Data di Scadenza *</label>
+                <input type="date" id="dataScadenza" required>
+            </div>
+
+            <div class="form-group">
+                <label id="lbl-ubicazione" for="ubicazioneProdotto">Ubicazione *</label>
+                <select id="ubicazioneProdotto" required>
+                    <option value="" disabled selected id="opt-sel-ubicazione">-- Seleziona ubicazione --</option>
+                    <option value="Dispensa Cucina">Dispensa Cucina</option>
+                    <option value="Frigorifero">Frigorifero</option>
+                    <option value="Cantina">Cantina</option>
+                </select>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="aggiungiSpesaCheck">
+                <label id="lbl-check-spesa" for="aggiungiSpesaCheck" style="margin: 0; color: #f0f6fc; cursor: pointer;">Aggiungi anche alla lista spesa</label>
+            </div>
+
+            <button type="submit" class="btn-submit" id="txt-btn-salva">Salva in Dispensa</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const containerLang = document.getElementById('header-lang');
+            if (containerLang) {
+                containerLang.innerHTML = creaSelettoreLinguaHTML();
+            }
+            applicaTraduzioniInterfaccia();
+        });
+
+        function applicaTraduzioniInterfaccia() {
+            const lang = getLinguaCorrente();
+            const t = dizionarioGlobale[lang] || dizionarioGlobale['it'];
+
+            document.getElementById('txt-back').innerHTML = t.backBtn || "Indietro";
+            document.getElementById('txt-carico-title').textContent = t.caricoArticolo || "Carica Nuovo Articolo";
+            document.getElementById('lbl-barcode').textContent = t.barcodeLbl || "Codice a Barre / EAN";
+            document.getElementById('btn-cerca-off').textContent = t.btnCercaOFF || "Cerca";
+            document.getElementById('lbl-nome').textContent = t.nomeProdottoLbl || "Nome Prodotto";
+            document.getElementById('lbl-qta').textContent = t.qtaLbl || "Quantità";
+            document.getElementById('lbl-scadenza').textContent = t.scadenzaLbl || "Data di Scadenza";
+            document.getElementById('lbl-ubicazione').textContent = t.ubicazioneLbl || "Ubicazione";
+            document.getElementById('lbl-check-spesa').textContent = t.checkSpesaLbl || "Aggiungi anche alla spesa";
+            document.getElementById('txt-btn-salva').textContent = t.btnSalvaDispensa || "Salva in Dispensa";
+            document.getElementById('opt-sel-ubicazione').textContent = t.selUbicazionePlaceholder || "-- Seleziona ubicazione --";
+        }
+
+        window.addEventListener('linguaCambiata', () => {
+            applicaTraduzioniInterfaccia();
+        });
+
+        // Legge la foto scattata dalla fotocamera nativa e la decodifica
+        async function scansionaFotoScattata(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            let msgInfo = document.getElementById('msgInfo');
+            msgInfo.textContent = "Lettura codice dalla foto in corso...";
+            msgInfo.style.display = 'block';
+
+            try {
+                const html5QrCode = new Html5Qrcode("formCarico"); // Contenitore temporaneo
+                const decodedText = await html5QrCode.scanFile(file, true);
+                
+                document.getElementById('codiceBarre').value = decodedText;
+                msgInfo.style.display = 'none';
+
+                // Avvia automaticamente la ricerca su Open Food Facts
+                cercaSuOpenFoodFacts();
+            } catch (err) {
+                msgInfo.style.display = 'none';
+                alert("Impossibile leggere il codice a barre dalla foto. Riprova inquadrando meglio.");
+            }
+        }
+
+        // Interroga Open Food Facts unendo Marca e Nome
+        async function cercaSuOpenFoodFacts() {
+            let barcode = document.getElementById('codiceBarre').value.trim();
+            if (!barcode) {
+                alert("Inserisci un codice a barre.");
+                return;
+            }
+
+            let msgInfo = document.getElementById('msgInfo');
+            msgInfo.textContent = "Interrogazione Open Food Facts in corso...";
+            msgInfo.style.display = 'block';
+
+            try {
+                let response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+                let data = await response.json();
+
+                msgInfo.style.display = 'none';
+
+                if (data.status === 1 && data.product) {
+                    let nome = data.product.product_name_it || data.product.product_name || "";
+                    let marca = data.product.brands || "";
+                    
+                    let descrizioneCompleta = "";
+                    if (marca && nome) {
+                        descrizioneCompleta = `${marca} - ${nome}`;
+                    } else {
+                        descrizioneCompleta = nome || marca || "Prodotto senza nome";
+                    }
+
+                    document.getElementById('nomeProdotto').value = descrizioneCompleta;
+                } else {
+                    alert("Prodotto non trovato in Open Food Facts. Inserisci il nome manualmente.");
+                }
+            } catch (error) {
+                msgInfo.style.display = 'none';
+                alert("Errore di connessione a Open Food Facts.");
+            }
+        }
+
+        function salvaArticolo(e) {
+            e.preventDefault();
+
+            let barcode = document.getElementById('codiceBarre').value.trim();
+            let nome = document.getElementById('nomeProdotto').value.trim();
+            let quantita = document.getElementById('qtaProdotto').value;
+            let unita = document.getElementById('unitaProdotto').value;
+            let scadenza = document.getElementById('dataScadenza').value;
+            let ubicazione = document.getElementById('ubicazioneProdotto').value;
+            let spesaCheck = document.getElementById('aggiungiSpesaCheck').checked;
+
+            if (!nome || !scadenza || !ubicazione) {
+                alert("Per favore, compila tutti i campi obbligatori (*).");
+                return;
+            }
+
+            let dispensa = JSON.parse(localStorage.getItem('eat_dispensa')) || [];
+            dispensa.push({ barcode, nome, quantita, unita, scadenza, ubicazione });
+            localStorage.setItem('eat_dispensa', JSON.stringify(dispensa));
+
+            if (spesaCheck) {
+                let spesa = JSON.parse(localStorage.getItem('eat_spesa')) || [];
+                spesa.push({ nome: nome, completato: false });
+                localStorage.setItem('eat_spesa', JSON.stringify(spesa));
+            }
+
+            let msg = document.getElementById('msgSuccesso');
+            msg.style.display = 'block';
+            document.getElementById('formCarico').reset();
+
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

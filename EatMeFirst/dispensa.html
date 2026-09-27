@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Dispensa</title>
+    <!-- Collegamento al file centrale delle 5 lingue -->
+    <script src="i18n.js"></script>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #f0f6fc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .btn-back {
+            background: #161b22;
+            border: 1px solid #30363d;
+            color: #f0f6fc;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .btn-back:hover {
+            background: #30363d;
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        .filter-container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        select {
+            background: #0d1117;
+            color: #f0f6fc;
+            border: 1px solid #30363d;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .empty-msg {
+            text-align: center;
+            color: #8b949e;
+            margin-top: 50px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <a href="menu.html" class="btn-back" id="txt-back">Indietro</a>
+        <!-- Qui appare automaticamente il selettore delle 5 lingue -->
+        <div id="header-lang"></div>
+    </div>
+
+    <h1 id="txt-dispensa-title">Visualizza Dispensa</h1>
+
+    <div class="filter-container">
+        <label id="txt-filtro-lbl" for="filtroLuogoSelect">Filtra per luogo:</label>
+        <select id="filtroLuogoSelect" onchange="caricaDispensa()">
+            <option value="tutti" id="txt-tutti">Tutti i luoghi</option>
+        </select>
+    </div>
+
+    <div id="lista-prodotti">
+        <!-- I prodotti salvati appariranno qui -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Inserisce il selettore delle 5 lingue nell'header
+            const containerLang = document.getElementById('header-lang');
+            if (containerLang) {
+                containerLang.innerHTML = creaSelettoreLinguaHTML();
+            }
+
+            // 2. Applica le traduzioni ai testi fissi della pagina
+            const lang = getLinguaCorrente();
+            const t = dizionarioGlobale[lang] || dizionarioGlobale['it'];
+
+            document.getElementById('txt-back').innerHTML = t.backBtn;
+            document.getElementById('txt-dispensa-title').textContent = t.dispensaTitle;
+            document.getElementById('txt-filtro-lbl').textContent = t.filtroLuogo;
+            document.getElementById('txt-tutti').textContent = t.tuttiLuoghi;
+
+            // 3. Carica i dati dal localStorage
+            popolaFiltroLuoghi();
+            caricaDispensa();
+        });
+
+        function popolaFiltroLuoghi() {
+            let luoghi = JSON.parse(localStorage.getItem('eat_luoghi')) || ["Dispensa Cucina", "Frigorifero", "Cantina"];
+            const select = document.getElementById('filtroLuogoSelect');
+            luoghi.forEach(l => {
+                let opt = document.createElement('option');
+                opt.value = l;
+                opt.textContent = l;
+                select.appendChild(opt);
+            });
+        }
+
+        function caricaDispensa() {
+            const lang = getLinguaCorrente();
+            const t = dizionarioGlobale[lang] || dizionarioGlobale['it'];
+            let dispensa = JSON.parse(localStorage.getItem('eat_dispensa')) || [];
+            let filtro = document.getElementById('filtroLuogoSelect').value;
+            let container = document.getElementById('lista-prodotti');
+            container.innerHTML = "";
+
+            let filtrati = filtro === "tutti" ? dispensa : dispensa.filter(p => p.ubicazione === filtro);
+
+            if (filtrati.length === 0) {
+                container.innerHTML = `<div class="empty-msg">${t.vuotaDispensaMsg}</div>`;
+                return;
+            }
+
+            filtrati.forEach(p => {
+                let div = document.createElement('div');
+                div.className = "card";
+                div.innerHTML = `
+                    <div>
+                        <strong style="font-size: 1.1rem; color: #f0f6fc;">${p.nome}</strong><br>
+                        <span style="color: #8b949e; font-size: 0.9rem;">📦 ${p.quantita} ${p.unita || ''} &bull; 📍 ${p.ubicazione}</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="color: #ff7b72; font-size: 0.85rem; font-weight: bold;">Scad: ${p.scadenza}</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>

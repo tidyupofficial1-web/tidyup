@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Benvenuto</title>
+    <!-- Collegamento al file centrale delle 5 lingue -->
+    <script src="i18n.js"></script>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #f0f6fc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .top-bar-absolute {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .welcome-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            padding: 40px 30px;
+            border-radius: 16px;
+            max-width: 450px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #58a6ff;
+        }
+        p {
+            color: #8b949e;
+            font-size: 1.05rem;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        .btn-enter {
+            background: #238636;
+            border: none;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background 0.2s;
+        }
+        .btn-enter:hover {
+            background: #2ea043;
+        }
+        footer {
+            position: absolute;
+            bottom: 20px;
+            color: #8b949e;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar-absolute">
+        <!-- Selettore delle 5 lingue posizionato in alto a destra -->
+        <div id="header-lang"></div>
+    </div>
+
+    <div class="welcome-card">
+        <h1 id="txt-welcome-title">EatMeFirst</h1>
+        <p id="txt-welcome-desc">La tua soluzione intelligente per la gestione della dispensa, il controllo delle scadenze e la lotta allo spreco alimentare.</p>
+        
+        <a href="menu.html" class="btn-enter" id="txt-btn-enter">Entra nell'App</a>
+    </div>
+
+    <footer id="txt-footer">
+        EatMeFirst &bull; Dati locali su dispositivo
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Inserisce il selettore delle 5 lingue
+            const containerLang = document.getElementById('header-lang');
+            if (containerLang) {
+                containerLang.innerHTML = creaSelettoreLinguaHTML();
+            }
+
+            // 2. Applica le traduzioni
+            applicaTraduzioniInterfaccia();
+        });
+
+        function applicaTraduzioniInterfaccia() {
+            const lang = getLinguaCorrente();
+            // Dizionario di supporto integrato per la pagina di benvenuto
+            const descrizioni = {
+                it: "La tua soluzione intelligente per la gestione della dispensa, il controllo delle scadenze e la lotta allo spreco alimentare.",
+                en: "Your smart solution for pantry management, expiry tracking, and food waste reduction.",
+                fr: "Votre solution intelligente pour la gestion du garde-manger et la réduction du gaspillage.",
+                es: "Tu solución inteligente para la gestión de despensas y la reducción del desperdicio.",
+                de: "Ihre intelligente Lösung für Vorratsverwaltung und Lebensmittelrettung."
+            };
+
+            const entraBtn = {
+                it: "Entra nell'App",
+                en: "Enter App",
+                fr: "Entrer dans l'App",
+                es: "Entrar en la App",
+                de: "App öffnen"
+            };
+
+            document.getElementById('txt-welcome-desc').textContent = descrizioni[lang] || descrizioni['it'];
+            document.getElementById('txt-btn-enter').textContent = entraBtn[lang] || entraBtn['it'];
+            
+            const t = dizionarioGlobale[lang] || dizionarioGlobale['it'];
+            if(t && t.footer) {
+                document.getElementById('txt-footer').innerHTML = t.footer;
+            }
+        }
+    </script>
+</body>
+</html>

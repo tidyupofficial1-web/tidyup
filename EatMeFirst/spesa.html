@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Lista Spesa</title>
+    <!-- Collegamento al file centrale delle 5 lingue -->
+    <script src="i18n.js"></script>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #f0f6fc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .btn-back {
+            background: #161b22;
+            border: 1px solid #30363d;
+            color: #f0f6fc;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .btn-back:hover {
+            background: #30363d;
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        .form-add {
+            background: #161b22;
+            border: 1px solid #30363d;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        input, button {
+            background: #0d1117;
+            color: #f0f6fc;
+            border: 1px solid #30363d;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+        input {
+            flex: 1;
+            min-width: 200px;
+        }
+        button {
+            background: #238636;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2ea043;
+        }
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-del {
+            background: #da3633;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+        }
+        .btn-del:hover {
+            background: #f85149;
+        }
+        .empty-msg {
+            text-align: center;
+            color: #8b949e;
+            margin-top: 50px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <a href="menu.html" class="btn-back" id="txt-back">Indietro</a>
+        <!-- Qui appare automaticamente il selettore delle 5 lingue -->
+        <div id="header-lang"></div>
+    </div>
+
+    <h1 id="txt-spesa-title">Lista della Spesa</h1>
+
+    <div class="form-add">
+        <input type="text" id="nuovoProdottoSpesa" placeholder="Aggiungi articolo alla spesa...">
+        <button onclick="aggiungiSpesa()" id="txt-btn-aggiungi">Aggiungi</button>
+    </div>
+
+    <div id="lista-spesa-container">
+        <!-- Gli articoli della spesa appariranno qui -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Inserisce il selettore delle 5 lingue nell'header
+            const containerLang = document.getElementById('header-lang');
+            if (containerLang) {
+                containerLang.innerHTML = creaSelettoreLinguaHTML();
+            }
+
+            // 2. Traduzioni fisse della pagina
+             applicaTraduzioniInterfaccia();
+
+            // 3. Carica la lista spesa
+            caricaListaSpesa();
+        });
+
+        function applicaTraduzioniInterfaccia() {
+            const lang = getLinguaCorrente();
+            const t = dizionarioGlobale[lang] || dizionarioGlobale['it'];
+
+            document.getElementById('txt-back').innerHTML = t.backBtn;
+            document.getElementById('txt-spesa-titletextContent = t.spesaTitle || "Lista della Spesa";
+            document.getElementById('nuovoProdottoSpesa').placeholder = t.placeholderSpesa || "Aggiungi articolo alla spesa...";
+            document.getElementById('txt-btn-aggiungi').textContent = t.btnAggiungi || "Aggiungi";
+        }
+
+        // Funzione agganciata al cambio lingua del selettore globale
+        window.addEventListener('linguaCambiata', () => {
+            applicaTraduzioniInterfaccia();
+            caricaListaSpesa();
+        });
+
+        function aggiungiSpesa() {
+            let input = document.getElementById('nuovoProdottoSpesa');
+            let nome = input.value.trim();
+            if (!nome) return;
+
+            let spesa = JSON.parse(localStorage.getItem('eat_spesa')) || [];
+            spesa.push({ nome: nome, completato: false });
+            localStorage.setItem('eat_spesa', JSON.stringify(spesa));
+
+            input.value = "";
+            caricaListaSpesa();
+        }
+
+        function eliminaSpesa(index) {
+            let spesa = JSON.parse(localStorage.getItem('eat_spesa')) || [];
+            spesa.splice(index, 1);
+            localStorage.setItem('eat_spesa', JSON.stringify(spesa));
+            caricaListaSpesa();
+        }
+
+        function caricaListaSpesa() {
+            const lang = getLinguaCorrente();
+            const t = dizionarioGlobale[lang] || dizionarioGlobale['it'];
+            let spesa = JSON.parse(localStorage.getItem('eat_spesa')) || [];
+            let container = document.getElementById('lista-spesa-container');
+            container.innerHTML = "";
+
+            if (spesa.length === 0) {
+                container.innerHTML = `<div class="empty-msg">${t.vuotaSpesaMsg || "La lista della spesa è vuota."}</div>`;
+                return;
+            }
+
+            spesa.forEach((item, index) => {
+                let div = document.createElement('div');
+                div.className = "card";
+                div.innerHTML = `
+                    <span style="font-size: 1.1rem; color: #f0f6fc;">🛒 ${item.nome}</span>
+                    <button class="btn-del" onclick="eliminaSpesa(${index})">${t.btnElimina || "Elimina"}</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
