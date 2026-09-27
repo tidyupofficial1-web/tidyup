@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Mia Lista & Commissioni Extra 🌟</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 15px;
+            color: #333;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+        }
+        .header-premium-box {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border: 1px solid #fde68a;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .badge-premium-large {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        h2 { color: #1e293b; margin: 5px 0 10px 0; }
+        
+        .top-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            text-decoration: none;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.2s;
+        }
+        .btn-primary { background: #6366f1; color: white; }
+        .btn-info { background: #0ea5e9; color: white; }
+        .btn-success { background: #10b981; color: white; }
+        .btn:hover { opacity: 0.9; }
+
+        /* Area inserimento rapido */
+        .form-inserimento {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .row-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        .row-inputs .form-group {
+            flex: 1;
+        }
+
+        /* Sezioni della lista */
+        .section-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #334155;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 6px;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .item-card {
+            display: flex;
+            align-items: flex-start;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: background 0.2s;
+        }
+        .item-card:hover {
+            background: #f8fafc;
+        }
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+        .item-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            margin-right: 12px;
+            background: #fff;
+        }
+        .item-content {
+            flex-grow: 1;
+        }
+        .item-title {
+            font-weight: bold;
+            font-size: 15px;
+            color: #1e293b;
+        }
+        .item-desc {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+        .item-content.barrato .item-title,
+        .item-content.barrato .item-desc {
+            text-decoration: line-through;
+            color: #94a3b8;
+        }
+        
+        /* Container Video Clip Leonardo */
+        .leonardo-clip-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .leonardo-video {
+            max-width: 100%;
+            width: 450px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid #e2e8f0;
+        }
+
+        /* Modal Popup Guida */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .example-box {
+            background: #f8fafc;
+            border-left: 4px solid #f59e0b;
+            padding: 10px 12px;
+            margin: 8px 0;
+            font-size: 13px;
+            color: #334155;
+            border-radius: 0 6px 6px 0;
+        }
+        .empty-msg {
+            text-align: center;
+            color: #64748b;
+            padding: 20px;
+            font-style: italic;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER PREMIUM -->
+        <div class="header-premium-box">
+            <div class="badge-premium-large">🌟 Funzione Premium Esclusiva</div>
+            <h2>Mia Lista, Commissioni & Offerte</h2>
+            <p style="font-size: 13px; color: #78350f; margin: 5px 0 0 0;">
+                Il tuo assistente personale per impegni fuori casa, idee al volo e promozioni da valutare in famiglia.
+            </p>
+        </div>
+
+        <!-- BOTTONI DI NAVIGAZIONE E GUIDA -->
+        <div class="top-buttons">
+            <button class="btn btn-info" onclick="apriGuida()">📖 Come usare questa lista</button>
+            <a href="liste.html" class="btn btn-primary">🛒 Torna alla Spesa Supermercato</a>
+        </div>
+
+        <!-- CLIP ANIMATA DI LEONARDO INTEGRATA -->
+        <div class="leonardo-clip-container">
+            <video class="leonardo-video" autoplay loop muted playsinline>
+                <source src="IMG/carrello_spesa.mp4" type="video/mp4">
+                Il tuo browser non supporta il tag video.
+            </video>
+        </div>
+
+        <!-- FORM DI INSERIMENTO RAPIDO -->
+        <div class="form-inserimento">
+            <h3 style="margin-top: 0; font-size: 15px; color: #1e293b;">➕ Aggiungi Nuovo Elemento</h3>
+            <div class="form-group">
+                <label>Cosa devi fare o comprare?</label>
+                <input type="text" id="inputTitolo" class="form-control" placeholder="Es. Ritiro scarpe dal calzolaio, Offerta vino...">
+            </div>
+            <div class="row-inputs">
+                <div class="form-group">
+                    <label>Tipo di elemento:</label>
+                    <select id="inputTipo" class="form-control">
+                        <option value="commissione">📌 Commissione / Appunto Fuori Casa</option>
+                        <option value="prodotto">🛍️ Prodotto / Offerta Extra</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Categoria (opzionale):</label>
+                    <input type="text" id="inputCategoria" class="form-control" placeholder="Es. Varie, Regali, Volantino">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Note, Prezzo o Dettagli (opzionale):</label>
+                <textarea id="inputNote" class="form-control" rows="2" placeholder="Es. Prezzo in offerta 4.50€, ricordare scontrino garanzia..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Allega Immagine / Foto (es. Volantino o Prodotto):</label>
+                <input type="file" id="inputImmagine" accept="image/*" class="form-control" style="font-size:12px;">
+            </div>
+            <button class="btn btn-success" style="width: 100%; justify-content: center;" onclick="aggiungiElemento()">Salva in Mia Lista</button>
+        </div>
+
+        <!-- SEZIONE 1: COMMISSIONI ED APPUNTI FUORI CASA -->
+        <div class="section-title">📌 Commissioni e Appunti Giornalieri</div>
+        <div id="lista-commissioni">
+            <div class="empty-msg">Nessuna commissione inserita al momento.</div>
+        </div>
+
+        <!-- SEZIONE 2: PRODOTTI ED OFFERTE EXTRA -->
+        <div class="section-title">🛍️ Prodotti Extra e Offerte da Valutare</div>
+        <div id="lista-prodotti-extra">
+            <div class="empty-msg">Nessun prodotto extra o offerta inserita.</div>
+        </div>
+    </div>
+
+    <!-- POPUP GUIDA D'USO ESEMPI -->
+    <div id="modalGuida" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:#d97706;">📖 Guida all'uso di "Mia Lista"</h3>
+            <p style="font-size: 13px; color: #475569; line-height: 1.5;">
+                Questa sezione è pensata per raccogliere tutto ciò che esce dalla normale spesa alimentare routinaria. Ecco alcuni esempi pratici di utilizzo:
+            </p>
+            
+            <div class="example-box">
+                <strong>👞 Commissioni Fuori Casa:</strong><br>
+                <em>"Ritiro scarpe riparate dal calzolaio"</em> oppure <em>"Duplicato chiavi cantina"</em>, <em>"Portare buoni pasto"</em>, <em>"Passare in farmacia"</em>. Restano in cima per darti visibilità mentre sei in giro.
+            </div>
+
+            <div class="example-box">
+                <strong>📸 Offerte e Idee in Famiglia:</strong><br>
+                Fotografa un prodotto o un volantino al supermercato e annota il prezzo: <em>"Offerta caffè a 3.99€ - lo prendiamo?"</em> per discuterne in famiglia prima di decidere l'acquisto.
+            </div>
+
+            <div class="example-box">
+                <strong>🎁 Promemoria Liberi:</strong><br>
+                <em>"Prendere regalo per il compleanno di Maria"</em> o <em>"Verificare quanto costa il detersivo sfuso"</em>.
+            </div>
+
+            <p style="font-size: 13px; color: #475569; margin-top: 15px;">
+                💡 <strong>Come funziona la spunta:</strong> Quando completi una commissione o metti l'articolo nel carrello, clicca sulla casella a sinistra: comparirà l'effetto sbarramento a penna (stile taccuino di carta)!
+            </p>
+
+            <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="chiudiGuida()">Ho capito, chiudi</button>
+        </div>
+    </div>
+
+    <script>
+        let miaListaElementi = [];
+
+        function caricaMiaLista() {
+            miaListaElementi = JSON.parse(localStorage.getItem('eatme_mia_lista')) || [];
+            renderizzaListe();
+        }
+
+        function aggiungiElemento() {
+            const titolo = document.getElementById('inputTitolo').value.trim();
+            const tipo = document.getElementById('inputTipo').value;
+            const categoria = document.getElementById('inputCategoria').value.trim() || (tipo === 'commissione' ? 'Impegni Giornalieri' : 'Varie / Offerte');
+            const note = document.getElementById('inputNote').value.trim();
+            const fileInput = document.getElementById('inputImmagine');
+
+            if (!titolo) {
+                alert("Inserisci almeno il titolo o la descrizione dell'elemento.");
+                return;
+            }
+
+            let immagineData = '';
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    immagineData = e.target.result;
+                    salvaNuovoElemento(titolo, tipo, categoria, note, immagineData);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                salvaNuovoElemento(titolo, tipo, categoria, note, '');
+            }
+        }
+
+        function salvaNuovoElemento(titolo, tipo, categoria, note, immagine) {
+            const nuovoItem = {
+                id: Date.now(),
+                titolo,
+                tipo,
+                categoria,
+                note,
+                immagine,
+                completato: false
+            };
+
+            miaListaElementi.push(nuovoItem);
+            localStorage.setItem('eatme_mia_lista', JSON.stringify(miaListaElementi));
+
+            document.getElementById('inputTitolo').value = '';
+            document.getElementById('inputNote').value = '';
+            document.getElementById('inputImmagine').value = '';
+            document.getElementById('inputCategoria').value = '';
+
+            renderizzaListe();
+        }
+
+        function renderizzaListe() {
+            const divCommissioni = document.getElementById('lista-commissioni');
+            const divProdotti = document.getElementById('lista-prodotti-extra');
+
+            divCommissioni.innerHTML = '';
+            divProdotti.innerHTML = '';
+
+            let commissioni = miaListaElementi.filter(item => item.tipo === 'commissione');
+            let prodotti = miaListaElementi.filter(item => item.tipo === 'prodotto');
+
+            if (commissioni.length === 0) {
+                divCommissioni.innerHTML = '<div class="empty-msg">Nessuna commissione inserita al momento.</div>';
+            } else {
+                commissioni.forEach(item => {
+                    divCommissioni.appendChild(creaCardElemento(item));
+                });
+            }
+
+            if (prodotti.length === 0) {
+                divProdotti.innerHTML = '<div class="empty-msg">Nessun prodotto extra o offerta inserita.</div>';
+            } else {
+                prodotti.forEach(item => {
+                    divProdotti.appendChild(creaCardElemento(item));
+                });
+            }
+        }
+
+        function creaCardElemento(item) {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'checkbox-custom';
+            checkbox.checked = item.completato;
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = `item-content ${item.completato ? 'barrato' : ''}`;
+            contentDiv.innerHTML = `
+                <div class="item-title">${item.titolo} <span style="font-size:11px; font-weight:normal; color:#64748b; background:#f1f5f9; padding:2px 6px; border-radius:4px; margin-left:6px;">${item.categoria}</span></div>
+                ${item.note ? `<div class="item-desc">📝 ${item.note}</div>` : ''}
+            `;
+
+            checkbox.onchange = (e) => {
+                item.completato = e.target.checked;
+                if (e.target.checked) {
+                    contentDiv.classList.add('barrato');
+                } else {
+                    contentDiv.classList.remove('barrato');
+                }
+                localStorage.setItem('eatme_mia_lista', JSON.stringify(miaListaElementi));
+            };
+
+            card.appendChild(checkbox);
+            
+            if (item.immagine) {
+                const imgElem = document.createElement('img');
+                imgElem.src = item.immagine;
+                imgElem.className = 'item-img';
+                card.appendChild(imgElem);
+            }
+
+            card.appendChild(contentDiv);
+            return card;
+        }
+
+        function apriGuida() {
+            document.getElementById('modalGuida').style.display = 'flex';
+        }
+        function chiudiGuida() {
+            document.getElementById('modalGuida').style.display = 'none';
+        }
+
+        window.onload = () => {
+            caricaMiaLista();
+        };
+    </script>
+</body>
+</html>
