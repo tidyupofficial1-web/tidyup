@@ -3,459 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EatMeFirst - Scarico Articoli</title>
-    <script src="i18n.js" onerror="console.log('i18n.js non trovato')"></script>
+    <title>EatMeFirst - Menu Principale</title>
+    <!-- Collegamento al file centrale delle 5 lingue -->
+    <script src="i18n.js"></script>
     <style>
-        :root {
-            --bg-color: #0d1117;
-            --card-bg: #161b22;
-            --border-color: #30363d;
-            --text-main: #f0f6fc;
-            --text-muted: #8b949e;
-            --accent-blue: #1f6feb;
-            --accent-green: #238636;
-            --accent-red: #da3633;
-        }
-
-        body { 
-            background-color: var(--bg-color); 
-            margin: 0; 
-            padding: 20px; 
-            color: var(--text-main); 
+        body {
+            background-color: #0d1117;
+            color: #f0f6fc;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        .container { 
-            max-width: 750px; 
-            margin: 0 auto; 
-            background: var(--card-bg); 
-            border: 1px solid var(--border-color);
-            padding: 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
-        }
-
-        h1 { 
-            color: #58a6ff; 
-            font-size: 1.8rem; 
-            text-align: center; 
-            margin-bottom: 25px; 
-        }
-
-        /* Guida Popup */
-        .help-popup {
-            background: rgba(31, 111, 235, 0.1);
-            border: 1px solid var(--accent-blue);
-            border-left: 4px solid var(--accent-blue);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            font-size: 0.95rem;
-            color: var(--text-muted);
-        }
-        .help-popup strong { color: var(--text-main); }
-        .close-help {
-            display: block;
-            margin-top: 8px;
-            font-size: 0.85rem;
-            color: #58a6ff;
-            cursor: pointer;
-            text-decoration: underline;
-            font-weight: bold;
-        }
-
-        /* Banner Assenza / Scaduti */
-        .alert-box { 
-            background: rgba(218, 54, 51, 0.15); 
-            border: 1px solid var(--accent-red);
-            border-left: 4px solid var(--accent-red); 
-            padding: 15px; 
-            margin-bottom: 25px; 
-            border-radius: 8px; 
-            display: none; 
-        }
-        .alert-box h4 { margin: 0 0 8px 0; color: #ff7b72; font-size: 1.05rem; }
-        .alert-box p { font-size: 0.9rem; margin: 0 0 10px 0; color: var(--text-muted); }
-
-        .section-box { 
-            background: #0d1117; 
-            border: 1px solid var(--border-color); 
-            padding: 20px; 
-            border-radius: 8px; 
-            margin-bottom: 25px; 
-        }
-        .section-box h3 { margin-top: 0; color: var(--text-main); font-size: 1.2rem; }
-        .input-row { display: flex; gap: 10px; margin-top: 12px; }
-        .input-row input { 
-            flex: 1; 
-            padding: 12px; 
-            background: #161b22;
-            border: 1px solid var(--border-color); 
-            color: var(--text-main);
-            border-radius: 6px; 
-            font-size: 1rem; 
-        }
-        
-        .btn { 
-            background-color: var(--accent-blue); 
-            color: white; 
-            border: none; 
-            padding: 12px 20px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 0.95rem; 
-        }
-        .btn:hover { opacity: 0.9; }
-        .btn-secondary { background-color: #21262d; border: 1px solid var(--border-color); color: var(--text-main); }
-        .btn-secondary:hover { background-color: #30363d; }
-        .btn-danger { background-color: rgba(218, 54, 51, 0.3); color: #ff7b72; border: 1px solid rgba(218, 54, 51, 0.5); }
-        .btn-danger:hover { background-color: rgba(218, 54, 51, 0.5); }
-
-        /* Area Risultato Scansione Interattiva */
-        #risultatoScansione {
-            display: none;
-            background: #161b22;
-            border: 1px solid var(--accent-blue);
-            border-radius: 8px;
+            margin: 0;
             padding: 20px;
-            margin-top: 15px;
-        }
-        .scan-card-content {
             display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .top-bar {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        .header-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        p {
+            color: #8b949e;
+            font-size: 1rem;
+            margin: 0;
+        }
+        .menu-grid {
+            display: grid;
             gap: 15px;
-            align-items: center;
-            margin-bottom: 15px;
+            width: 100%;
+            max-width: 400px;
         }
-        .scan-img {
-            width: 70px;
-            height: 70px;
-            background: #21262d;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            border: 1px solid var(--border-color);
+        .menu-btn {
+            background: #161b22;
+            border: 1px solid #30363d;
+            color: #f0f6fc;
+            padding: 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 1.05rem;
+            font-weight: bold;
+            text-align: center;
+            transition: background 0.2s, border-color 0.2s;
+            display: block;
         }
-
-        .settore-card { 
-            background: #161b22; 
-            border: 1px solid var(--border-color); 
-            border-radius: 8px; 
-            margin-bottom: 20px; 
-            overflow: hidden; 
+        .menu-btn:hover {
+            background: #30363d;
+            border-color: #8b949e;
         }
-        .settore-header { 
-            background: #21262d; 
-            color: var(--text-main); 
-            padding: 12px 18px; 
-            font-weight: bold; 
-            font-size: 1.05rem; 
-            border-bottom: 1px solid var(--border-color);
+        footer {
+            margin-top: 50px;
+            color: #8b949e;
+            font-size: 0.85rem;
+            text-align: center;
         }
-        
-        .item-list { list-style: none; padding: 0; margin: 0; }
-        .item-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 15px 18px; 
-            border-bottom: 1px solid var(--border-color); 
-        }
-        .item-row:last-child { border-bottom: none; }
-        
-        .item-details { font-size: 0.95rem; }
-        .item-name { font-weight: bold; color: var(--text-main); font-size: 1.05rem; }
-        .item-meta { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
-        .scadenza-tassativa { color: #ff7b72; font-weight: bold; }
-
-        .item-actions { display: flex; gap: 8px; align-items: center; }
-        .btn-sm { padding: 8px 12px; font-size: 0.85rem; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; }
-        
-        .back-link { display: block; text-align: center; margin-top: 30px; color: #58a6ff; text-decoration: none; font-weight: bold; font-size: 0.95rem; }
-        .back-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>📤 Scarico Articoli (Consumo e Scorte)</h1>
-
-    <!-- Guida Popup Informativa -->
-    <div id="helpPopupScarico" class="help-popup">
-        ℹ️ <strong>Istruzioni per lo scarico:</strong> 
-        Usa la scansione barcode o la lista per gestire i consumi. Per i prodotti a pezzo unico potrai confermare l'eliminazione diretta verso la spesa. Per quelli multi-pezzo potrai ridurre la quantità gradualmente o confermare lo stock residuo.
-        <span class="close-help" onclick="chiudiGuidaScarico()">[ Nascondi questo suggerimento ]</span>
+    <div class="top-bar">
+        <!-- Selettore delle 5 lingue -->
+        <div id="header-lang"></div>
     </div>
 
-    <!-- Avviso Intelligente Assenza Prolungata -->
-    <div id="bannerAssenza" class="alert-box">
-        <h4>🚨 Bentornato! Rilevati prodotti scaduti durante l'assenza</h4>
-        <p>Alcuni prodotti hanno superato la data di scadenza tassativa mentre eri via. Rimuovendoli, saranno aggiunti automaticamente alla Lista della Spesa.</p>
-        <div id="listaScadutiContainer"></div>
+    <div class="header-container">
+        <h1 id="txt-menu-title">Menu Principale</h1>
+        <p id="txt-menu-subtitle">Gestione Intelligente della Dispensa</p>
     </div>
 
-    <!-- Metodo 1: Scansione Rapida Barcode -->
-    <div class="section-box">
-        <h3>⚡ 1. Scansione Rapida Barcode</h3>
-        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px;">Passa il prodotto confezionato davanti al lettore:</p>
-        <div class="input-row">
-            <!-- Campo azzerato in partenza -->
-            <input type="text" id="barcodeInput" value="" placeholder="Inserisci o scansiona codice a barre...">
-            <button class="btn" onclick="scansionaBarcode()">Cerca Articolo</button>
-        </div>
-
-        <!-- Box interattivo del prodotto estratto via scansione -->
-        <div id="risultatoScansione">
-            <div class="scan-card-content">
-                <div class="scan-img" id="scanIcona">📦</div>
-                <div>
-                    <div id="scanNome" style="font-weight: bold; font-size: 1.1rem; color: var(--text-main);"></div>
-                    <div id="scanMeta" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;"></div>
-                </div>
-            </div>
-            <div id="scanAzioneContainer" style="border-top: 1px solid var(--border-color); padding-top: 15px;">
-                <!-- Dinamico in base a pezzo unico o multiplo -->
-            </div>
-        </div>
+    <div class="menu-grid">
+        <a href="carico.html" class="menu-btn" id="txt-btn-carico">📥 Carico Articolo</a>
+        <a href="scarico.html" class="menu-btn" id="txt-btn-scarico">📤 Scarico Prodotti</a>
+        <a href="dispensa.html" class="menu-btn" id="txt-btn-dispensa">📋 Visualizza Dispensa</a>
+        <a href="spesa.html" class="menu-btn" id="txt-btn-spesa">🛒 Lista della Spesa</a>
+        <a href="impostazioni.html" class="menu-btn" id="txt-btn-impostazioni">⚙️ Impostazioni</a>
+        <a href="termini.html" class="menu-btn" id="txt-btn-termini">📄 Termini e Condizioni</a>
     </div>
 
-    <!-- Metodo 2: Navigazione per Settori e Ubicazioni Reali -->
-    <div class="section-box" style="background: transparent; border: none; padding: 0;">
-        <h3 style="color: var(--text-main); margin-bottom: 5px;">🗺️ 2. Sfoglia per Luogo e Settore</h3>
-        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Seleziona il prodotto dallo scaffale o dal frigo:</p>
-        
-        <div id="contenitoreSettori"></div>
-    </div>
+    <footer id="txt-footer">
+        EatMeFirst &bull; Dati locali su dispositivo
+    </footer>
 
-    <a href="menu.html" class="back-link">⬅ Torna alla Dashboard principale</a>
-</div>
-
-<script>
-    function chiudiGuidaScarico() {
-        document.getElementById('helpPopupScarico').style.display = 'none';
-        localStorage.setItem('nascondiGuidaScarico', 'true');
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-        if (localStorage.getItem('nascondiGuidaScarico') === 'true') {
-            const popup = document.getElementById('helpPopupScarico');
-            if (popup) popup.style.display = 'none';
-        }
-        
-        // Pulizia totale dei campi input all'avvio
-        document.getElementById('barcodeInput').value = '';
-        document.getElementById('risultatoScansione').style.display = 'none';
-        
-        caricaDispensaDaStorage();
-        controllaProdottiScaduti();
-        renderSettori();
-    });
-
-    let dispensa = [];
-
-    function caricaDispensaDaStorage() {
-        let datiSalvati = localStorage.getItem('eatMeFirst_dispensa');
-        if (datiSalvati) {
-            dispensa = JSON.parse(datiSalvati);
-        } else {
-            dispensa = []; // Nessun dato fittizio inserito: dispensa totalmente vuota
-            salvaDispensaInStorage();
-        }
-    }
-
-    function salvaDispensaInStorage() {
-        localStorage.setItem('eatMeFirst_dispensa', JSON.stringify(dispensa));
-    }
-
-    function aggiungiAllaSpesa(nomeProdotto) {
-        let listaSpesa = JSON.parse(localStorage.getItem('eatMeFirst_spesa')) || [];
-        listaSpesa.push({ nome: nomeProdotto, acquistato: false });
-        localStorage.setItem('eatMeFirst_spesa', JSON.stringify(listaSpesa));
-    }
-
-    function controllaProdottiScaduti() {
-        let oggi = new Date().toISOString().split('T')[0];
-        let scaduti = dispensa.filter(item => {
-            if (!item.tassativa || !item.scadenza) return false;
-            let parti = item.scadenza.split('/');
-            if (parti.length === 3) {
-                let dataIso = `${parti[2]}-${parti[1]}-${parti[0]}`;
-                return dataIso < oggi;
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const containerLang = document.getElementById('header-lang');
+            if (containerLang && typeof creaSelettoreLinguaHTML === 'function') {
+                containerLang.innerHTML = creaSelettoreLinguaHTML();
             }
-            return false;
+
+            applicaTraduzioniInterfaccia();
         });
 
-        if (scaduti.length > 0) {
-            let banner = document.getElementById('bannerAssenza');
-            let container = document.getElementById('listaScadutiContainer');
-            banner.style.display = 'block';
-
-            let html = "<ul style='margin: 0; padding-left: 20px; font-size: 0.9rem;'>";
-            scaduti.forEach(s => {
-                html += `<li><strong>${s.nome}</strong> (Scadenza: ${s.scadenza}) -> <a href="#" onclick="rimuoviESposta(${s.id}); return false;" style="color: #ff7b72; font-weight: bold;">Rimuovi e metti in spesa</a></li>`;
-            });
-            html += "</ul>";
-            container.innerHTML = html;
-        } else {
-            document.getElementById('bannerAssenza').style.display = 'none';
-        }
-    }
-
-    function renderSettori() {
-        let contenitore = document.getElementById('contenitoreSettori');
-        contenitore.innerHTML = '';
-
-        if (dispensa.length === 0) {
-            contenitore.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 30px; background: #161b22; border: 1px solid var(--border-color); border-radius: 8px;">La dispensa è attualmente vuota. Nessuna ubicazione registrata. Aggiungi prima qualche articolo tramite la pagina di carico!</p>';
-            return;
-        }
-
-        // Estrae unicamente i settori/ubicazioni realmente presenti nei dati dell'utente
-        let settoriUnici = [...new Set(dispensa.map(i => i.settore || 'Ubicazione non specificata'))];
-
-        settoriUnici.forEach(settore => {
-            let card = document.createElement('div');
-            card.className = 'settore-card';
+        function applicaTraduzioniInterfaccia() {
+            if (typeof getLinguaCorrente !== 'function' || typeof dizionarioGlobale === 'undefined') return;
             
-            let header = document.createElement('div');
-            header.className = 'settore-header';
-            header.innerText = `🧊 ${settore}`;
-            card.appendChild(header);
+            const lang = getLinguaCorrente();
+            const t = dizionarioGlobale[lang] || dizionarioGlobale['it'];
 
-            let ul = document.createElement('ul');
-            ul.className = 'item-list';
-
-            dispensa.filter(i => (i.settore || 'Ubicazione non specificata') === settore).forEach(item => {
-                let li = document.createElement('li');
-                li.className = 'item-row';
-                
-                let infoExtra = item.tipo === 'sfuso' ? `Quantità: <strong>${item.quantita} ${item.unita}</strong>` : `Quantità disponibile: <strong>${item.quantita} pz</strong>`;
-                let classeScadenza = item.tassativa ? 'scadenza-tassativa' : '';
-
-                li.innerHTML = `
-                    <div class="item-details">
-                        <div class="item-name">${item.nome}</div>
-                        <div class="item-meta">
-                            ${infoExtra} | Ubicazione: <strong>${item.ubicazione || settore}</strong> | Scad: <span class="${classeScadenza}">${item.scadenza}</span> ${item.tassativa ? '(Tassativa)' : ''}
-                        </div>
-                    </div>
-                    <div class="item-actions">
-                        ${item.quantita <= 1 ? 
-                            `<button class="btn-sm btn-danger" onclick="confermaEliminazioneSingola(${item.id})">Elimino?</button>` :
-                            `<button class="btn-sm btn-secondary" onclick="decrementaQuantita(${item.id})">Riduci (-1)</button>`
-                        }
-                    </div>
-                `;
-                ul.appendChild(li);
-            });
-
-            card.appendChild(ul);
-            contenitore.appendChild(card);
-        });
-    }
-
-    // Gestione Scansione Barcode reale
-    function scansionaBarcode() {
-        let code = document.getElementById('barcodeInput').value.trim();
-        let boxRisultato = document.getElementById('risultatoScansione');
-        
-        if (!code) {
-            alert("Inserisci o scansiona un codice a barre valido.");
-            boxRisultato.style.display = 'none';
-            return;
+            document.getElementById('txt-menu-title').textContent = t.menuTitle || "Menu Principale";
+            document.getElementById('txt-menu-subtitle').textContent = t.menuSubtitle || "Gestione Intelligente della Dispensa";
+            document.getElementById('txt-btn-carico').textContent = t.caricoArticolo || "📥 Carico Articolo";
+            document.getElementById('txt-btn-scarico').textContent = "📤 Scarico Prodotti";
+            document.getElementById('txt-btn-dispensa').textContent = t.visualizzaDispensa || "📋 Visualizza Dispensa";
+            document.getElementById('txt-btn-spesa').textContent = t.spesa || "🛒 Lista della Spesa";
+            document.getElementById('txt-btn-impostazioni').textContent = t.impostazioni || "⚙️ Impostazioni";
+            document.getElementById('txt-btn-termini').textContent = t.terminiTitle || "📄 Termini e Condizioni";
+            document.getElementById('txt-footer').innerHTML = t.footer || "EatMeFirst &bull; Dati locali su dispositivo";
         }
-
-        // Cerca l'articolo reale per codice a barre salvato
-        let item = dispensa.find(i => i.codiceBarre === code);
-
-        if (item) {
-            boxRisultato.style.display = 'block';
-            document.getElementById('scanNome').innerText = item.nome;
-            document.getElementById('scanMeta').innerHTML = `Quantità attuale: <strong>${item.quantita} pz</strong> | Ubicazione: <strong>${item.ubicazione || item.settore || 'Generica'}</strong> | Scadenza: <span class="${item.tassativa ? 'scadenza-tassativa' : ''}">${item.scadenza}</span>`;
-            
-            let azioneContainer = document.getElementById('scanAzioneContainer');
-
-            if (item.quantita <= 1) {
-                // Caso Pezzo Unico
-                azioneContainer.innerHTML = `
-                    <p style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--text-muted);">Questo è un pezzo unico.</p>
-                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                        <label style="display: flex; align-items: center; gap: 8px; font-weight: bold; cursor: pointer; color: #ff7b72;">
-                            <input type="checkbox" id="checkEliminaUnico" style="width: 18px; height: 18px;"> Elimino definitivamente e sposta in spesa?
-                        </label>
-                        <button class="btn btn-danger" onclick="eseguiScaricoScansione(${item.id}, 'unico')">Conferma</button>
-                        <button class="btn btn-secondary" onclick="annullaScansione()">Indietro</button>
-                    </div>
-                `;
-            } else {
-                // Caso Più Pezzi (decremento graduale)
-                azioneContainer.innerHTML = `
-                    <p style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--text-muted);">Disponi di più unità. Riduci la quantità di 1:</p>
-                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                        <button class="btn btn-secondary" onclick="decrementaQuantita(${item.id}); scansionaBarcode();">Riduci di 1 (-1)</button>
-                        <span id="txtRestano" style="font-size: 0.9rem; color: var(--text-main);">Ne restano ${item.quantita - 1}. Confermi?</span>
-                        <button class="btn" onclick="annullaScansione()">Indietro / Annulla</button>
-                    </div>
-                `;
-            }
-        } else {
-            alert("Nessun articolo corrispondente trovato in dispensa con questo codice a barre.");
-            boxRisultato.style.display = 'none';
-        }
-    }
-
-    function annullaScansione() {
-        document.getElementById('risultatoScansione').style.display = 'none';
-        document.getElementById('barcodeInput').value = '';
-    }
-
-    function confermaEliminazioneSingola(id) {
-        let item = dispensa.find(i => i.id === id);
-        if (item && confirm(`Il prodotto "${item.nome}" è un pezzo unico. Vuoi eliminarlo e aggiungerlo alla Lista della Spesa?`)) {
-            rimuoviESposta(id);
-        }
-    }
-
-    function decrementaQuantita(id) {
-        let item = dispensa.find(i => i.id === id);
-        if (item) {
-            if (item.quantita > 1) {
-                item.quantita--;
-                salvaDispensaInStorage();
-                renderSettori();
-            } else {
-                rimuoviESposta(id);
-            }
-        }
-    }
-
-    function eseguiScaricoScansione(id, tipo) {
-        if (tipo === 'unico') {
-            let checkbox = document.getElementById('checkEliminaUnico');
-            if (checkbox && checkbox.checked) {
-                rimuoviESposta(id);
-                annullaScansione();
-            } else {
-                alert("Devi spuntare la casella 'Elimino' per confermare la rimozione del pezzo unico.");
-            }
-        }
-    }
-
-    function rimuoviESposta(id) {
-        let index = dispensa.findIndex(i => i.id === id);
-        if (index !== -1) {
-            let rimosso = dispensa.splice(index, 1)[0];
-            aggiungiAllaSpesa(rimosso.nome);
-            salvaDispensaInStorage();
-            alert(`"${rimosso.nome}" è terminato ed è stato aggiunto AUTOMATICAMENTE alla Lista della Spesa!`);
-            renderSettori();
-            controllaProdottiScaduti();
-            annullaScansione();
-        }
-    }
-</script>
-
+    </script>
 </body>
 </html>
