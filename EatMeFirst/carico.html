@@ -181,6 +181,7 @@
         <!-- Riquadro video in tempo reale per la scansione continua -->
         <div id="reader"></div>
         
+        <!-- Pulsante per attivare lo scanner live -->
         <button type="button" class="btn-native-cam" id="btnAvviaScanner" onclick="avviaScannerLive()">📷 Avvia Scanner Live</button>
 
         <!-- Box anteprima immagine del prodotto -->
@@ -246,7 +247,7 @@
 
     <script>
         let html5QrCodeScanner = null;
-        let urlImmagineCorrente = ""; // Variabile per memorizzare l'immagine trovata
+        let urlImmagineCorrente = ""; 
 
         document.addEventListener('DOMContentLoaded', () => {
             const containerLang = document.getElementById('header-lang');
@@ -277,7 +278,6 @@
             applicaTraduzioniInterfaccia();
         });
 
-        // Avvia la fotocamera in streaming live continuo
         function avviaScannerLive() {
             const readerDiv = document.getElementById('reader');
             readerDiv.style.display = 'block';
@@ -295,9 +295,7 @@
                     fermaScannerLive();
                     cercaSuOpenFoodFacts();
                 },
-                (errorMessage) => {
-                    // Errori di frame ignorati
-                }
+                (errorMessage) => {}
             ).catch(err => {
                 alert("Impossibile accedere alla fotocamera. Verifica i permessi del browser.");
                 fermaScannerLive();
@@ -319,7 +317,6 @@
             }
         }
 
-        // Interroga Open Food Facts ed estrae anche l'immagine
         async function cercaSuOpenFoodFacts() {
             let barcode = document.getElementById('codiceBarre').value.trim();
             if (!barcode) {
@@ -350,7 +347,6 @@
 
                     document.getElementById('nomeProdotto').value = descrizioneCompleta;
 
-                    // Recupera e mostra l'immagine del prodotto se disponibile
                     urlImmagineCorrente = data.product.image_front_small_url || data.product.image_front_url || "";
                     let boxAnteprima = document.getElementById('boxAnteprima');
                     let imgProdotto = document.getElementById('imgProdotto');
@@ -383,7 +379,7 @@
             let scadenza = document.getElementById('dataScadenza').value;
             let ubicazione = document.getElementById('ubicazioneProdotto').value;
             let spesaCheck = document.getElementById('aggiungiSpesaCheck').checked;
-            let immagine = urlImmagineCorrente; // Salva l'URL dell'immagine associata
+            let immagine = urlImmagineCorrente;
 
             if (!nome || !scadenza || !ubicazione) {
                 alert("Per favore, compila tutti i campi obbligatori (*).");
@@ -403,7 +399,6 @@
             let msg = document.getElementById('msgSuccesso');
             msg.style.display = 'block';
             
-            // Resetta form e nasconde l'anteprima
             document.getElementById('formCarico').reset();
             document.getElementById('boxAnteprima').style.display = 'none';
             urlImmagineCorrente = "";
