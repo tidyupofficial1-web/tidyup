@@ -31,9 +31,7 @@
             text-decoration: none;
             font-size: 0.9rem;
         }
-        .btn-back:hover {
-            background: #30363d;
-        }
+        .btn-back:hover { background: #30363d; }
         .form-container {
             background: #161b22;
             border: 1px solid #30363d;
@@ -42,9 +40,7 @@
             max-width: 500px;
             margin: 0 auto;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
+        .form-group { margin-bottom: 15px; }
         label {
             display: block;
             margin-bottom: 6px;
@@ -61,21 +57,10 @@
             font-size: 1rem;
             box-sizing: border-box;
         }
-        textarea {
-            resize: vertical;
-            height: 70px;
-        }
-        .row {
-            display: flex;
-            gap: 10px;
-        }
-        .row .form-group {
-            flex: 1;
-        }
-        .barcode-row {
-            display: flex;
-            gap: 8px;
-        }
+        textarea { resize: vertical; height: 70px; }
+        .row { display: flex; gap: 10px; }
+        .row .form-group { flex: 1; }
+        .barcode-row { display: flex; gap: 8px; }
         .btn-off {
             background: #1f6feb;
             border: none;
@@ -87,9 +72,7 @@
             font-size: 0.9rem;
             white-space: nowrap;
         }
-        .btn-off:hover {
-            background: #388bfd;
-        }
+        .btn-off:hover { background: #388bfd; }
         .btn-native-cam {
             background: #238636;
             border: none;
@@ -105,9 +88,7 @@
             display: block;
             box-sizing: border-box;
         }
-        .btn-native-cam:hover {
-            background: #2ea043;
-        }
+        .btn-native-cam:hover { background: #2ea043; }
         .btn-manual-prod {
             background: #21262d;
             border: 1px solid #30363d;
@@ -123,9 +104,7 @@
             display: block;
             box-sizing: border-box;
         }
-        .btn-manual-prod:hover {
-            background: #30363d;
-        }
+        .btn-manual-prod:hover { background: #30363d; }
         #reader {
             width: 100%;
             border-radius: 8px;
@@ -150,11 +129,7 @@
         }
         
         /* Selettore Tipo di Scadenza */
-        .scadenza-type-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
+        .scadenza-type-row { display: flex; gap: 10px; margin-bottom: 10px; }
         .scadenza-btn {
             flex: 1;
             padding: 8px;
@@ -167,44 +142,17 @@
             font-size: 0.85rem;
             text-align: center;
         }
-        .scadenza-btn.active-tassativa {
-            background: #da3633;
-            color: white;
-            border-color: #f85149;
-        }
-        .scadenza-btn.active-consigliata {
-            background: #9e6a03;
-            color: white;
-            border-color: #bb8009;
-        }
-        .scadenza-btn.active-senza {
-            background: #30363d;
-            color: white;
-        }
+        .scadenza-btn.active-tassativa { background: #da3633; color: white; border-color: #f85149; }
+        .scadenza-btn.active-consigliata { background: #9e6a03; color: white; border-color: #bb8009; }
+        .scadenza-btn.active-senza { background: #30363d; color: white; }
 
-        /* Caselle della data dinamiche */
-        #containerDateInputs {
-            transition: all 0.3s ease;
-        }
-        .date-inputs-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .date-inputs-row input {
-            text-align: center;
-            font-size: 1.1rem;
-            letter-spacing: 2px;
-        }
-        /* Bordi colorati in base al tipo di scadenza */
+        #containerDateInputs { transition: all 0.3s ease; }
+        .date-inputs-row { display: flex; gap: 8px; align-items: center; }
+        .date-inputs-row input { text-align: center; font-size: 1.1rem; letter-spacing: 2px; }
         .border-tassativa { border-color: #f85149 !important; background: #2d1517 !important; }
         .border-consigliata { border-color: #bb8009 !important; background: #262114 !important; }
 
-        .date-separator {
-            color: #8b949e;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
+        .date-separator { color: #8b949e; font-weight: bold; font-size: 1.2rem; }
         .confirm-date-box {
             display: none;
             background: #1f242c;
@@ -226,11 +174,7 @@
             margin-left: 8px;
         }
 
-        /* Stile per Ubicazione Dinamica */
-        .ubicazione-box {
-            display: flex;
-            gap: 8px;
-        }
+        .ubicazione-box { display: flex; gap: 8px; }
         .btn-crea-ubicazione {
             background: #238636;
             border: none;
@@ -244,7 +188,7 @@
         }
         .btn-crea-ubicazione:hover { background: #2ea043; }
 
-        /* Stile Popup Guida */
+        /* Popup Guida con spunta */
         .popup-guida {
             display: none;
             background: #1f242c;
@@ -259,12 +203,7 @@
         .popup-guida label { display: inline; color: #8b949e; cursor: pointer; font-size: 0.8rem; }
         .popup-guida input[type="checkbox"] { width: auto; margin-right: 5px; }
 
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 15px;
-        }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-top: 15px; }
         .checkbox-group input { width: auto; }
         .btn-submit {
             background: #238636;
@@ -302,21 +241,31 @@
         <h1 id="txt-carico-title" style="margin-top: 0; font-size: 1.5rem;">Carica Nuovo Articolo</h1>
         
         <div id="msgSuccesso" class="success-msg">Articolo salvato con successo!</div>
-        <div id="msgInfo" class="info-msg">Elaborazione codice in corso...</div>
+        <div id="msgInfo" class="info-msg">Interrogazione database in corso...</div>
 
-        <!-- Riquadro video live scanner -->
         <div id="reader"></div>
         
         <button type="button" class="btn-native-cam" id="btnAvviaScanner" onclick="avviaScannerLive()">📷 Avvia Scanner Live</button>
         <button type="button" class="btn-manual-prod" id="btnProdottoManuale" onclick="attivaProdottoSenzaCodice()">🏷️ Prodotto senza codice (Mercato / Fatti in casa)</button>
 
-        <!-- Popup Guida Intelligente (Note) -->
+        <!-- Popup Guida Manuale -->
+        <div id="popupManualeGuida" class="popup-guida">
+            <p>🏷️ <b>Prodotti senza codice:</b> Qui puoi inserire manualmente articoli del mercato o fatti in casa (marmellate, torte), specificando descrizione, peso, litri o metri e gestendo la scadenza dedicata.</p>
+            <label><input type="checkbox" id="chkNonMostrareManuale" onclick="salvaPreferenzaPopup('manuale')"> Non mostrare più questo avviso</label>
+        </div>
+
+        <!-- Popup Guida Note -->
         <div id="popupNoteGuida" class="popup-guida">
-            <p>💡 <b>A cosa serve il campo Note?</b> Puoi scriverci offerte (es. <i>"Preso da MD"</i>) o promemoria per eventi speciali inserendo una data e i giorni di preavviso (es. <i>"Picnic del 15 agosto, avvisa 5 giorni prima"</i>).</p>
+            <p>💡 <b>A cosa serve il campo Note?</b> Puoi scriverci offerte (es. <i>"Preso da MD"</i>) o promemoria per eventi speciali inserendo una data e i giorni di preavviso.</p>
             <label><input type="checkbox" id="chkNonMostrareNote" onclick="salvaPreferenzaPopup('note')"> Non mostrare più questo avviso</label>
         </div>
 
-        <!-- Box anteprima immagine prodotto -->
+        <!-- Popup Guida Scadenze -->
+        <div id="popupScadenzaGuida" class="popup-guida">
+            <p>⏳ <b>Tipi di scadenza:</b> 🔴 <b>Tassativa</b> per i freschi (allerta rigorosa). 🟡 <b>Consigliata</b> (TMC) per scatolame o biscotti (l'app suggerisce il consumo flessibile). ⚪ <b>Senza scadenza</b> per tovaglioli o detersivi.</p>
+            <label><input type="checkbox" id="chkNonMostrareScadenza" onclick="salvaPreferenzaPopup('scadenza')"> Non mostrare più questo avviso</label>
+        </div>
+
         <div id="boxAnteprima" class="preview-container">
             <img id="imgProdotto" src="" alt="Anteprima prodotto">
         </div>
@@ -327,7 +276,7 @@
                 <label id="lbl-barcode" for="codiceBarre">Codice a Barre / EAN</label>
                 <div class="barcode-row">
                     <input type="text" id="codiceBarre" inputmode="numeric" placeholder="Codice EAN...">
-                    <button type="button" class="btn-off" onclick="cercaSuOpenFoodFacts()" id="btn-cerca-off">Cerca</button>
+                    <button type="button" class="btn-off" onclick="cercaSuOpenFoodFactsMultipli()" id="btn-cerca-off">Cerca</button>
                 </div>
             </div>
 
@@ -380,14 +329,14 @@
                 </div>
             </div>
 
-            <!-- Ubicazione Dinamica -->
+            <!-- Ubicazione Dinamica (Vuota all'avvio) -->
             <div class="form-group">
                 <label id="lbl-ubicazione" for="ubicazioneProdotto">Ubicazione *</label>
                 <div class="ubicazione-box">
                     <select id="ubicazioneProdotto" required>
-                        <option value="" disabled selected id="opt-sel-ubicazione">-- Seleziona o crea ubicazione --</option>
+                        <option value="" disabled selected id="opt-sel-ubicazione">-- Crea o seleziona ubicazione --</option>
                     </select>
-                    <button type="button" class="btn-crea-ubicazione" onclick="creaNuovaUbicazione()" id="btn-crea-ub">+ Crea</button>
+                    <button type="button" class="btn-crea-ubicazione" onclick="creaNuovaUbicazione()" id="btn-crea-ub">+ Crea ubicazione</button>
                 </div>
             </div>
 
@@ -410,7 +359,7 @@
         let html5QrCodeScanner = null;
         let urlImmagineCorrente = ""; 
         let dataConfermataValida = false;
-        let tipoScadenzaSelezionato = "tassativa"; // di default fresco/rosso
+        let tipoScadenzaSelezionato = "tassativa";
 
         document.addEventListener('DOMContentLoaded', () => {
             const containerLang = document.getElementById('header-lang');
@@ -421,10 +370,16 @@
             aggiornaElencoUbicazioni();
             controllaPopupMostrati();
 
-            // Attiva listener sul campo note per mostrare la guida la prima volta
+            // Attivazione popup intelligenti
             document.getElementById('notaArticolo').addEventListener('focus', () => {
                 if (localStorage.getItem('eat_popup_note') !== 'nascondi') {
                     document.getElementById('popupNoteGuida').style.display = 'block';
+                }
+            });
+
+            document.getElementById('containerDateInputs').addEventListener('click', () => {
+                if (localStorage.getItem('eat_popup_scadenza') !== 'nascondi') {
+                    document.getElementById('popupScadenzaGuida').style.display = 'block';
                 }
             });
         });
@@ -443,33 +398,38 @@
             document.getElementById('lbl-ubicazione').textContent = t.ubicazioneLbl || "Ubicazione";
             document.getElementById('lbl-check-spesa').textContent = t.checkSpesaLbl || "Aggiungi anche alla spesa";
             document.getElementById('txt-btn-salva').textContent = t.btnSalvaDispensa || "Salva in Dispensa";
-            document.getElementById('opt-sel-ubicazione').textContent = t.selUbicazionePlaceholder || "-- Seleziona o crea ubicazione --";
-            document.getElementById('btn-crea-ub').textContent = t.btnCreaUbicazione || "+ Crea";
+            document.getElementById('opt-sel-ubicazione').textContent = t.selUbicazionePlaceholder || "-- Crea o seleziona ubicazione --";
+            document.getElementById('btn-crea-ub').textContent = t.btnCreaUbicazione || "+ Crea ubicazione";
             document.getElementById('btnProdottoManuale').textContent = t.btnManuale || "🏷️ Prodotto senza codice (Mercato / Fatti in casa)";
         }
 
-        window.addEventListener('linguaCambiata', () => {
-            applicaTraduzioniInterfaccia();
-        });
+        window.addEventListener('linguaCambiata', () => { applicaTraduzioniInterfaccia(); });
 
         function controllaPopupMostrati() {
-            if (localStorage.getItem('eat_popup_note') === 'nascondi') {
-                document.getElementById('chkNonMostrareNote').checked = true;
-            }
+            if (localStorage.getItem('eat_popup_note') === 'nascondi') document.getElementById('chkNonMostrareNote').checked = true;
+            if (localStorage.getItem('eat_popup_scadenza') === 'nascondi') document.getElementById('chkNonMostrareScadenza').checked = true;
+            if (localStorage.getItem('eat_popup_manuale') === 'nascondi') document.getElementById('chkNonMostrareManuale').checked = true;
         }
 
         function salvaPreferenzaPopup(tipo) {
-            localStorage.setItem('eat_popup_note', 'nascondi');
-            document.getElementById('popupNoteGuida').style.display = 'none';
+            if (tipo === 'note') {
+                localStorage.setItem('eat_popup_note', 'nascondi');
+                document.getElementById('popupNoteGuida').style.display = 'none';
+            } else if (tipo === 'scadenza') {
+                localStorage.setItem('eat_popup_scadenza', 'nascondi');
+                document.getElementById('popupScadenzaGuida').style.display = 'none';
+            } else if (tipo === 'manuale') {
+                localStorage.setItem('eat_popup_manuale', 'nascondi');
+                document.getElementById('popupManualeGuida').style.display = 'none';
+            }
         }
 
-        // Gestione Ubicazioni dinamiche salvate in localStorage
-        function aggiornaElencoUbicazioni(selezionaUltima = false) {
+        // Ubicazioni dinamiche (partono totalmente vuote finché l'utente non le crea)
+        function aggiornaElencoUbicazioni() {
             let select = document.getElementById('ubicazioneProdotto');
-            let ubicazioni = JSON.parse(localStorage.getItem('eat_ubicazioni')) || ["Dispensa Cucina", "Frigorifero", "Cantina", "Freezer"];
+            let ubicazioni = JSON.parse(localStorage.getItem('eat_ubicazioni')) || [];
             
-            // Pantiene il placeholder
-            select.innerHTML = `<option value="" disabled selected id="opt-sel-ubicazione">-- Seleziona o crea ubicazione --</option>`;
+            select.innerHTML = `<option value="" disabled selected id="opt-sel-ubicazione">-- Crea o seleziona ubicazione --</option>`;
             
             ubicazioni.forEach(ub => {
                 let opt = document.createElement('option');
@@ -477,17 +437,13 @@
                 opt.textContent = ub;
                 select.appendChild(opt);
             });
-
-            if (selezionaUltima && ubicazioni.length > 0) {
-                select.value = ubicazioni[ubicazioni.length - 1];
-            }
         }
 
         function creaNuovaUbicazione() {
-            let nuovaUb = prompt("Inserisci il nome della nuova ubicazione (es. Garage, Ripostiglio):");
+            let nuovaUb = prompt("Inserisci il nome della nuova ubicazione (es. Frigorifero, Dispensa Cucina, Cantina):");
             if (nuovaUb && nuovaUb.trim() !== "") {
                 nuovaUb = nuovaUb.trim();
-                let ubicazioni = JSON.parse(localStorage.getItem('eat_ubicazioni')) || ["Dispensa Cucina", "Frigorifero", "Cantina", "Freezer"];
+                let ubicazioni = JSON.parse(localStorage.getItem('eat_ubicazioni')) || [];
                 if (!ubicazioni.includes(nuovaUb)) {
                     ubicazioni.push(nuovaUb);
                     localStorage.setItem('eat_ubicazioni', JSON.stringify(ubicazioni));
@@ -497,7 +453,7 @@
             }
         }
 
-        // Gestione Tipo Scadenza (Tassativa, Consigliata, Senza)
+        // Tipo Scadenza
         function impostaTipoScadenza(tipo) {
             tipoScadenzaSelezionato = tipo;
             let btnT = document.getElementById('btnTassativa');
@@ -528,7 +484,7 @@
                 btnS.className = "scadenza-btn active-senza";
                 containerDate.style.display = 'none';
                 ggInput.required = false; mmInput.required = false; aaInput.required = false;
-                dataConfermataValida = true; // Non serve data
+                dataConfermataValida = true;
             }
         }
 
@@ -545,8 +501,7 @@
             let aa = document.getElementById('annoScad').value;
 
             if (gg.length > 0 && mm.length > 0 && aa.length === 2) {
-                let annoCompleto = "20" + aa;
-                let stringaFormattata = `${gg.padStart(2, '0')}/${mm.padStart(2, '0')}/${annoCompleto}`;
+                let stringaFormattata = `${gg.padStart(2, '0')}/${mm.padStart(2, '0')}/20${aa}`;
                 document.getElementById('testoDataConferma').textContent = stringaFormattata;
                 document.getElementById('boxConfermaData').style.display = 'block';
             } else {
@@ -555,14 +510,6 @@
         }
 
         function confermaDataInserita() {
-            let gg = document.getElementById('giornoScad').value.padStart(2, '0');
-            let mm = document.getElementById('meseScad').value.padStart(2, '0');
-            
-            if (gg > 31 || mm > 12 || gg == 0 || mm == 0) {
-                alert("Verifica i valori di giorno o mese inseriti.");
-                return;
-            }
-
             dataConfermataValida = true;
             document.getElementById('boxConfermaData').style.background = '#1b3a2b';
             document.getElementById('testoDataConferma').textContent += " (Confermata ✅)";
@@ -572,7 +519,9 @@
             document.getElementById('groupBarcode').style.display = 'none';
             document.getElementById('codiceBarre').value = "SENZA_CODICE";
             document.getElementById('nomeProdotto').focus();
-            alert("Modalità prodotto artigianale / senza codice attivata. Inserisci la descrizione e imposta la scadenza desiderata.");
+            if (localStorage.getItem('eat_popup_manuale') !== 'nascondi') {
+                document.getElementById('popupManualeGuida').style.display = 'block';
+            }
         }
 
         function avviaScannerLive() {
@@ -581,69 +530,75 @@
             document.getElementById('btnAvviaScanner').style.display = 'none';
 
             html5QrCodeScanner = new Html5Qrcode("reader");
-            const config = { fps: 10, qrbox: { width: 250, height: 150 } };
-
             html5QrCodeScanner.start(
                 { facingMode: "environment" }, 
-                config, 
-                (decodedText, decodedResult) => {
+                { fps: 10, qrbox: { width: 250, height: 150 } }, 
+                (decodedText) => {
                     document.getElementById('codiceBarre').value = decodedText;
                     fermaScannerLive();
-                    cercaSuOpenFoodFacts();
+                    cercaSuOpenFoodFactsMultipli();
                 },
-                (errorMessage) => {}
-            ).catch(err => {
+                () => {}
+            ).catch(() => {
                 alert("Impossibile accedere alla fotocamera.");
                 fermaScannerLive();
             });
         }
 
         function fermaScannerLive() {
-            if (html5QrCodeScanner) {
-                html5QrCodeScanner.stop().catch(err => {});
-            }
+            if (html5QrCodeScanner) html5QrCodeScanner.stop().catch(() => {});
             document.getElementById('reader').style.display = 'none';
             document.getElementById('btnAvviaScanner').style.display = 'block';
         }
 
-        async function cercaSuOpenFoodFacts() {
+        // Sistema multi-database di riserva (Open Food Facts + Open Beauty Facts / World Products)
+        async function cercaSuOpenFoodFactsMultipli() {
             let barcode = document.getElementById('codiceBarre').value.trim();
             if (!barcode) return;
 
             let msgInfo = document.getElementById('msgInfo');
-            msgInfo.textContent = "Interrogazione Open Food Facts in corso...";
+            msgInfo.textContent = "Interrogazione database multipli in corso...";
             msgInfo.style.display = 'block';
 
-            try {
-                let response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
-                let data = await response.json();
-                msgInfo.style.display = 'none';
+            let endpoints = [
+                `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`,
+                `https://world.openbeautyfacts.org/api/v0/product/${barcode}.json`
+            ];
 
-                if (data.status === 1 && data.product) {
-                    let nome = data.product.product_name_it || data.product.product_name || "";
-                    let marca = data.product.brands || "";
-                    document.getElementById('nomeProdotto').value = (marca && nome) ? `${marca} - ${nome}` : (nome || marca);
+            let trovato = false;
+            for (let url of endpoints) {
+                try {
+                    let response = await fetch(url);
+                    let data = await response.json();
+                    if (data.status === 1 && data.product) {
+                        trovato = true;
+                        msgInfo.style.display = 'none';
 
-                    // Proposta automatica tipo scadenza in base a categorie o tags
-                    let categorie = (data.product.categories_tags || []).join(" ").toLowerCase();
-                    if (categorie.includes("fresh") || categorie.includes("fresco") || categorie.includes("milk") || categorie.includes("latte") || categorie.includes("meat") || categorie.includes("carne")) {
-                        impostaTipoScadenza('tassativa');
-                    } else if (categorie.includes("biscuit") || categorie.includes("biscotti") || categorie.includes("pasta") || categorie.includes("canned") || categorie.includes("scatolame")) {
-                        impostaTipoScadenza('consigliata');
+                        let nome = data.product.product_name_it || data.product.product_name || "";
+                        let marca = data.product.brands || "";
+                        document.getElementById('nomeProdotto').value = (marca && nome) ? `${marca} - ${nome}` : (nome || marca);
+
+                        // Logica corretta per assegnare Tassativa (rossa) o Consigliata (gialla)
+                        let categorie = (data.product.categories_tags || []).join(" ").toLowerCase();
+                        if (categorie.includes("fresh") || categorie.includes("fresco") || categorie.includes("milk") || categorie.includes("latte") || categorie.includes("meat") || categorie.includes("carne") || categorie.includes("fish") || categorie.includes("pesce")) {
+                            impostaTipoScadenza('tassativa');
+                        } else {
+                            impostaTipoScadenza('consigliata'); // Per scatolame, biscotti, pasta ecc.
+                        }
+
+                        urlImmagineCorrente = data.product.image_front_small_url || data.product.image_front_url || "";
+                        if (urlImmagineCorrente) {
+                            document.getElementById('imgProdotto').src = urlImmagineCorrente;
+                            document.getElementById('boxAnteprima').style.display = 'block';
+                        }
+                        break;
                     }
+                } catch (e) {}
+            }
 
-                    urlImmagineCorrente = data.product.image_front_small_url || data.product.image_front_url || "";
-                    let boxAnteprima = document.getElementById('boxAnteprima');
-                    if (urlImmagineCorrente) {
-                        document.getElementById('imgProdotto').src = urlImmagineCorrente;
-                        boxAnteprima.style.display = 'block';
-                    }
-                } else {
-                    alert("Prodotto non trovato in Open Food Facts. Inserisci i dati manualmente.");
-                }
-            } catch (error) {
+            if (!trovato) {
                 msgInfo.style.display = 'none';
-                alert("Errore di connessione a Open Food Facts.");
+                alert("Prodotto non trovato nei database principali. Usa il pulsante 'Prodotto senza codice' o inserisci i dati manualmente.");
             }
         }
 
@@ -680,17 +635,7 @@
                 return;
             }
 
-            let articolo = {
-                barcode,
-                nome,
-                quantita,
-                unita,
-                tipoScadenza: tipoScadenzaSelezionato,
-                scadenza,
-                ubicazione,
-                nota,
-                immagine
-            };
+            let articolo = { barcode, nome, quantita, unita, tipoScadenza: tipoScadenzaSelezionato, scadenza, ubicazione, nota, immagine };
 
             let dispensa = JSON.parse(localStorage.getItem('eat_dispensa')) || [];
             dispensa.push(articolo);
@@ -705,7 +650,6 @@
             let msg = document.getElementById('msgSuccesso');
             msg.style.display = 'block';
             
-            // Reset form
             document.getElementById('formCarico').reset();
             document.getElementById('boxAnteprima').style.display = 'none';
             document.getElementById('boxConfermaData').style.display = 'none';
