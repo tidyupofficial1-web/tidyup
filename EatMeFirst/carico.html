@@ -113,6 +113,22 @@
             overflow: hidden;
             display: none;
         }
+        /* Anteprima immagine prodotto */
+        .preview-container {
+            display: none;
+            text-align: center;
+            margin-bottom: 15px;
+            background: #0d1117;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+        }
+        .preview-container img {
+            max-height: 90px;
+            max-width: 90px;
+            border-radius: 6px;
+            object-fit: contain;
+        }
         .checkbox-group {
             display: flex;
             align-items: center;
@@ -166,6 +182,11 @@
         <div id="reader"></div>
         
         <button type="button" class="btn-native-cam" id="btnAvviaScanner" onclick="avviaScannerLive()">📷 Avvia Scanner Live</button>
+
+        <!-- Box anteprima immagine del prodotto -->
+        <div id="boxAnteprima" class="preview-container">
+            <img id="imgProdotto" src="" alt="Anteprima prodotto">
+        </div>
 
         <form id="formCarico" onsubmit="salvaArticolo(event)">
             
@@ -225,6 +246,7 @@
 
     <script>
         let html5QrCodeScanner = null;
+        let urlImmagineCorrente = ""; // Variabile per memorizzare l'immagine trovata
 
         document.addEventListener('DOMContentLoaded', () => {
             const containerLang = document.getElementById('header-lang');
@@ -255,7 +277,7 @@
             applicaTraduzioniInterfaccia();
         });
 
-        // Avvia la fotocamera in streaming live continuo per leggere il codice a barre
+        // Avvia la fotocamera in streaming live continuo
         function avviaScannerLive() {
             const readerDiv = document.getElementById('reader');
             readerDiv.style.display = 'block';
@@ -269,17 +291,12 @@
                 { facingMode: "environment" }, 
                 config, 
                 (decodedText, decodedResult) => {
-                    // Codice a barre trovato con successo!
                     document.getElementById('codiceBarre').value = decodedText;
-                    
-                    // Spegne la fotocamera e ripristina la schermata
                     fermaScannerLive();
-
-                    // Avvia la ricerca su Open Food Facts
                     cercaSuOpenFoodFacts();
                 },
                 (errorMessage) => {
-                    // Errori di scansione frame ignorati per permettere la continuità della lettura
+                    // Errori di frame ignorati
                 }
             ).catch(err => {
                 alert("Impossibile accedere alla fotocamera. Verifica i permessi del browser.");
@@ -302,7 +319,7 @@
             }
         }
 
-        // Interroga Open Food Facts
+        // Interroga Open Food Facts ed estrae anche l'immagine
         async function cercaSuOpenFoodFacts() {
             let barcode = document.getElementById('codiceBarre').value.trim();
             if (!barcode) {
@@ -332,8 +349,23 @@
                     }
 
                     document.getElementById('nomeProdotto').value = descrizioneCompleta;
+
+                    // Recupera e mostra l'immagine del prodotto se disponibile
+                    urlImmagineCorrente = data.product.image_front_small_url || data.product.image_front_url || "";
+                    let boxAnteprima = document.getElementById('boxAnteprima');
+                    let imgProdotto = document.getElementById('imgProdotto');
+
+                    if (urlImmagineCorrente) {
+                        imgProdotto.src = urlImmagineCorrente;
+                        boxAnteprima.style.display = 'block';
+                    } else {
+                        boxAnteprima.style.display = 'none';
+                    }
+
                 } else {
                     alert("Prodotto non trovato in Open Food Facts. Inserisci il nome manualmente.");
+                    urlImmagineCorrente = "";
+                    document.getElementById('boxAnteprima').style.display = 'none';
                 }
             } catch (error) {
                 msgInfo.style.display = 'none';
@@ -351,6 +383,7 @@
             let scadenza = document.getElementById('dataScadenza').value;
             let ubicazione = document.getElementById('ubicazioneProdotto').value;
             let spesaCheck = document.getElementById('aggiungiSpesaCheck').checked;
+            let immagine = urlImmagineCorrente; // Salva l'URL dell'immagine associata
 
             if (!nome || !scadenza || !ubicazione) {
                 alert("Per favore, compila tutti i campi obbligatori (*).");
@@ -358,7 +391,7 @@
             }
 
             let dispensa = JSON.parse(localStorage.getItem('eat_dispensa')) || [];
-            dispensa.push({ barcode, nome, quantita, unita, scadenza, ubicazione });
+            dispensa.push({ barcode, nome, quantita, unita, scadenza, ubicazione, immagine });
             localStorage.setItem('eat_dispensa', JSON.stringify(dispensa));
 
             if (spesaCheck) {
@@ -369,7 +402,11 @@
 
             let msg = document.getElementById('msgSuccesso');
             msg.style.display = 'block';
+            
+            // Resetta form e nasconde l'anteprima
             document.getElementById('formCarico').reset();
+            document.getElementById('boxAnteprima').style.display = 'none';
+            urlImmagineCorrente = "";
 
             setTimeout(() => {
                 msg.style.display = 'none';
