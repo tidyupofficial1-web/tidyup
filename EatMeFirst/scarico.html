@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Scarico Articoli</title>
+    <!-- Collegamento al file centrale delle lingue se presente -->
+    <script src="i18n.js" onerror="console.log('i18n.js non trovato, uso lingua di default')"></script>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --accent-blue: #1f6feb;
+            --accent-green: #238636;
+            --accent-red: #da3633;
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            margin: 0; 
+            padding: 20px; 
+            color: var(--text-main); 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .container { 
+            max-width: 750px; 
+            margin: 0 auto; 
+            background: var(--card-bg); 
+            border: 1px solid var(--border-color);
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+        }
+
+        h1 { 
+            color: #58a6ff; 
+            font-size: 1.8rem; 
+            text-align: center; 
+            margin-bottom: 25px; 
+        }
+
+        /* --- GUIDA POPUP / BOX INFORMATIVO --- */
+        .help-popup {
+            background: rgba(31, 111, 235, 0.1);
+            border: 1px solid var(--accent-blue);
+            border-left: 4px solid var(--accent-blue);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            position: relative;
+        }
+        .help-popup strong {
+            color: var(--text-main);
+        }
+        .close-help {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #58a6ff;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        /* Banner Assenza Prolungata / Scaduti */
+        .alert-box { 
+            background: rgba(218, 54, 51, 0.15); 
+            border: 1px solid var(--accent-red);
+            border-left: 4px solid var(--accent-red); 
+            padding: 15px; 
+            margin-bottom: 25px; 
+            border-radius: 8px; 
+            display: none; 
+        }
+        .alert-box h4 { margin: 0 0 8px 0; color: #ff7b72; font-size: 1.05rem; }
+        .alert-box p { font-size: 0.9rem; margin: 0 0 10px 0; color: var(--text-muted); }
+
+        /* Box Metodi di Scarico */
+        .section-box { 
+            background: #0d1117; 
+            border: 1px solid var(--border-color); 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-bottom: 25px; 
+        }
+        .section-box h3 { margin-top: 0; color: var(--text-main); font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+        .input-row { display: flex; gap: 10px; margin-top: 12px; }
+        .input-row input { 
+            flex: 1; 
+            padding: 12px; 
+            background: #161b22;
+            border: 1px solid var(--border-color); 
+            color: var(--text-main);
+            border-radius: 6px; 
+            font-size: 1rem; 
+        }
+        
+        .btn { 
+            background-color: var(--accent-blue); 
+            color: white; 
+            border: none; 
+            padding: 12px 20px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 0.95rem; 
+        }
+        .btn:hover { opacity: 0.9; }
+
+        /* Navigazione per Settori */
+        .settore-card { 
+            background: #161b22; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            overflow: hidden; 
+        }
+        .settore-header { 
+            background: #21262d; 
+            color: var(--text-main); 
+            padding: 12px 18px; 
+            font-weight: bold; 
+            font-size: 1.05rem; 
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .item-list { list-style: none; padding: 0; margin: 0; }
+        .item-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 18px; 
+            border-bottom: 1px solid var(--border-color); 
+            background: #161b22; 
+        }
+        .item-row:last-child { border-bottom: none; }
+        
+        .item-details { font-size: 0.95rem; }
+        .item-name { font-weight: bold; color: var(--text-main); font-size: 1.05rem; }
+        .item-meta { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+        .scadenza-tassativa { color: #ff7b72; font-weight: bold; }
+
+        .item-actions { display: flex; gap: 8px; }
+        .btn-sm { padding: 8px 12px; font-size: 0.85rem; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; }
+        .btn-scale { background: #21262d; color: var(--text-main); border: 1px solid var(--border-color); }
+        .btn-scale:hover { background: #30363d; }
+        .btn-delete { background: rgba(218, 54, 51, 0.2); color: #ff7b72; border: 1px solid rgba(218, 54, 51, 0.4); }
+        .btn-delete:hover { background: rgba(218, 54, 51, 0.3); }
+
+        .back-link { display: block; text-align: center; margin-top: 30px; color: #58a6ff; text-decoration: none; font-weight: bold; font-size: 0.95rem; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📤 Scarico Articoli (Consumo e Scorte)</h1>
+
+    <!-- Guida Popup Informativa -->
+    <div id="helpPopupScarico" class="help-popup">
+        ℹ️ <strong>Come funziona lo scarico:</strong> Usa i tasti "Usa / Scala" quando consumi una parte o un pezzo dell'articolo, oppure "Terminato" se il prodotto è finito. Se un prodotto scade o viene esaurito, verrà automaticamente inserito nella tua Lista della Spesa.
+        <span class="close-help" onclick="chiudiGuidaScarico()">[ Nascondi questo suggerimento ]</span>
+    </div>
+
+    <!-- Avviso Intelligente Assenza Prolungata / Scaduti -->
+    <div id="bannerAssenza" class="alert-box">
+        <h4>🚨 Bentornato! Rilevati prodotti scaduti durante l'assenza</h4>
+        <p>Alcuni prodotti hanno superato la data di scadenza tassativa mentre eri via. Rimuovendoli, saranno aggiunti automaticamente alla tua Lista della Spesa.</p>
+        <div id="listaScadutiContainer"></div>
+    </div>
+
+    <!-- Metodo 1: Scansione Rapida Barcode -->
+    <div class="section-box">
+        <h3>⚡ 1. Scansione Rapida Barcode</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px;">Passa il prodotto confezionato davanti al lettore:</p>
+        <div class="input-row">
+            <input type="text" id="barcodeInput" placeholder="Inserisci o scansiona codice a barre...">
+            <button class="btn" onclick="scaricaBarcode()">Cerca e Scala</button>
+        </div>
+    </div>
+
+    <!-- Metodo 2: Navigazione per Settori -->
+    <div class="section-box" style="background: transparent; border: none; padding: 0;">
+        <h3 style="color: var(--text-main); margin-bottom: 5px;">🗺️ 2. Sfoglia per Luogo e Settore</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Seleziona il prodotto dallo scaffale o dal banco (gestisce anche i prodotti sfusi con conteggio pezzi):</p>
+        
+        <div id="contenitoreSettori">
+            <!-- Popolato dinamicamente da JavaScript -->
+        </div>
+    </div>
+
+    <a href="menu.html" class="back-link">⬅ Torna alla Dashboard principale</a>
+</div>
+
+<script>
+    // Gestione Guida Popup (memorizza la chiusura nel browser)
+    function chiudiGuidaScarico() {
+        document.getElementById('helpPopupScarico').style.display = 'none';
+        localStorage.setItem('nascondiGuidaScarico', 'true');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('nascondiGuidaScarico') === 'true') {
+            const popup = document.getElementById('helpPopupScarico');
+            if (popup) popup.style.display = 'none';
+        }
+        caricaDispensaDaStorage();
+        controllaAssenzaProlungata();
+        renderSettori();
+    });
+
+    // Database locale (legge dal LocalStorage o carica dati di test se vuoto)
+    let dispensa = [];
+
+    function caricaDispensaDaStorage() {
+        let datiSalvati = localStorage.getItem('eatMeFirst_dispensa');
+        if (datiSalvati) {
+            dispensa = JSON.parse(datiSalvati);
+        } else {
+            // Dati di default iniziali se il LocalStorage è vuoto
+            dispensa = [
+                { id: 1, nome: "Latte Intero 1L", settore: "Frigo Cucina", tipo: "barcode", quantita: 1, unita: "pz", scadenza: "10/10/2026", tassativa: true },
+                { id: 2, nome: "Zucchine fresche (Mercato)", settore: "Frigo Cucina", tipo: "sfuso", quantita: 4, unita: "pezzi", scadenza: "28/09/2026", tassativa: true },
+                { id: 3, nome: "Cipolle di Tropea", settore: "Scaffale Ripostiglio", tipo: "sfuso", quantita: 5, unita: "pezzi", scadenza: "15/10/2026", tassativa: false },
+                { id: 4, nome: "Tonno in scatola", settore: "Scaffale Ripostiglio", tipo: "barcode", quantita: 3, unita: "pz", scadenza: "15/06/2028", tassativa: false }
+            ];
+            salvaDispensaInStorage();
+        }
+    }
+
+    function salvaDispensaInStorage() {
+        localStorage.setItem('eatMeFirst_dispensa', JSON.stringify(dispensa));
+    }
+
+    // Aggiunge un prodotto alla lista della spesa nel LocalStorage
+    function aggiungiAllaSpesa(nomeProdotto) {
+        let listaSpesa = JSON.parse(localStorage.getItem('eatMeFirst_spesa')) || [];
+        listaSpesa.push({ nome: nomeProdotto, acquistato: false });
+        localStorage.setItem('eatMeFirst_spesa', JSON.stringify(listaSpesa));
+    }
+
+    // Simula il controllo in caso di lunga assenza
+    function controllaAssenzaProlungata() {
+        let scaduti = dispensa.filter(item => item.tassativa && item.scadenza === "28/09/2026");
+
+        if (scaduti.length > 0) {
+            let banner = document.getElementById('bannerAssenza');
+            let container = document.getElementById('listaScadutiContainer');
+            banner.style.display = 'block';
+
+            let html = "<ul style='margin: 0; padding-left: 20px; font-size: 0.9rem;'>";
+            scaduti.forEach(s => {
+                html += `<li><strong>${s.nome}</strong> (Scadenza: ${s.scadenza}) -> <a href="#" onclick="rimuoviESposta(${s.id}); return false;" style="color: #ff7b72; font-weight: bold;">Rimuovi e metti in spesa</a></li>`;
+            });
+            html += "</ul>";
+            container.innerHTML = html;
+        } else {
+            document.getElementById('bannerAssenza').style.display = 'none';
+        }
+    }
+
+    function renderSettori() {
+        let contenitore = document.getElementById('contenitoreSettori');
+        contenitore.innerHTML = '';
+
+        if (dispensa.length === 0) {
+            contenitore.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px;">La dispensa è attualmente vuota.</p>';
+            return;
+        }
+
+        let settoriUnici = [...new Set(dispensa.map(i => i.settore))];
+
+        settoriUnici.forEach(settore => {
+            let card = document.createElement('div');
+            card.className = 'settore-card';
+            
+            let header = document.createElement('div');
+            header.className = 'settore-header';
+            header.innerText = `🧊 ${settore}`;
+            card.appendChild(header);
+
+            let ul = document.createElement('ul');
+            ul.className = 'item-list';
+
+            dispensa.filter(i => i.settore === settore).forEach(item => {
+                let li = document.createElement('li');
+                li.className = 'item-row';
+                
+                let infoExtra = item.tipo === 'sfuso' ? `Quantità: <strong>${item.quantita} ${item.unita}</strong>` : `Scorte: <strong>${item.quantita} pz</strong>`;
+                let classeScadenza = item.tassativa ? 'scadenza-tassativa' : '';
+
+                li.innerHTML = `
+                    <div class="item-details">
+                        <div class="item-name">${item.nome}</div>
+                        <div class="item-meta">
+                            ${infoExtra} | Scad: <span class="${classeScadenza}">${item.scadenza}</span> ${item.tassativa ? '(Tassativa)' : ''}
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-sm btn-scale" onclick="scalaQuantita(${item.id})">Usa / Scala</button>
+                        <button class="btn-sm btn-delete" onclick="rimuoviESposta(${item.id})">Terminato</button>
+                    </div>
+                `;
+                ul.appendChild(li);
+            });
+
+            card.appendChild(ul);
+            contenitore.appendChild(card);
+        });
+    }
+
+    function scalaQuantita(id) {
+        let item = dispensa.find(i => i.id === id);
+        if (item) {
+            if (item.quantita > 1) {
+                item.quantita--;
+                salvaDispensaInStorage();
+                renderSettori();
+            } else {
+                rimuoviESposta(id);
+            }
+        }
+    }
+
+    function rimuoviESposta(id) {
+        let index = dispensa.findIndex(i => i.id === id);
+        if (index !== -1) {
+            let rimosso = dispensa.splice(index, 1)[0];
+            aggiungiAllaSpesa(rimosso.nome);
+            salvaDispensaInStorage();
+            alert(`"${rimosso.nome}" è terminato ed è stato aggiunto AUTOMATICAMENTE alla Lista della Spesa!`);
+            renderSettori();
+            controllaAssenzaProlungata();
+        }
+    }
+
+    function scaricaBarcode() {
+        let code = document.getElementById('barcodeInput').value.trim();
+        if (code) {
+            let item = dispensa.find(i => i.tipo === 'barcode');
+            if (item) {
+                scalaQuantita(item.id);
+                document.getElementById('barcodeInput').value = '';
+            } else {
+                alert("Nessun articolo corrispondente trovato in dispensa.");
+            }
+        } else {
+            alert("Inserisci un codice a barre valido.");
+        }
+    }
+</script>
+
+</body>
+</html>
