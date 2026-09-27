@@ -1,16 +1,27 @@
-// Sistema multi-database esteso a Food, Beauty e General Products (No-Food)
+// Sistema ibrido: Memoria Locale (per No-Food e articoli personali) + Database Online
         async function cercaSuOpenFoodFactsMultipli() {
             let barcode = document.getElementById('codiceBarre').value.trim();
             if (!barcode) return;
 
             let msgInfo = document.getElementById('msgInfo');
-            msgInfo.textContent = "Interrogazione database multipli (Food, Beauty, No-Food) in corso...";
+
+            // 1. Controllo immediato nella memoria locale dei prodotti No-Food / personalizzati già usati in precedenza
+            let prodottiSalvatiLocali = JSON.parse(localStorage.getItem('eat_nofood_custom')) || {};
+            if (prodottiSalvatiLocali[barcode]) {
+                let p = prodottiSalvatiLocali[barcode];
+                document.getElementById('nomeProdotto').value = p.nome;
+                impostaTipoScadenza('consigliata'); // I prodotti non alimentari non hanno scadenza tassativa
+                msgInfo.style.display = 'none';
+                return;
+            }
+
+            // 2. Se non è in locale, interroghiamo i database ufficiali (Food & Beauty)
+            msgInfo.textContent = "Interrogazione database in corso...";
             msgInfo.style.display = 'block';
 
             let endpoints = [
                 `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`,
-                `https://world.openbeautyfacts.org/api/v0/product/${barcode}.json`,
-                `https://world.openproducts.org/api/v0/product/${barcode}.json`
+                `https://world.openbeautyfacts.org/api/v0/product/${barcode}.json`
             ];
 
             let trovato = false;
@@ -26,12 +37,10 @@
                         let marca = data.product.brands || "";
                         document.getElementById('nomeProdotto').value = (marca && nome) ? `${marca} - ${nome}` : (nome || marca);
 
-                        // Gestione intelligente scadenza (i non alimentari o prodotti senza scadenza alimentare impostano di default "Consigliata" o "Senza")
                         let categorie = (data.product.categories_tags || []).join(" ").toLowerCase();
-                        if (url.includes("openbeautyfacts") || url.includes("openproducts")) {
-                            // Prodotti no-food / cosmetici spesso hanno PAO (period after opening) o scadenza non tassativa alimentare
+                        if (url.includes("openbeautyfacts") || categorie.includes("non-food") || categorie.includes("no-food")) {
                             impostaTipoScadenza('consigliata');
-                        } else if (categorie.includes("fresh") || categorie.includes("fresco") || categorie.includes("milk") || categorie.includes("latte") || categorie.includes("meat") || categorie.includes("carne") || categorie.includes("fish") || categorie.includes("pesce")) {
+                        } else if (categorie.includes("fresh") || categorie.includes("fresco") || categorie.includes("milk") || categorie.includes("latte") || categorie.includes("meat") || categorie.includes("carne")) {
                             impostaTipoScadenza('tassativa');
                         } else {
                             impostaTipoScadenza('consigliata');
@@ -49,6 +58,11 @@
 
             if (!trovato) {
                 msgInfo.style.display = 'none';
-                alert("Prodotto non trovato nei database (Food, Beauty e No-Food). Usa il pulsante 'Prodotto senza codice' o inserisci i dati manualmente.");
+                // Suggerimento mirato per articoli no-food non presenti nei cataloghi
+                let esito = confirm("Prodotto non trovato nei database online (es. articolo no-food come fazzoletti o bicchieri).\n\nVuoi inserire il nome manualmente? Verrà memorizzato in modo che la prossima volta la scansione di questo codice lo riconoscerà subito!");
+                if (esito) {
+                    document.getElementById('nomeProdotto').focus();
+                    impostaTipoScadenza('consigliata'); // Imposta di default una scadenza non tassativa per i non alimentari
+                }
             }
         }
