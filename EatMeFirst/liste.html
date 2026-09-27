@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Lista Spesa Supermercato</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 15px;
+            color: #333;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .header-top {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .carrello-icon {
+            font-size: 40px;
+            margin-bottom: 5px;
+        }
+        h2 { text-align: center; color: #1e293b; margin: 0 0 10px 0; }
+        
+        .top-bar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            text-decoration: none;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary { background: #6366f1; color: white; }
+        .btn-info { background: #0ea5e9; color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn:hover { opacity: 0.9; }
+
+        /* Box Consigli Trend Premium */
+        .box-premium-trend {
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            border: 1px solid #fed7aa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .badge-premium {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .trend-title {
+            font-weight: bold;
+            color: #9a3412;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        .trend-list {
+            font-size: 13px;
+            color: #7c2d12;
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        /* Categorie e Lista Spesa */
+        .categoria-section {
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .categoria-header {
+            background: #f8fafc;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 15px;
+            color: #334155;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .spesa-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s;
+        }
+        .spesa-item:last-child {
+            border-bottom: none;
+        }
+        .spesa-item:hover {
+            background: #f8fafc;
+        }
+        .spesa-img {
+            width: 35px;
+            height: 35px;
+            object-fit: contain;
+            border-radius: 4px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            margin: 0 12px;
+        }
+        .spesa-info {
+            flex-grow: 1;
+            font-size: 14px;
+            color: #1e293b;
+        }
+        .spesa-info.barrato {
+            text-decoration: line-through;
+            color: #94a3b8;
+        }
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Modal Generici */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .empty-msg {
+            text-align: center;
+            color: #64748b;
+            padding: 25px;
+            font-style: italic;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-top">
+            <div class="carrello-icon">🛒</div>
+            <h2>Lista Spesa Supermercato</h2>
+        </div>
+
+        <div class="top-bar">
+            <button class="btn btn-info" onclick="apriPopupInfo()">ℹ️ Come funziona?</button>
+            <a href="mia_lista.html" class="btn btn-warning">📝 Commissioni ed Extra 🌟</a>
+        </div>
+
+        <!-- SEZIONE PREMIUM: CONSIGLI TREND / ESAURIMENTI PREVISTI -->
+        <div class="box-premium-trend">
+            <div class="badge-premium">🌟 Funzione Premium - Trend Consumi</div>
+            <div class="trend-title">💡 Prodotti in esaurimento stimato prima del prossimo giro:</div>
+            <ul id="lista-trend-consigli" class="trend-list">
+                <li><em>Nessun avviso di trend al momento.</em></li>
+            </ul>
+        </div>
+
+        <!-- ELENCO SPESA ORDINATO PER CATEGORIE -->
+        <div id="contenitore-categorie-spesa">
+            <div class="empty-msg">La lista della spesa è vuota. I prodotti esauriti in dispensa appariranno qui automaticamente in ordine di reparto!</div>
+        </div>
+    </div>
+
+    <!-- POPUP INFORMATIVO SPIEGAZIONE LISTA -->
+    <div id="modalInfo" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:#0ea5e9;">Come funziona questa lista?</h3>
+            <p style="font-size: 13px; line-height: 1.5; color: #475569;">
+                Questa pagina si popola <strong>in automatico</strong> quando un prodotto in dispensa si esaurisce o viene consumato.<br><br>
+                I prodotti sono ordinati per <strong>categorie e reparti</strong> (es. Ortofrutta, Latticini, Detersivi), permettendoti di seguire un percorso logico tra gli scaffali del supermercato senza saltare da un reparto all'altro.<br><br>
+                Mentre metti gli articoli nel carrello, clicca sulla spunta a fianco: il prodotto verrà sbarrato come sulla classica lista di carta!
+            </p>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="chiudiPopupInfo()">Ho capito</button>
+        </div>
+    </div>
+
+    <script>
+        // Simulazione dati spesa (collegabile al backend o localStorage)
+        let listaSpesaProdotti = [];
+        let prodottiTrendConsigliati = [];
+
+        function caricaListaSpesa() {
+            // Esempio dati di recupero (da adattare al database o localStorage locale)
+            // Struttura attesa: { id, nome, categoria, immagine, barcode, quantita }
+            listaSpesaProdotti = JSON.parse(localStorage.getItem('eatme_lista_spesa')) || [];
+            
+            // Esempio simulato trend premium
+            prodottiTrendConsigliati = JSON.parse(localStorage.getItem('eatme_trend_spesa')) || [];
+
+            renderizzaTrend();
+            renderizzaSpesaPerCategorie();
+        }
+
+        function renderizzaTrend() {
+            const ulTrend = document.getElementById('lista-trend-consigli');
+            if (prodottiTrendConsigliati.length === 0) {
+                ulTrend.innerHTML = '<li>Nessun rischio esaurimento imminente calcolato dai consumi recenti.</li>';
+                return;
+            }
+            ulTrend.innerHTML = '';
+            prodottiTrendConsigliati.forEach(t => {
+                let li = document.createElement('li');
+                li.innerHTML = `<strong>${t.nome}</strong> (Rimasti: ${t.quantita}) — <em>Consigliato l'acquisto preventivo</em>`;
+                ulTrend.appendChild(li);
+            });
+        }
+
+        function renderizzaSpesaPerCategorie() {
+            const contenitore = document.getElementById('contenitore-categorie-spesa');
+            contenitore.innerHTML = '';
+
+            if (listaSpesaProdotti.length === 0) {
+                contenitore.innerHTML = '<div class="empty-msg">La lista della spesa è vuota. I prodotti esauriti in dispensa appariranno qui automaticamente in ordine di reparto!</div>';
+                return;
+            }
+
+            // Raggruppa per categoria
+            let categorieMap = {};
+            listaSpesaProdotti.forEach(p => {
+                let cat = p.categoria || 'Generale / Dispensa';
+                if (!categorieMap[cat]) categorieMap[cat] = [];
+                categorieMap[cat].push(p);
+            });
+
+            // Mostra per categoria ordinata
+            Object.keys(categorieMap).sort().forEach(cat => {
+                let prodotti = categorieMap[cat];
+
+                let section = document.createElement('div');
+                section.className = 'categoria-section';
+
+                let header = document.createElement('div');
+                header.className = 'categoria-header';
+                header.innerHTML = `🏪 ${cat} (${prodotti.length})`;
+                section.appendChild(header);
+
+                prodotti.forEach(prod => {
+                    let itemDiv = document.createElement('div');
+                    itemDiv.className = 'spesa-item';
+
+                    let checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'checkbox-custom';
+                    checkbox.checked = prod.comprato || false;
+
+                    let infoDiv = document.createElement('div');
+                    infoDiv.className = `spesa-info ${prod.comprato ? 'barrato' : ''}`;
+                    infoDiv.innerText = `${prod.nome} (Q.tà: ${prod.quantita || 1})`;
+
+                    // Gestione spunta / sbarramento
+                    checkbox.onchange = () => {
+                        prod.comprato = checkbox.checked;
+                        if (checkbox.checked) {
+                            infoDiv.classList.add('barrato');
+                        } else {
+                            infoDiv.classList.remove('barrato');
+                        }
+                        // Salvataggio stato locale
+                        salvaStatoSpesa();
+                    };
+
+                    let img = prod.immagine ? `<img src="${prod.immagine}" class="spesa-img">` : '<div class="spesa-img" style="display:flex;align-items:center;justify-content:center;">📦</div>';
+
+                    itemDiv.innerHTML = `<input type="checkbox" class="checkbox-custom" ${prod.comprato ? 'checked' : ''}> ${img}`;
+                    // Sostituiamo il checkbox per agganciare correttamente l'evento onchange
+                    const realCheckbox = itemDiv.querySelector('input');
+                    realCheckbox.onchange = (e) => {
+                        prod.comprato = e.target.checked;
+                        if (e.target.checked) {
+                            infoDiv.classList.add('barrato');
+                        } else {
+                            infoDiv.classList.remove('barrato');
+                        }
+                        salvaStatoSpesa();
+                    };
+
+                    itemDiv.appendChild(infoDiv);
+                    section.appendChild(itemDiv);
+                });
+
+                contenitore.appendChild(section);
+            });
+        }
+
+        function salvaStatoSpesa() {
+            localStorage.setItem('eatme_lista_spesa', JSON.stringify(listaSpesaProdotti));
+        }
+
+        // Popup Info
+        function apriPopupInfo() {
+            document.getElementById('modalInfo').style.display = 'flex';
+        }
+        function chiudiPopupInfo() {
+            document.getElementById('modalInfo').style.display = 'none';
+        }
+
+        window.onload = () => {
+            caricaListaSpesa();
+        };
+    </script>
+</body>
+</html>
