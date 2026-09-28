@@ -144,22 +144,27 @@
             // Aggiorna la dispensa in memoria
             localStorage.setItem('eatMeFirst_dispensa', JSON.stringify(dispensa));
 
-            // Aggiunge automaticamente il prodotto alla lista della spesa (liste.html)
-            let listaSpesa = JSON.parse(localStorage.getItem('eatMeFirst_spesa')) || [];
-            
-            // Verifica se non è già presente per evitare doppioni
-            let esisteGia = listaSpesa.some(item => item.nome.toLowerCase() === prodottoRimosso.nome.toLowerCase());
-            if (!esisteGia) {
-                listaSpesa.push({
-                    id: Date.now(),
-                    nome: prodottoRimosso.nome,
-                    quantita: prodottoRimosso.quantita || 1,
-                    comprato: false
-                });
-                localStorage.setItem('eatMeFirst_spesa', JSON.stringify(listaSpesa));
-            }
+            // Chiavi multiple per la lista spesa per garantire la compatibilità con liste.html
+            let possibiliChiavi = ['eatMeFirst_spesa', 'eatMeFirst_listaSpesa', 'lista_spesa', 'spesa'];
 
-            alert(`Prodotto "${prodottoRimosso.nome}" scaricato dalla dispensa e aggiunto alla lista della spesa!`);
+            possibiliChiavi.forEach(chiave => {
+                let listaSpesa = JSON.parse(localStorage.getItem(chiave)) || [];
+                
+                // Controlla se l'articolo è già presente in questa chiave specifica
+                let esisteGia = listaSpesa.some(item => item.nome.toLowerCase() === prodottoRimosso.nome.toLowerCase());
+                
+                if (!esisteGia) {
+                    listaSpesa.push({
+                        id: Date.now() + Math.random(),
+                        nome: prodottoRimosso.nome,
+                        quantita: prodottoRimosso.quantita || 1,
+                        comprato: false
+                    });
+                    localStorage.setItem(chiave, JSON.stringify(listaSpesa));
+                }
+            });
+
+            alert(`Prodotto "${prodottoRimosso.nome}" scaricato e aggiunto alla lista della spesa!`);
             caricaListaDispensa();
         }
     }
