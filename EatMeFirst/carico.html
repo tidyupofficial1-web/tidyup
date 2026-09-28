@@ -381,12 +381,20 @@
             quantita: quantita,
             scadenza: scadenzaStr,
             ubicazione: ubicazione,
-            immagine: urlImmagineCorrente
+            immagine: urlImmagineCorrente,
+            preso: false,
+            lowStock: false
         };
 
-        let dispensa = JSON.parse(localStorage.getItem('eatMeFirst_dispensa')) || [];
-        dispensa.push(nuovoItem);
-        localStorage.setItem('eatMeFirst_dispensa', JSON.stringify(dispensa));
+        // Salvataggio unificato sul database comune a tutte le pagine
+        let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [] };
+        db.dispensa.push(nuovoItem);
+        localStorage.setItem('eat_me_first_db', JSON.stringify(db));
+
+        // Per retrocompatibilità aggiorniamo anche la vecchia chiave se serve
+        let dispensaAlt = JSON.parse(localStorage.getItem('eatMeFirst_dispensa')) || [];
+        dispensaAlt.push(nuovoItem);
+        localStorage.setItem('eatMeFirst_dispensa', JSON.stringify(dispensaAlt));
 
         alert("Articolo caricato con successo!");
         window.location.href = 'menu.html';
