@@ -108,13 +108,13 @@
         let container = document.getElementById('listaContainer');
         let filtro = document.getElementById('filtroProdotti').value.toLowerCase();
         
-        // Legge direttamente dal database condiviso con liste.html ('eat_me_first_db')
         let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [] };
         container.innerHTML = "";
 
-        // Filtra i prodotti che non sono già stati segnati come presi/da comprare
+        // Mostra solo i prodotti realmente presenti in dispensa (escludendo quelli già marcati come lowStock o consumati)
         let prodottiFiltrati = db.dispensa.filter(item => 
-            !item.preso && !item.lowStock && (item.nome.toLowerCase().includes(filtro) || item.ubicazione.toLowerCase().includes(filtro))
+            !item.lowStock && !item.preso && 
+            (item.nome.toLowerCase().includes(filtro) || item.ubicazione.toLowerCase().includes(filtro))
         );
 
         if (prodottiFiltrati.length === 0) {
@@ -140,17 +140,23 @@
 
     function scaricaProdotto(id) {
         let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [] };
-        let item = db.dispensa.find(i => i.id === id);
+        let index = db.dispensa.findIndex(i => i.id === id);
 
-        if (item) {
-            // Trasforma lo stato dell'articolo affinché liste.html lo riconosca come "Da Prendere"
-            item.lowStock = true;
-            item.preso = false;
+        if (index !== -1) {
+            let itemName = db.dispensa[index].nome;
+            
+            // Opzione A: Rimuove del tutto il prodotto dalla dispensa (se preferisci un consumo definitivo)
+            // Se preferisci invece spostarlo nella lista della spesa, decommenta le due righe sotto e rimuovi db.dispensa.splice
+            db.dispensa.splice(index, 1);
 
-            // Salva nel database condiviso
+            /* Opzione B (Sposta in lista spesa):
+            db.dispensa[index].lowStock = true;
+            db.dispensa[index].preso = false;
+            */
+
             localStorage.setItem('eat_me_first_db', JSON.stringify(db));
 
-            alert(`Prodotto "${item.nome}" scaricato! Ora è stato aggiunto alla Lista della Spesa.`);
+            alert(`Prodotto "${itemName}" consumato e rimosso dalla dispensa!`);
             caricaListaDispensa();
         }
     }
