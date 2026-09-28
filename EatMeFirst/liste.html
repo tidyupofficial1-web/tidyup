@@ -64,7 +64,7 @@
 
     <div class="container">
         
-        <!-- Clip Video Carrello Spesa (Scompare dopo 3 loop) -->
+        <!-- Clip Video Carrello Spesa -->
         <div id="video-container">
             <video id="clip-carrello" autoplay muted playsinline>
                 <source src="IMG/carrello_spesa.mp4" type="video/mp4">
@@ -84,21 +84,17 @@
             <p style="font-size:0.82rem; color:#666; margin-bottom:12px;">
                 Metti la spunta sui prodotti presi. Quelli non spuntati rimarranno qui per la prossima spesa.
             </p>
-            <div id="lista-da-prendere">
-                <!-- Popolato via JavaScript -->
-            </div>
+            <div id="lista-da-prendere"></div>
         </div>
 
         <!-- Sezione Già Presi -->
         <div id="sezione-presi" class="card" style="display: none;">
             <h3>Prodotti nel Carrello (Già Presi)</h3>
             <p style="font-size:0.82rem; color:#666; margin-bottom:12px;">
-                Riepilogo dei prodotti acquistati. Cliccando il pulsante sotto verranno archiviati/rimossi dalla lista spesa, lasciando intatti quelli non presi.
+                Riepilogo dei prodotti acquistati. Cliccando il pulsante sotto verranno pulite le visualizzazioni sbarrate, lasciando intatti quelli non presi.
             </p>
-            <div id="lista-gia-presi">
-                <!-- Popolato via JavaScript -->
-            </div>
-            <button class="btn-clean" onclick="pulisciProdottiPresi()">Rimuovi acquistati dalla lista spesa</button>
+            <div id="lista-gia-presi"></div>
+            <button class="btn-clean" onclick="pulisciProdottiPresi()">Pulisci testi sbarrati</button>
         </div>
 
         <a href="index.html" class="nav-back">← Torna al Menu Principale</a>
@@ -106,12 +102,10 @@
     </div>
 
     <script>
-        // Caricamento dello stato condiviso da localStorage
         let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || {
             dispensa: []
         };
 
-        // Gestione loop della clip video (scompare dopo 3 riproduzioni)
         let loopCount = 0;
         const maxLoops = 3;
         const videoElement = document.getElementById('clip-carrello');
@@ -121,9 +115,7 @@
             loopCount++;
             if (loopCount >= maxLoops) {
                 videoContainer.style.opacity = '0';
-                setTimeout(() => {
-                    videoContainer.style.display = 'none';
-                }, 500);
+                setTimeout(() => { videoContainer.style.display = 'none'; }, 500);
             } else {
                 videoElement.play();
             }
@@ -170,10 +162,8 @@
             db.dispensa.forEach(item => {
                 let dataFormatted = formattaDataItaliana(item.scadenza);
 
-                // Mostriamo nella lista spesa solo i prodotti con lowStock: true
                 if (item.lowStock) {
                     if (!item.preso) {
-                        // Articolo ancora da prendere (attivo)
                         htmlDaPrendere += `
                             <div class="item-row low-stock">
                                 <input type="checkbox" style="transform: scale(1.3);" onchange="spuntatoProdotto(${item.id})">
@@ -183,12 +173,11 @@
                                 </div>
                             </div>`;
                     } else {
-                        // Articolo già preso: barrato in "Da Prendere" e visibile in "Già Presi"
                         htmlDaPrendere += `
                             <div class="item-row" style="background-color: #f1f2f6;">
                                 <input type="checkbox" checked disabled style="transform: scale(1.3);">
-                                <div class="item-info" style="text-decoration: line-through; color: #888;">
-                                    <div class="item-title">${item.nome}</div>
+                                <div class="item-info" style="text-decoration: line-title; color: #888;">
+                                    <div class="item-title" style="text-decoration: line-through;">${item.nome}</div>
                                     <div class="item-details">Ubicazione: ${item.ubicazione || 'N/D'} | Scadenza: ${dataFormatted}</div>
                                 </div>
                             </div>`;
@@ -211,34 +200,29 @@
         function spuntatoProdotto(id) {
             let item = db.dispensa.find(i => i.id === id);
             if (item) {
-                item.preso = true; // Segnato come preso
+                item.preso = true;
                 salvaDb();
             }
         }
 
         function pulisciProdottiPresi() {
-            // PULIZIA CHIRURGICA: spegne lowStock e azzera preso SOLO per i prodotti effettivamente acquistati.
-            // I prodotti NON spuntati (che non hai preso) restano intatti nella lista della spesa!
             let acquistatiCount = db.dispensa.filter(i => i.lowStock && i.preso).length;
             
             if (acquistatiCount === 0) {
-                alert("Non ci sono prodotti spuntati come 'presi' da rimuovere.");
+                alert("Non ci sono prodotti spuntati come 'presi' da pulire.");
                 return;
             }
 
-            if (confirm(`Vuoi rimuovere i ${acquistatiCount} prodotti acquistati dalla lista della spesa? (Quelli non presi rimarranno al loro posto).`)) {
-                db.dispensa.forEach(item => {
-                    if (item.lowStock && item.preso) {
-                        item.lowStock = false; // Esce dalla lista spesa
-                        item.preso = false;    // Resetta lo stato di spunta
-                    }
-                });
+            if (confirm("Vuoi ripulire i testi sbarrati dei prodotti acquistati? Quelli non presi rimarranno in lista.")) {
+                // Pulizia visiva/logica dei presi: rimuoviamo dalla lista spesa i prodotti acquistati
+                // senza toccare la dispensa (che era già uscita di scena allo scarico)
+                db.dispensa = db.dispensa.filter(item => !(item.lowStock && item.preso));
+                
                 salvaDb();
-                cambiaVistaSpesa('prendere'); // Riporta l'utente sulla schermata principale della spesa
+                cambiaVistaSpesa('prendere');
             }
         }
 
-        // Avvio pagina
         window.onload = function() {
             renderizzaListe();
         };
