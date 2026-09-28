@@ -103,8 +103,8 @@
             <h3>⚡ Modalità Carico Rapido</h3>
             <p>
                 • <b>Tastiera al 100%</b>: Premi <b>Invio</b> in ogni campo per passare automaticamente al successivo senza staccare le mani.<br>
-                • <b>Scadenze Intelligenti</b>: Per i freschi inserisci la data a mano. Per gli altri prodotti l'app propone la scadenza stimata.<br>
-                • <b>No-Food</b>: Se il prodotto non ha scadenza (es. rasoi), le relative caselle spariscono in automatico.
+                • <b>Scadenze Intelligenti</b>: I prodotti No-Food e igiene escludono la scadenza in autonomia. Per i lunghi periodi viene stimata una data di comodo.<br>
+                • <b>Scarico Completo</b>: Informazioni, marche e immagini vengono recuperate in tempo reale dai database globali.
             </p>
             <button class="modal-btn" onclick="chiudiGuida()">Ho capito, iniziamo!</button>
         </div>
@@ -160,7 +160,7 @@
 <script>
     let urlImmagineCorrente = "";
     let html5QrCode = null;
-    let tipoScadenzaCorrente = "consigliata"; // consigliata o tassativa o none
+    let tipoScadenzaCorrente = "consigliata"; // consigliata, tassativa o none
 
     function chiudiGuida() {
         document.getElementById('modal-overlay').style.display = 'none';
@@ -188,7 +188,8 @@
             if (prossimoId === 'btnSalva') {
                 salvaArticolo();
             } else {
-                document.getElementById(prossimoId).focus();
+                let elem = document.getElementById(prossimoId);
+                if(elem) elem.focus();
             }
         }
     }
@@ -196,7 +197,8 @@
     // Salto automatico tra le caselle della data GG -> MM -> AAAA
     function passaggioAuto(corrente, prossimoId) {
         if (corrente.value.length >= corrente.maxLength) {
-            document.getElementById(prossimoId).focus();
+            let prossimo = document.getElementById(prossimoId);
+            if (prossimo) prossimo.focus();
         }
     }
 
@@ -235,10 +237,16 @@
         let msgInfo = document.getElementById('msgInfo');
         let prodottiSalvatiLocali = JSON.parse(localStorage.getItem('eat_nofood_custom')) || {};
         
+        // Controllo se il prodotto è già memorizzato localmente con le sue info complete
         if (prodottiSalvatiLocali[barcode]) {
             let p = prodottiSalvatiLocali[barcode];
             document.getElementById('nomeProdotto').value = p.nome;
-            impostaRegolaScadenza(p.nome, "");
+            urlImmagineCorrente = p.immagine || "";
+            if (urlImmagineCorrente) {
+                document.getElementById('imgProdotto').src = urlImmagineCorrente;
+                document.getElementById('boxAnteprima').style.display = 'block';
+            }
+            impostaRegolaScadenza(p.nome, p.categoria || "");
             document.getElementById('quantita').focus();
             return;
         }
@@ -266,13 +274,22 @@
                     document.getElementById('nomeProdotto').value = nomeCompleto;
 
                     let categorie = (data.product.categories_tags || []).join(" ").toLowerCase();
-                    impostaRegolaScadenza(nomeCompleto, categorie);
-
+                    
                     urlImmagineCorrente = data.product.image_front_small_url || data.product.image_front_url || "";
                     if (urlImmagineCorrente) {
                         document.getElementById('imgProdotto').src = urlImmagineCorrente;
                         document.getElementById('boxAnteprima').style.display = 'block';
                     }
+
+                    // Salvataggio automatico nel database locale per i futuri caricamenti
+                    prodottiSalvatiLocali[barcode] = {
+                        nome: nomeCompleto,
+                        categoria: categorie,
+                        immagine: urlImmagineCorrente
+                    };
+                    localStorage.setItem('eat_nofood_custom', JSON.stringify(prodottiSalvatiLocali));
+
+                    impostaRegolaScadenza(nomeCompleto, categorie);
                     document.getElementById('quantita').focus();
                     break;
                 }
@@ -287,11 +304,16 @@
 
     function impostaRegolaScadenza(nome, categorie) {
         let nomeLower = nome.toLowerCase();
+        let catLower = categorie.toLowerCase();
         let bloccoScadenza = document.getElementById('bloccoScadenza');
         let lbl = document.getElementById('tipoScadenzaLabel');
 
-        // Controllo se il prodotto non ha scadenze (es. rasoi, bicchieri, detersivi, pantofole)
-        if (nomeLower.includes("rasoio") || nomeLower.includes("pantofol") || nomeLower.includes("bicchier") || nomeLower.includes("detersiv") || nomeLower.includes("carta")) {
+        // Se è un prodotto No-Food, Igiene, Cosmetico o Casa (es. dentifricio, spazzolini, shampoo, bagnoschiuma, rasoi, detersivi)
+        if (nomeLower.includes("rasoio") || nomeLower.includes("pantofol") || nomeLower.includes("bicchier") || 
+            nomeLower.includes("detersiv") || nomeLower.includes("carta") || nomeLower.includes("dentifricio") || 
+            nomeLower.includes("spazzolin") || nomeLower.includes("shampoo") || nomeLower.includes("bagnoschiuma") ||
+            catLower.includes("beauty") || catLower.includes("hygiene") || catLower.includes("cosmetic") || catLower.includes("personal care")) {
+            
             tipoScadenzaCorrente = "none";
             bloccoScadenza.style.display = "none";
             return;
@@ -300,19 +322,24 @@
         bloccoScadenza.style.display = "block";
 
         // Verifica se è un fresco (tassativa)
-        if (categorie.includes("fresh") || categorie.includes("fresco") || categorie.includes("latte") || categorie.includes("carne") || categorie.includes("pesce") || nomeLower.includes("pesce") || nomeLower.includes("carne") || nomeLower.includes("latte")) {
+        if (catLower.includes("fresh") || catLower.includes("fresco") || catLower.includes("latte") || 
+            catLower.includes("carne") || catLower.includes("pesce") || nomeLower.includes("pesce") || 
+            nomeLower.includes("carne") || nomeLower.includes("latte") || nomeLower.includes("mozzarella")) {
+            
             tipoScadenzaCorrente = "tassativa";
             lbl.textContent = "⚠️ Scadenza tassativa (Prodotto fresco: inserimento manuale obbligatorio)";
             lbl.style.color = "var(--accent-red)";
-            // Lascia i campi vuoti per obbligare l'inserimento manuale
+            document.getElementById('giornoScadenza').value = "";
+            document.getElementById('meseScadenza').value = "";
+            document.getElementById('annoScadenza').value = "";
         } else {
             tipoScadenzaCorrente = "consigliata";
             lbl.textContent = "ℹ️ Scadenza consigliata stimata (puoi confermare o variare)";
             lbl.style.color = "var(--accent-yellow)";
             
-            // Proposta automatica stimata a +30 giorni per lunga conservazione
+            // Proposta automatica stimata a +6 mesi per conservati / confezionati
             let dataStimata = new Date();
-            dataStimata.setDate(dataStimata.getDate() + 30);
+            dataStimata.setMonth(dataStimata.getMonth() + 6);
             document.getElementById('giornoScadenza').value = String(dataStimata.getDate()).padStart(2, '0');
             document.getElementById('meseScadenza').value = String(dataStimata.getMonth() + 1).padStart(2, '0');
             document.getElementById('annoScadenza').value = dataStimata.getFullYear();
@@ -346,7 +373,7 @@
 
             scadenzaStr = `${aa}-${mm.padStart(2, '0')}-${gg.padStart(2, '0')}`;
 
-            // Controllo congruenza fresco (es. pesce fresco stimato a 3 giorni, se l'utente mette troppo in là)
+            // Controllo congruenza fresco
             let nomeLower = nome.toLowerCase();
             if ((nomeLower.includes("pesce") || nomeLower.includes("carne fresca")) && tipoScadenzaCorrente === "tassativa") {
                 let dataInserita = new Date(scadenzaStr);
@@ -356,15 +383,6 @@
                     let conferma = confirm("⚠️ Attenzione: hai inserito una scadenza molto lontana per un prodotto fresco. Sei sicuro?");
                     if (!conferma) return;
                 }
-            }
-        }
-
-        // Salvataggio custom locale se barcode nuovo
-        if (barcode) {
-            let prodottiSalvatiLocali = JSON.parse(localStorage.getItem('eat_nofood_custom')) || {};
-            if (!prodottiSalvatiLocali[barcode]) {
-                prodottiSalvatiLocali[barcode] = { nome: nome };
-                localStorage.setItem('eat_nofood_custom', JSON.stringify(prodottiSalvatiLocali));
             }
         }
 
