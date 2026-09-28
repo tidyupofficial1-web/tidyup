@@ -108,12 +108,13 @@
         let container = document.getElementById('listaContainer');
         let filtro = document.getElementById('filtroProdotti').value.toLowerCase();
         
-        // Legge dal database principale condiviso con liste.html
+        // Legge direttamente dal database condiviso con liste.html ('eat_me_first_db')
         let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [] };
         container.innerHTML = "";
 
+        // Filtra i prodotti che non sono già stati segnati come presi/da comprare
         let prodottiFiltrati = db.dispensa.filter(item => 
-            !item.preso && (item.nome.toLowerCase().includes(filtro) || item.ubicazione.toLowerCase().includes(filtro))
+            !item.preso && !item.lowStock && (item.nome.toLowerCase().includes(filtro) || item.ubicazione.toLowerCase().includes(filtro))
         );
 
         if (prodottiFiltrati.length === 0) {
@@ -142,23 +143,14 @@
         let item = db.dispensa.find(i => i.id === id);
 
         if (item) {
-            // Segna il prodotto come in esaurimento/da comprare per la pagina liste.html
+            // Trasforma lo stato dell'articolo affinché liste.html lo riconosca come "Da Prendere"
             item.lowStock = true;
-            item.preso = false; // Assicura che finisca nella tab "Da Prendere"
+            item.preso = false;
 
             // Salva nel database condiviso
             localStorage.setItem('eat_me_first_db', JSON.stringify(db));
 
-            // Per massima compatibilità, aggiorniamo anche la vecchia chiave isolata se usata da altre parti
-            let dispensaAlternativa = JSON.parse(localStorage.getItem('eatMeFirst_dispensa')) || [];
-            let altItem = dispensaAlternativa.find(i => i.id === id);
-            if (altItem) {
-                altItem.lowStock = true;
-                altItem.preso = false;
-                localStorage.setItem('eatMeFirst_dispensa', JSON.stringify(dispensaAlternativa));
-            }
-
-            alert(`Prodotto "${item.nome}" scaricato! Ora è visibile nella Lista della Spesa.`);
+            alert(`Prodotto "${item.nome}" scaricato! Ora è stato aggiunto alla Lista della Spesa.`);
             caricaListaDispensa();
         }
     }
