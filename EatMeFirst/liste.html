@@ -38,7 +38,21 @@
         .item-title { font-weight: bold; }
         .item-details { font-size: 0.8rem; color: #666; }
         
-        /* Pulsanti di navigazione rapida */
+        /* Pulsante pulito per rimuovere i presi */
+        .btn-clean {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .btn-clean:hover { opacity: 0.9; }
+
         .nav-back { display: block; text-align: center; margin-top: 2rem; color: var(--primary); text-decoration: none; font-weight: bold; }
     </style>
 </head>
@@ -68,7 +82,7 @@
         <div id="sezione-prendere" class="card">
             <h3>Articoli da Acquistare</h3>
             <p style="font-size:0.82rem; color:#666; margin-bottom:12px;">
-                I prodotti evidenziati in <span style="color:var(--accent); font-weight:bold;">rosso</span> sono in esaurimento o in scadenza imminente nella dispensa. Metti la spunta quando li acquisti.
+                Metti la spunta sui prodotti presi. Quelli non spuntati rimarranno qui per la prossima spesa.
             </p>
             <div id="lista-da-prendere">
                 <!-- Popolato via JavaScript -->
@@ -79,11 +93,12 @@
         <div id="sezione-presi" class="card" style="display: none;">
             <h3>Prodotti nel Carrello (Già Presi)</h3>
             <p style="font-size:0.82rem; color:#666; margin-bottom:12px;">
-                Articoli acquistati. Togli la spunta se hai sbagliato per rimetterli tra quelli da prendere.
+                Riepilogo dei prodotti acquistati. Cliccando il pulsante sotto verranno archiviati/rimossi dalla lista spesa, lasciando intatti quelli non presi.
             </p>
             <div id="lista-gia-presi">
                 <!-- Popolato via JavaScript -->
             </div>
+            <button class="btn-clean" onclick="pulisciProdottiPresi()">Rimuovi acquistati dalla lista spesa</button>
         </div>
 
         <a href="index.html" class="nav-back">← Torna al Menu Principale</a>
@@ -154,25 +169,35 @@
 
             db.dispensa.forEach(item => {
                 let dataFormatted = formattaDataItaliana(item.scadenza);
-                // Filtriamo solo quelli che sono effettivamente da comprare (lowStock = true o contrassegnati come da comprare)
-                // Se lowStock è false e preso è false, sono prodotti normali in dispensa e non devono apparire nella lista della spesa.
+
+                // Mostriamo nella lista spesa solo i prodotti con lowStock: true
                 if (item.lowStock) {
                     if (!item.preso) {
+                        // Articolo ancora da prendere (attivo)
                         htmlDaPrendere += `
                             <div class="item-row low-stock">
-                                <input type="checkbox" style="transform: scale(1.3);" onchange="spuntatoProdotto(${item.id}, true)">
+                                <input type="checkbox" style="transform: scale(1.3);" onchange="spuntatoProdotto(${item.id})">
                                 <div class="item-info">
                                     <div class="item-title">${item.nome} ⚠️ (In esaurimento)</div>
                                     <div class="item-details">Ubicazione: ${item.ubicazione || 'N/D'} | Scadenza: ${dataFormatted}</div>
                                 </div>
                             </div>`;
                     } else {
-                        htmlGiaPresi += `
-                            <div class="item-row">
-                                <input type="checkbox" checked style="transform: scale(1.3);" onchange="spuntatoProdotto(${item.id}, false)">
+                        // Articolo già preso: barrato in "Da Prendere" e visibile in "Già Presi"
+                        htmlDaPrendere += `
+                            <div class="item-row" style="background-color: #f1f2f6;">
+                                <input type="checkbox" checked disabled style="transform: scale(1.3);">
                                 <div class="item-info" style="text-decoration: line-through; color: #888;">
                                     <div class="item-title">${item.nome}</div>
                                     <div class="item-details">Ubicazione: ${item.ubicazione || 'N/D'} | Scadenza: ${dataFormatted}</div>
+                                </div>
+                            </div>`;
+
+                        htmlGiaPresi += `
+                            <div class="item-row">
+                                <div class="item-info">
+                                    <div class="item-title" style="color: var(--success);">&#10004; ${item.nome}</div>
+                                    <div class="item-details">Ubicazione: ${item.ubicazione || 'N/D'} | Preso</div>
                                 </div>
                             </div>`;
                     }
@@ -180,19 +205,36 @@
             });
 
             document.getElementById('lista-da-prendere').innerHTML = htmlDaPrendere || '<p style="padding:10px; color:#666;">Nessun prodotto da acquistare.</p>';
-            document.getElementById('lista-gia-presi').innerHTML = htmlGiaPresi || '<p style="padding:10px; color:#666;">Il carrello è vuoto.</p>';
+            document.getElementById('lista-gia-presi').innerHTML = htmlGiaPresi || '<p style="padding:10px; color:#666;">Nessun prodotto nel carrello. Spunta gli articoli mentre fai la spesa.</p>';
         }
 
-        function spuntatoProdotto(id, statoPreso) {
+        function spuntatoProdotto(id) {
             let item = db.dispensa.find(i => i.id === id);
             if (item) {
-                item.preso = statoPreso;
-                if (statoPreso) {
-                    // Quando lo compri (metti la spunta), segniamo che è stato preso. 
-                    // Se vuoi che rientri in dispensa come "acquistato", potremmo azzerare lowStock, 
-                    // oppure lo lasciamo nello storico "Già Presi" finché non viene ricaricato da carico.html
-                }
+                item.preso = true; // Segnato come preso
                 salvaDb();
+            }
+        }
+
+        function pulisciProdottiPresi() {
+            // PULIZIA CHIRURGICA: spegne lowStock e azzera preso SOLO per i prodotti effettivamente acquistati.
+            // I prodotti NON spuntati (che non hai preso) restano intatti nella lista della spesa!
+            let acquistatiCount = db.dispensa.filter(i => i.lowStock && i.preso).length;
+            
+            if (acquistatiCount === 0) {
+                alert("Non ci sono prodotti spuntati come 'presi' da rimuovere.");
+                return;
+            }
+
+            if (confirm(`Vuoi rimuovere i ${acquistatiCount} prodotti acquistati dalla lista della spesa? (Quelli non presi rimarranno al loro posto).`)) {
+                db.dispensa.forEach(item => {
+                    if (item.lowStock && item.preso) {
+                        item.lowStock = false; // Esce dalla lista spesa
+                        item.preso = false;    // Resetta lo stato di spunta
+                    }
+                });
+                salvaDb();
+                cambiaVistaSpesa('prendere'); // Riporta l'utente sulla schermata principale della spesa
             }
         }
 
