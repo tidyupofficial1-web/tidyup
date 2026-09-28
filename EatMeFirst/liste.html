@@ -68,7 +68,7 @@
         <div id="sezione-prendere" class="card">
             <h3>Articoli da Acquistare</h3>
             <p style="font-size:0.82rem; color:#666; margin-bottom:12px;">
-                I prodotti evidenziati in <span style="color:var(--accent); font-weight:bold;">rosso</span> sono in esaurimento o in scadenza imminente nella dispensa.
+                I prodotti evidenziati in <span style="color:var(--accent); font-weight:bold;">rosso</span> sono in esaurimento o in scadenza imminente nella dispensa. Metti la spunta quando li acquisti.
             </p>
             <div id="lista-da-prendere">
                 <!-- Popolato via JavaScript -->
@@ -79,7 +79,7 @@
         <div id="sezione-presi" class="card" style="display: none;">
             <h3>Prodotti nel Carrello (Già Presi)</h3>
             <p style="font-size:0.82rem; color:#666; margin-bottom:12px;">
-                Spunta per rimettere l'articolo tra quelli da prendere in caso di errore.
+                Articoli acquistati. Togli la spunta se hai sbagliato per rimetterli tra quelli da prendere.
             </p>
             <div id="lista-gia-presi">
                 <!-- Popolato via JavaScript -->
@@ -91,7 +91,7 @@
     </div>
 
     <script>
-        // Caricamento dello stato condiviso da localStorage (partenza completamente vuota)
+        // Caricamento dello stato condiviso da localStorage
         let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || {
             dispensa: []
         };
@@ -154,25 +154,28 @@
 
             db.dispensa.forEach(item => {
                 let dataFormatted = formattaDataItaliana(item.scadenza);
-                if (!item.preso) {
-                    let classeRiga = item.lowStock ? 'item-row low-stock' : 'item-row';
-                    htmlDaPrendere += `
-                        <div class="${classeRiga}">
-                            <input type="checkbox" style="transform: scale(1.3);" onchange="spuntatoProdotto(${item.id}, true)">
-                            <div class="item-info">
-                                <div class="item-title">${item.nome} ${item.lowStock ? '⚠️ (In esaurimento)' : ''}</div>
-                                <div class="item-details">Ubicazione: ${item.ubicazione} | Scadenza: ${dataFormatted}</div>
-                            </div>
-                        </div>`;
-                } else {
-                    htmlGiaPresi += `
-                        <div class="item-row">
-                            <input type="checkbox" checked style="transform: scale(1.3);" onchange="spuntatoProdotto(${item.id}, false)">
-                            <div class="item-info" style="text-decoration: line-through; color: #888;">
-                                <div class="item-title">${item.nome}</div>
-                                <div class="item-details">Ubicazione: ${item.ubicazione} | Scadenza: ${dataFormatted}</div>
-                            </div>
-                        </div>`;
+                // Filtriamo solo quelli che sono effettivamente da comprare (lowStock = true o contrassegnati come da comprare)
+                // Se lowStock è false e preso è false, sono prodotti normali in dispensa e non devono apparire nella lista della spesa.
+                if (item.lowStock) {
+                    if (!item.preso) {
+                        htmlDaPrendere += `
+                            <div class="item-row low-stock">
+                                <input type="checkbox" style="transform: scale(1.3);" onchange="spuntatoProdotto(${item.id}, true)">
+                                <div class="item-info">
+                                    <div class="item-title">${item.nome} ⚠️ (In esaurimento)</div>
+                                    <div class="item-details">Ubicazione: ${item.ubicazione || 'N/D'} | Scadenza: ${dataFormatted}</div>
+                                </div>
+                            </div>`;
+                    } else {
+                        htmlGiaPresi += `
+                            <div class="item-row">
+                                <input type="checkbox" checked style="transform: scale(1.3);" onchange="spuntatoProdotto(${item.id}, false)">
+                                <div class="item-info" style="text-decoration: line-through; color: #888;">
+                                    <div class="item-title">${item.nome}</div>
+                                    <div class="item-details">Ubicazione: ${item.ubicazione || 'N/D'} | Scadenza: ${dataFormatted}</div>
+                                </div>
+                            </div>`;
+                    }
                 }
             });
 
@@ -184,6 +187,11 @@
             let item = db.dispensa.find(i => i.id === id);
             if (item) {
                 item.preso = statoPreso;
+                if (statoPreso) {
+                    // Quando lo compri (metti la spunta), segniamo che è stato preso. 
+                    // Se vuoi che rientri in dispensa come "acquistato", potremmo azzerare lowStock, 
+                    // oppure lo lasciamo nello storico "Già Presi" finché non viene ricaricato da carico.html
+                }
                 salvaDb();
             }
         }
