@@ -197,7 +197,7 @@
 
         <div class="top-bar">
             <button class="btn btn-warning" onclick="mostraPopupScadenzeManualita()">⚠️ Prodotti da consumare in fretta</button>
-            <a href="spesa.html" class="btn btn-primary">➕ Gestisci / Carica Prodotti</a>
+            <a href="carica.html" class="btn btn-primary">➕ Gestisci / Carica Prodotti</a>
         </div>
 
         <!-- Contenitore dinamico dei luoghi e prodotti -->
@@ -233,17 +233,27 @@
     </div>
 
     <script>
-        // Simulazione caricamento dati (qui andrà la chiamata al server o localStorage)
         let prodottiDispensa = [];
 
         async function caricaDatiDispensa() {
-            try {
-                // Esempio di recupero dati (sostituire con endpoint reale o localStorage)
-                let res = await fetch('http://192.168.1.101:8000/api/prodotti');
-                prodottiDispensa = await res.json();
-            } catch (e) {
-                // Fallback locale di prova se il server non è attivo
-                prodottiDispensa = JSON.parse(localStorage.getItem('eatme_prodotti')) || [];
+            // Legge direttamente dal database unificato EatMeFirst
+            let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [] };
+            
+            // Filtra solo i prodotti che sono effettivamente in dispensa (non presi/consumati)
+            prodottiDispensa = (db.dispensa || []).filter(p => !p.preso && !p.lowStock).map(p => ({
+                ...p,
+                posizione: p.ubicazione || p.posizione || 'Altro / Non specificato',
+                barcode: p.codiceBarre || p.barcode
+            }));
+
+            // Fallback di retrocompatibilità se il db unificato è vuoto
+            if (prodottiDispensa.length === 0) {
+                let dispensaAlt = JSON.parse(localStorage.getItem('eatMeFirst_dispensa')) || [];
+                prodottiDispensa = dispensaAlt.map(p => ({
+                    ...p,
+                    posizione: p.ubicazione || p.posizione || 'Altro / Non specificato',
+                    barcode: p.codiceBarre || p.barcode
+                }));
             }
             
             organizzaDispensaPerLuoghi();
@@ -259,7 +269,7 @@
                 return;
             }
 
-            // Raggruppa per luogo (se non specificato, usa "Generale")
+            // Raggruppa per luogo
             let luoghiMap = {};
             prodottiDispensa.forEach(p => {
                 let luogo = p.posizione || 'Altro / Non specificato';
@@ -281,7 +291,6 @@
                 
                 let ul = document.createElement('ul');
                 ul.className = 'prodotti-list';
-                // Di default lasciamo visibili o comprimibili, qui li rendiamo visibili
                 
                 header.onclick = () => {
                     ul.style.display = ul.style.display === 'none' ? 'block' : 'none';
@@ -311,12 +320,10 @@
             });
         }
 
-        // Gestione Popup Giornaliero (una sola volta al giorno)
         function verificaPopupGiornaliero() {
             const oggiStr = new Date().toISOString().slice(0, 10);
             const ultimoVisto = localStorage.getItem('eatme_ultimo_popup_scadenze');
 
-            // Verifica se ci sono prodotti vicini alla scadenza (es. simulato o calcolato)
             let scadenzeUrgenti = prodottiDispensa.filter(p => isScadenzaUrgente(p.scadenza));
 
             if (scadenzeUrgenti.length > 0 && ultimoVisto !== oggiStr) {
@@ -341,7 +348,7 @@
         }
 
         function mostraPopupScadenzeManualita() {
-            let scadenzeUrgenti = prodottiDispensa; // Mostra tutto o filtrate se si preferisce
+            let scadenzeUrgenti = prodottiDispensa;
             if (scadenzeUrgenti.length === 0) {
                 alert("Nessun prodotto in dispensa da controllare.");
                 return;
@@ -353,13 +360,10 @@
             document.getElementById('popupScadenze').style.display = 'none';
         }
 
-        // Funzione di supporto per valutare l'urgenza (semplificata)
         function isScadenzaUrgente(dataStr) {
-            // Logica di controllo data (per ora restituisce true come esempio se il campo esiste)
             return dataStr ? true : false;
         }
 
-        // Scheda Prodotto Premium (Sola Lettura)
         function apriSchedaPremium(prod) {
             const contenuto = document.getElementById('dettaglio-prodotto-contenuto');
             let img = prod.immagine ? `<img src="${prod.immagine}" style="max-width:120px; max-height:120px; object-fit:contain; margin-bottom:10px;">` : '📦';
@@ -382,12 +386,10 @@
             document.getElementById('modalPremium').style.display = 'none';
         }
 
-        // Inizializzazione al caricamento
         window.onload = () => {
             caricaDatiDispensa();
         };
 
-        // Alias per compatibilità con la funzione interna
         function organizzaDispensaPerLuoghi() {
             organizzatoreLuoghi();
         }
