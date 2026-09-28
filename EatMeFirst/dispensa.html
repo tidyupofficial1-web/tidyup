@@ -45,7 +45,6 @@
         .btn-danger { background: #ef4444; color: white; }
         .btn-primary:hover, .btn-warning:hover, .btn-danger:hover { opacity: 0.9; }
 
-        /* Stile Accordion Luoghi */
         .luogo-section {
             margin-bottom: 15px;
             border: 1px solid #e2e8f0;
@@ -112,7 +111,6 @@
             background: #e2e8f0;
         }
 
-        /* POPUP SCADENZE */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -196,7 +194,6 @@
             <button class="btn btn-danger" onclick="azzeraTuttoDatabase()">🗑️ Svuota e Azzera Tutto</button>
         </div>
 
-        <!-- Contenitore dinamico dei luoghi e prodotti -->
         <div id="contenitore-luoghi">
             <div class="empty-msg">Nessun prodotto presente nella dispensa. Inizia a caricarne qualcuno!</div>
         </div>
@@ -215,7 +212,7 @@
         </div>
     </div>
 
-    <!-- SCHEDA PRODOTTO (PREMIUM) -->
+    <!-- SCHEDA PRODOTTO -->
     <div id="modalPremium" class="modal-premium">
         <div class="premium-box">
             <div class="badge-premium">🌟 Dettaglio Prodotto</div>
@@ -227,25 +224,17 @@
     <script>
         let prodottiDispensa = [];
 
-        async function caricaDatiDispensa() {
+        function caricaDatiDispensa() {
             let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [] };
             
+            // Filtra rigorosamente escludendo i prodotti già presi o mandati in spesa (lowStock)
             prodottiDispensa = (db.dispensa || []).filter(p => !p.preso && !p.lowStock).map(p => ({
                 ...p,
                 posizione: p.ubicazione || p.posizione || 'Altro / Non specificato',
                 barcode: p.codiceBarre || p.barcode
             }));
-
-            if (prodottiDispensa.length === 0) {
-                let dispensaAlt = JSON.parse(localStorage.getItem('eatMeFirst_dispensa')) || [];
-                prodottiDispensa = dispensaAlt.map(p => ({
-                    ...p,
-                    posizione: p.ubicazione || p.posizione || 'Altro / Non specificato',
-                    barcode: p.codiceBarre || p.barcode
-                }));
-            }
             
-            organizzaDispensaPerLuoghi();
+            organizzatoreLuoghi();
             verificaPopupGiornaliero();
         }
 
@@ -307,16 +296,13 @@
             });
         }
 
-        // Funzione per azzerare completamente tutti gli archivi e contatori
         function azzeraTuttoDatabase() {
-            if (confirm("⚠️ Sei sicuro di voler azzerare TUTTI gli archivi, la dispensa e le liste della spesa? Questa operazione cancellerà tutti i dati salvati.")) {
-                // Rimuove completamente le chiavi dal localStorage
+            if (confirm("⚠️ Sei sicuro di voler azzerare TUTTI gli archivi, la dispensa e le liste della spesa?")) {
                 localStorage.removeItem('eat_me_first_db');
                 localStorage.removeItem('eatMeFirst_dispensa');
                 localStorage.removeItem('eatme_prodotti');
                 localStorage.removeItem('eatme_ultimo_popup_scadenze');
                 
-                // Ricarica la pagina pulita
                 alert("Tutti gli archivi sono stati azzerati con successo.");
                 location.reload();
             }
