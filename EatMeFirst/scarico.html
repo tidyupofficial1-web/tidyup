@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EatMeFirst - Scarico Articoli</title>
+    <title>EatMeFirst - Scarico Prodotti</title>
     <script src="i18n.js" onerror="console.log('i18n.js non trovato')"></script>
     <style>
         :root {
@@ -35,342 +35,132 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
         }
 
-        h1 { 
-            color: #58a6ff; 
-            font-size: 1.8rem; 
-            text-align: center; 
-            margin-bottom: 25px; 
-        }
+        h1 { color: #58a6ff; font-size: 1.8rem; text-align: center; margin-bottom: 25px; }
 
-        .section-box { 
-            background: #0d1117; 
-            border: 1px solid var(--border-color); 
-            padding: 20px; 
-            border-radius: 8px; 
-            margin-bottom: 20px; 
-        }
-        .section-box h3 { margin-top: 0; color: var(--text-main); font-size: 1.1rem; }
-        
-        .input-row { display: flex; gap: 10px; margin-top: 10px; }
-        .input-row input, .input-row select { 
-            flex: 1; 
+        .search-box { margin-bottom: 20px; }
+        input { 
+            width: 100%; 
             padding: 12px; 
-            background: #161b22;
+            background: #0d1117; 
             border: 1px solid var(--border-color); 
             color: var(--text-main);
             border-radius: 6px; 
             font-size: 1rem; 
+            box-sizing: border-box;
         }
-        
-        .btn { 
-            background-color: var(--accent-blue); 
+        input:focus { border-color: var(--accent-blue); outline: none; }
+
+        .item-card {
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .item-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; color: var(--text-main); }
+        .item-info p { margin: 2px 0; font-size: 0.85rem; color: var(--text-muted); }
+
+        .btn-scarica { 
+            background-color: var(--accent-red); 
             color: white; 
             border: none; 
-            padding: 12px 20px; 
+            padding: 10px 15px; 
             border-radius: 6px; 
             cursor: pointer; 
             font-weight: bold; 
-            font-size: 0.95rem; 
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
-        .btn:hover { opacity: 0.9; }
-        .btn-secondary { background-color: #21262d; border: 1px solid var(--border-color); color: var(--text-main); }
-        .btn-secondary:hover { background-color: #30363d; }
-        .btn-danger { background-color: rgba(218, 54, 51, 0.3); color: #ff7b72; border: 1px solid rgba(218, 54, 51, 0.5); }
+        .btn-scarica:hover { opacity: 0.9; }
 
-        /* Scheda Prodotto Estratta (Campi Bloccati) */
-        #schedaProdotto {
-            display: none;
-            background: #161b22;
-            border: 2px solid var(--accent-blue);
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        .prodotto-info-grid {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .prodotto-img {
-            width: 75px;
-            height: 75px;
-            background: #21262d;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            border: 1px solid var(--border-color);
-            object-fit: cover;
-        }
-        .campo-bloccato {
-            background: #0d1117 !important;
-            border: 1px dashed var(--border-color);
-            color: var(--text-muted);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            margin-top: 4px;
-        }
+        .empty-msg { text-align: center; color: var(--text-muted); padding: 20px; }
 
-        .back-link { display: block; text-align: center; margin-top: 30px; color: #58a6ff; text-decoration: none; font-weight: bold; }
+        .back-link { display: block; text-align: center; margin-top: 25px; color: #58a6ff; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>📤 Scarico Articoli</h1>
+    <h1>📤 Scarico / Consumo Prodotti</h1>
 
-    <!-- I TRE METODI DI RICERCA -->
-    
-    <!-- 1. Codice a barre -->
-    <div class="section-box">
-        <h3>⚡ 1. Ricerca per Codice a Barre</h3>
-        <div class="input-row">
-            <input type="text" id="inputBarcode" value="" placeholder="Scansiona o digita codice a barre...">
-            <button class="btn" onclick="cercaPerBarcode()">Cerca</button>
-        </div>
+    <div class="search-box">
+        <input type="text" id="filtroProdotti" placeholder="Cerca prodotto in dispensa..." oninput="caricaListaDispensa()">
     </div>
 
-    <!-- 2. Per Luogo (Basato unicamente sui dati inseriti dall'utente) -->
-    <div class="section-box">
-        <h3>📍 2. Ricerca per Luogo</h3>
-        <div class="input-row">
-            <select id="selectLuogo">
-                <option value="">-- Seleziona un tuo luogo --</option>
-            </select>
-            <button class="btn" onclick="cercaPerLuogo()">Filtra Luogo</button>
-        </div>
-    </div>
-
-    <!-- 3. Per Categoria -->
-    <div class="section-box">
-        <h3>🏷️ 3. Ricerca per Categoria</h3>
-        <div class="input-row">
-            <select id="selectCategoria">
-                <option value="">-- Seleziona categoria --</option>
-            </select>
-            <button class="btn" onclick="cercaPerCategoria()">Filtra Categoria</button>
-        </div>
-    </div>
-
-    <!-- SCHEDA PRODOTTO ESTRATTA (Campi Bloccati + Gestione Scarico) -->
-    <div id="schedaProdotto">
-        <h3 style="color: #58a6ff; margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">Prodotto Selezionato</h3>
-        
-        <div class="prodotto-info-grid">
-            <div id="containerImg" class="prodotto-img">📦</div>
-            <div style="flex: 1;">
-                <div style="font-size: 0.85rem; color: var(--text-muted);">Descrizione Prodotto:</div>
-                <div id="lblDescrizione" class="campo-bloccato">-</div>
-                
-                <div style="display: flex; gap: 10px; margin-top: 8px;">
-                    <div style="flex: 1;">
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Disponibile:</span>
-                        <div id="lblQuantita" class="campo-bloccato">-</div>
-                    </div>
-                    <div style="flex: 1;">
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Scadenza:</span>
-                        <div id="lblScadenza" class="campo-bloccato">-</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Area Interattiva Dinamica (Pezzo Unico vs Più Pezzi) -->
-        <div id="areaAzioneScarico" style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 15px;">
-            <!-- Iniettato via JavaScript in base alla quantità -->
-        </div>
+    <div id="listaContainer">
+        <!-- I prodotti verranno inseriti qui dinamicamente -->
     </div>
 
     <a href="menu.html" class="back-link">⬅ Torna al Menu Principale</a>
 </div>
 
 <script>
-    let dispensa = [];
-    let prodottoCorrente = null;
-
-    window.addEventListener('DOMContentLoaded', () => {
-        // Pulizia totale campi in avvio
-        document.getElementById('inputBarcode').value = '';
-        caricaDispensaDaStorage();
-        popolaFiltriReali();
+    document.addEventListener("DOMContentLoaded", function() {
+        caricaListaDispensa();
     });
 
-    function caricaDispensaDaStorage() {
-        let dati = localStorage.getItem('eatMeFirst_dispensa');
-        dispensa = dati ? JSON.parse(dati) : [];
-    }
-
-    function popolaFiltriReali() {
-        let selectLuogo = document.getElementById('selectLuogo');
-        let selectCategoria = document.getElementById('selectCategoria');
+    function caricaListaDispensa() {
+        let container = document.getElementById('listaContainer');
+        let filtro = document.getElementById('filtroProdotti').value.toLowerCase();
         
-        // Pulisci select
-        selectLuogo.innerHTML = '<option value="">-- Seleziona un tuo luogo --</option>';
-        selectCategoria.innerHTML = '<option value="">-- Seleziona categoria --</option>';
+        let dispensa = JSON.parse(localStorage.getItem('eatMeFirst_dispensa')) || [];
+        container.innerHTML = "";
 
-        // Estrai solo i luoghi e le categorie realmente presenti nei dati dell'utente
-        let luoghiReali = [...new Set(dispensa.map(i => i.ubicazione || i.settore).filter(Boolean))];
-        let categorieReali = [...new Set(dispensa.map(i => i.categoria).filter(Boolean))];
+        let prodottiFiltrati = dispensa.filter(item => item.nome.toLowerCase().includes(filtro) || item.ubicazione.toLowerCase().includes(filtro));
 
-        luoghiReali.forEach(l => {
-            let opt = document.createElement('option');
-            opt.value = l;
-            opt.textContent = l;
-            selectLuogo.appendChild(opt);
-        });
+        if (prodottiFiltrati.length === 0) {
+            container.innerHTML = `<div class="empty-msg">Nessun prodotto trovato in dispensa.</div>`;
+            return;
+        }
 
-        categorieReali.forEach(c => {
-            let opt = document.createElement('option');
-            opt.value = c;
-            opt.textContent = c;
-            selectCategoria.appendChild(opt);
+        prodottiFiltrati.forEach(item => {
+            let card = document.createElement('div');
+            card.className = 'item-card';
+
+            card.innerHTML = `
+                <div class="item-info">
+                    <h3>${item.nome}</h3>
+                    <p>📦 Q.tà: <b>${item.quantita}</b> | 📍 Ubicazione: <b>${item.ubicazione}</b></p>
+                    <p>⏳ Scadenza: ${item.scadenza ? item.scadenza : 'Nessuna'}</p>
+                </div>
+                <button class="btn-scarica" onclick="scaricaProdotto(${item.id})">Consuma / Elimina</button>
+            `;
+            container.appendChild(card);
         });
     }
 
-    function mostraScheda(item) {
-        prodottoCorrente = item;
-        let scheda = document.getElementById('schedaProdotto');
-        scheda.style.display = 'block';
+    function scaricaProdotto(id) {
+        let dispensa = JSON.parse(localStorage.getItem('eatMeFirst_dispensa')) || [];
+        let index = dispensa.findIndex(item => item.id === id);
 
-        // Compila campi bloccati
-        document.getElementById('lblDescrizione').textContent = item.nome || item.descrizione || "Articolo senza nome";
-        document.getElementById('lblQuantita').textContent = `${item.quantita} ${item.unita || 'pz'}`;
-        document.getElementById('lblScadenza').textContent = item.scadenza || "Nessuna scadenza";
-
-        // Immagine se esiste
-        let containerImg = document.getElementById('containerImg');
-        if (item.immagine) {
-            containerImg.innerHTML = `<img src="${item.immagine}" style="width:100%; height:100%; border-radius:6px; object-fit:cover;">`;
-        } else {
-            containerImg.innerHTML = '📦';
-        }
-
-        // Renderizza i comandi in base alla quantità (Pezzo unico vs Multiplo)
-        let areaAzione = document.getElementById('areaAzioneScarico');
-        
-        if (item.quantita <= 1) {
-            areaAzione.innerHTML = `
-                <p style="margin: 0 0 10px 0; font-size: 0.9rem; color: #ff7b72; font-weight: bold;">Questo è un pezzo unico.</p>
-                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: bold;">
-                        <input type="checkbox" id="chkElimino" style="width: 18px; height: 18px;"> Elimino?
-                    </label>
-                    <button class="btn btn-danger" onclick="confermaScaricoUnico()">Conferma e Sposta in Spesa</button>
-                    <button class="btn btn-secondary" onclick="annullaSelezione()">Indietro</button>
-                </div>
-            `;
-        } else {
-            areaAzione.innerHTML = `
-                <p style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--text-muted);">Disponi di più pezzi. Riduci la quantità:</p>
-                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                    <button class="btn btn-secondary" onclick="decrementaPezzo()">Riduci di 1 (-1)</button>
-                    <span id="txtRestano" style="font-size: 0.95rem; font-weight: bold;">Ne restano ${item.quantita - 1}. Confermi?</span>
-                    <button class="btn" onclick="confermaScaricoMultiplo()">Conferma Modifica</button>
-                    <button class="btn btn-secondary" onclick="annullaSelezione()">Indietro</button>
-                </div>
-            `;
-        }
-    }
-
-    function annullaSelezione() {
-        document.getElementById('schedaProdotto').style.display = 'none';
-        prodottoCorrente = null;
-        document.getElementById('inputBarcode').value = '';
-    }
-
-    function cercaPerBarcode() {
-        let code = document.getElementById('inputBarcode').value.trim();
-        if (!code) {
-            alert("Inserisci un codice a barre.");
-            return;
-        }
-        let trovato = dispensa.find(i => i.codiceBarre === code);
-        if (trovato) {
-            mostraScheda(trovato);
-        } else {
-            alert("Nessun prodotto trovato con questo codice a barre.");
-        }
-    }
-
-    function cercaPerLuogo() {
-        let luogo = document.getElementById('selectLuogo').value;
-        if (!luogo) {
-            alert("Seleziona un luogo.");
-            return;
-        }
-        let trovato = dispensa.find(i => (i.ubicazione || i.settore) === luogo);
-        if (trovato) {
-            mostraScheda(trovato);
-        } else {
-            alert("Nessun prodotto trovato in questo luogo.");
-        }
-    }
-
-    function cercaPerCategoria() {
-        let cat = document.getElementById('selectCategoria').value;
-        if (!cat) {
-            alert("Seleziona una categoria.");
-            return;
-        }
-        let trovato = dispensa.find(i => i.categoria === cat);
-        if (trovato) {
-            mostraScheda(trovato);
-        } else {
-            alert("Nessun prodotto trovato in questa categoria.");
-        }
-    }
-
-    function aggiungiAllaSpesa(nomeProdotto) {
-        let listaSpesa = JSON.parse(localStorage.getItem('eatMeFirst_spesa')) || [];
-        listaSpesa.push({ nome: nomeProdotto, acquistato: false });
-        localStorage.setItem('eatMeFirst_spesa', JSON.stringify(listaSpesa));
-    }
-
-    function confermaScaricoUnico() {
-        let chk = document.getElementById('chkElimino');
-        if (chk && chk.checked) {
-            let index = dispensa.findIndex(i => i.id === prodottoCorrente.id);
-            if (index !== -1) {
-                let rimossa = dispensa.splice(index, 1)[0];
-                localStorage.setItem('eatMeFirst_dispensa', JSON.stringify(dispensa));
-                aggiungiAllaSpesa(rimossa.nome || rimossa.descrizione);
-                alert(`"${rimossa.nome || rimossa.descrizione}" eliminato e aggiunto alla Lista della Spesa!`);
-                annullaSelezione();
-                popolaFiltriReali();
-            }
-        } else {
-            alert("Devi spuntare la casella 'Elimino?' per confermare.");
-        }
-    }
-
-    function decrementaPezzo() {
-        if (prodottoCorrente && prodottoCorrente.quantita > 1) {
-            prodottoCorrente.quantitaTemp = (prodottoCorrente.quantitaTemp !== undefined ? prodottoCorrente.quantitaTemp : prodottoCorrente.quantita) - 1;
-            document.getElementById('txtRestano').textContent = `Ne restano ${prodottoCorrente.quantitaTemp}. Confermi?`;
-        }
-    }
-
-    function confermaScaricoMultiplo() {
-        if (!prodottoCorrente) return;
-        let nuovaQta = prodottoCorrente.quantitaTemp !== undefined ? prodottoCorrente.quantitaTemp : prodottoCorrente.quantita - 1;
-        
-        let index = dispensa.findIndex(i => i.id === prodottoCorrente.id);
         if (index !== -1) {
-            if (nuovaQta <= 0) {
-                let rimossa = dispensa.splice(index, 1)[0];
-                localStorage.setItem('eatMeFirst_dispensa', JSON.stringify(dispensa));
-                aggiungiAllaSpesa(rimossa.nome || rimossa.descrizione);
-                alert(`Il prodotto è terminato ed è stato spostato nella Lista della Spesa!`);
-            } else {
-                dispensa[index].quantita = nuovaQta;
-                localStorage.setItem('eatMeFirst_dispensa', JSON.stringify(dispensa));
-                alert(`Quantità aggiornata con successo. Ne restano ${nuovaQta}.`);
+            let prodottoRimosso = dispensa.splice(index, 1)[0];
+            
+            // Aggiorna la dispensa in memoria
+            localStorage.setItem('eatMeFirst_dispensa', JSON.stringify(dispensa));
+
+            // Aggiunge automaticamente il prodotto alla lista della spesa (liste.html)
+            let listaSpesa = JSON.parse(localStorage.getItem('eatMeFirst_spesa')) || [];
+            
+            // Verifica se non è già presente per evitare doppioni
+            let esisteGia = listaSpesa.some(item => item.nome.toLowerCase() === prodottoRimosso.nome.toLowerCase());
+            if (!esisteGia) {
+                listaSpesa.push({
+                    id: Date.now(),
+                    nome: prodottoRimosso.nome,
+                    quantita: prodottoRimosso.quantita || 1,
+                    comprato: false
+                });
+                localStorage.setItem('eatMeFirst_spesa', JSON.stringify(listaSpesa));
             }
-            annullaSelezione();
-            popolaFiltriReali();
+
+            alert(`Prodotto "${prodottoRimosso.nome}" scaricato dalla dispensa e aggiunto alla lista della spesa!`);
+            caricaListaDispensa();
         }
     }
 </script>
