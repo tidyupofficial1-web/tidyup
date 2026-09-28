@@ -4,120 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EatMeFirst - Menu Principale</title>
-    <!-- Collegamento al file centrale delle 5 lingue -->
-    <script src="i18n.js"></script>
     <style>
-        body {
-            background-color: #0d1117;
-            color: #f0f6fc;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 20px;
+        :root {
+            --primary: #2c3e50;
+            --secondary: #16a085;
+            --accent: #e74c3c;
+            --bg: #f0f3f4;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --border: #dcdde1;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 40px; }
+        
+        header { 
+            background: linear-gradient(135deg, #2c3e50, #16a085); 
+            color: white; 
+            padding: 2rem 1rem; 
+            text-align: center; 
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1 { font-size: 1.6rem; margin-bottom: 5px; }
+        p { font-size: 0.95rem; opacity: 0.9; }
+        
+        .container { max-width: 500px; margin: 1.5rem auto; padding: 0 1rem; display: flex; flex-direction: column; gap: 0.9rem; }
+        
+        /* Pulsanti del menu uniformi e colorati con icone */
+        .menu-btn { 
+            background: var(--card-bg); 
+            color: var(--text); 
+            border: 1px solid var(--border); 
+            border-left: 5px solid var(--secondary);
+            padding: 1rem 1.2rem; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 1.05rem; 
+            font-weight: 600; 
+            text-align: left; 
+            text-decoration: none; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.04); 
+            transition: all 0.2s ease;
             display: flex;
-            flex-direction: column;
             align-items: center;
+            gap: 12px;
+            position: relative;
         }
-        .top-bar {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 20px;
+        .menu-btn:hover { 
+            background: #ffffff; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+            border-color: var(--secondary);
         }
-        .header-container {
-            text-align: center;
-            margin-bottom: 30px;
+
+        /* Differenziamo leggermente i bordi laterali per gruppo per dare colore */
+        .btn-dispensa { border-left-color: #3498db; }
+        .btn-spesa { border-left-color: #e67e22; }
+        .btn-note { border-left-color: var(--accent); }
+
+        /* Effetto lampeggiante per notifiche Block Notes */
+        @keyframes pulse-blink {
+            0% { border-left-color: var(--accent); background-color: rgba(231, 76, 60, 0.05); }
+            50% { border-left-color: #c0392b; background-color: rgba(231, 76, 60, 0.15); }
+            100% { border-left-color: var(--accent); background-color: rgba(231, 76, 60, 0.05); }
         }
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-        p {
-            color: #8b949e;
-            font-size: 1rem;
-            margin: 0;
-        }
-        .menu-grid {
-            display: grid;
-            gap: 15px;
-            width: 100%;
-            max-width: 400px;
-        }
-        .menu-btn {
-            background: #161b22;
-            border: 1px solid #30363d;
-            color: #f0f6fc;
-            padding: 16px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-size: 1.05rem;
-            font-weight: bold;
-            text-align: center;
-            transition: background 0.2s, border-color 0.2s;
-            display: block;
-        }
-        .menu-btn:hover {
-            background: #30363d;
-            border-color: #8b949e;
-        }
-        footer {
-            margin-top: 50px;
-            color: #8b949e;
-            font-size: 0.85rem;
-            text-align: center;
-        }
+        .blinking-btn { animation: pulse-blink 1.2s infinite; }
+
+        /* Popup Notifica Nuove Note sul Menu */
+        #popup-notifica { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
+        #popup-box { background: white; width: 100%; max-width: 400px; padding: 25px 20px; border-radius: 12px; box-shadow: 0 6px 25px rgba(0,0,0,0.25); text-align: center; }
+        #popup-box h3 { color: var(--accent); margin-bottom: 10px; font-size: 1.2rem; }
+        #popup-box p { font-size: 0.95rem; color: #444; line-height: 1.4; margin-bottom: 20px; }
+        .popup-actions { display: flex; gap: 10px; }
+        .popup-btn { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
+        .btn-chiudi { background: #ecf0f1; color: #7f8c8d; }
+        .btn-chiudi:hover { background: #bdc3c7; color: #2c3e50; }
+        .btn-apri { background: var(--secondary); color: white; }
+        .btn-apri:hover { background: #117a65; }
     </style>
 </head>
 <body>
 
-    <div class="top-bar">
-        <!-- Selettore delle 5 lingue -->
-        <div id="header-lang"></div>
+    <header>
+        <h1>EatMeFirst</h1>
+        <p>Gestione Intelligente Dispensa e Spesa</p>
+    </header>
+
+    <div class="container">
+        <!-- Funzioni Storiche della Dispensa -->
+        <a href="carico.html" class="menu-btn btn-dispensa">📦 Carico Articolo</a>
+        <a href="scarico.html" class="menu-btn btn-dispensa">📤 Scarico Prodotti</a>
+        <a href="dispensa.html" class="menu-btn btn-dispensa">📋 Visualizza Dispensa</a>
+
+        <!-- Sezioni Spesa e Note -->
+        <a href="liste.html" class="menu-btn btn-spesa">🛒 Lista della Spesa (Dispensa)</a>
+        <a href="spesa.html" class="menu-btn btn-spesa">🛍️ Articoli da comperare</a>
+        <a href="mia_lista.html" id="btn-block-notes" class="menu-btn btn-note">💭 Ricordarsi di...</a>
     </div>
 
-    <div class="header-container">
-        <h1 id="txt-menu-title">Menu Principale</h1>
-        <p id="txt-menu-subtitle">Gestione Intelligente della Dispensa</p>
+    <!-- Popup Notifica Nuove Note -->
+    <div id="popup-notifica">
+        <div id="popup-box">
+            <h3>Nuovi Appunti nel Block Notes!</h3>
+            <p>Ci sono promemoria o note inserite in "Ricordarsi di..." in attesa di lettura.</p>
+            <div class="popup-actions">
+                <button class="popup-btn btn-chiudi" onclick="chiudiPopupNotifica()">Ho capito</button>
+                <button class="popup-btn btn-apri" onclick="apriBlockNotes()">Vai a Ricordarsi di...</button>
+            </div>
+        </div>
     </div>
-
-    <div class="menu-grid">
-        <a href="carico.html" class="menu-btn" id="txt-btn-carico">📥 Carico Articolo</a>
-        <a href="scarico.html" class="menu-btn" id="txt-btn-scarico">📤 Scarico Prodotti</a>
-        <a href="dispensa.html" class="menu-btn" id="txt-btn-dispensa">📋 Visualizza Dispensa</a>
-        <a href="spesa.html" class="menu-btn" id="txt-btn-spesa">🛒 Lista della Spesa</a>
-        <a href="impostazioni.html" class="menu-btn" id="txt-btn-impostazioni">⚙️ Impostazioni</a>
-        <a href="termini.html" class="menu-btn" id="txt-btn-termini">📄 Termini e Condizioni</a>
-    </div>
-
-    <footer id="txt-footer">
-        EatMeFirst &bull; Dati locali su dispositivo
-    </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const containerLang = document.getElementById('header-lang');
-            if (containerLang && typeof creaSelettoreLinguaHTML === 'function') {
-                containerLang.innerHTML = creaSelettoreLinguaHTML();
-            }
-
-            applicaTraduzioniInterfaccia();
-        });
-
-        function applicaTraduzioniInterfaccia() {
-            if (typeof getLinguaCorrente !== 'function' || typeof dizionarioGlobale === 'undefined') return;
+        // Controllo dello stato da localStorage per le notifiche non lette del Block Notes
+        window.onload = function() {
+            let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { note: [] };
             
-            const lang = getLinguaCorrente();
-            const t = dizionarioGlobale[lang] || dizionarioGlobale['it'];
+            // Verifica se ci sono note non lette (letto === false)
+            let haNoteNonLette = db.note && db.note.some(n => n.letto === false);
+            
+            if (haNoteNonLette) {
+                // Attiva il lampeggio sul pulsante "Ricordarsi di..."
+                document.getElementById('btn-block-notes').classList.add('blinking-btn');
+                // Mostra il popup di notifica sul menu
+                document.getElementById('popup-notifica').style.display = 'flex';
+            }
+        };
 
-            document.getElementById('txt-menu-title').textContent = t.menuTitle || "Menu Principale";
-            document.getElementById('txt-menu-subtitle').textContent = t.menuSubtitle || "Gestione Intelligente della Dispensa";
-            document.getElementById('txt-btn-carico').textContent = t.caricoArticolo || "📥 Carico Articolo";
-            document.getElementById('txt-btn-scarico').textContent = "📤 Scarico Prodotti";
-            document.getElementById('txt-btn-dispensa').textContent = t.visualizzaDispensa || "📋 Visualizza Dispensa";
-            document.getElementById('txt-btn-spesa').textContent = t.spesa || "🛒 Lista della Spesa";
-            document.getElementById('txt-btn-impostazioni').textContent = t.impostazioni || "⚙️ Impostazioni";
-            document.getElementById('txt-btn-termini').textContent = t.terminiTitle || "📄 Termini e Condizioni";
-            document.getElementById('txt-footer').innerHTML = t.footer || "EatMeFirst &bull; Dati locali su dispositivo";
+        function chiudiPopupNotifica() {
+            document.getElementById('popup-notifica').style.display = 'none';
+        }
+
+        function apriBlockNotes() {
+            window.location.href = 'mia_lista.html';
         }
     </script>
 </body>
