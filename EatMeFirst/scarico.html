@@ -108,13 +108,16 @@
         let container = document.getElementById('listaContainer');
         let filtro = document.getElementById('filtroProdotti').value.toLowerCase();
         
-        let dispensa = JSON.parse(localStorage.getItem('eatMeFirst_dispensa')) || [];
+        // Legge dal database principale condiviso con liste.html
+        let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [] };
         container.innerHTML = "";
 
-        let prodottiFiltrati = dispensa.filter(item => item.nome.toLowerCase().includes(filtro) || item.ubicazione.toLowerCase().includes(filtro));
+        let prodottiFiltrati = db.dispensa.filter(item => 
+            !item.preso && (item.nome.toLowerCase().includes(filtro) || item.ubicazione.toLowerCase().includes(filtro))
+        );
 
         if (prodottiFiltrati.length === 0) {
-            container.innerHTML = `<div class="empty-msg">Nessun prodotto trovato in dispensa.</div>`;
+            container.innerHTML = `<div class="empty-msg">Nessun prodotto disponibile in dispensa da scaricare.</div>`;
             return;
         }
 
@@ -125,7 +128,7 @@
             card.innerHTML = `
                 <div class="item-info">
                     <h3>${item.nome}</h3>
-                    <p>📦 Q.tà: <b>${item.quantita}</b> | 📍 Ubicazione: <b>${item.ubicazione}</b></p>
+                    <p>📦 Q.tà: <b>${item.quantita || 1}</b> | 📍 Ubicazione: <b>${item.ubicazione}</b></p>
                     <p>⏳ Scadenza: ${item.scadenza ? item.scadenza : 'Nessuna'}</p>
                 </div>
                 <button class="btn-scarica" onclick="scaricaProdotto(${item.id})">Consuma / Elimina</button>
@@ -135,36 +138,27 @@
     }
 
     function scaricaProdotto(id) {
-        let dispensa = JSON.parse(localStorage.getItem('eatMeFirst_dispensa')) || [];
-        let index = dispensa.findIndex(item => item.id === id);
+        let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [] };
+        let item = db.dispensa.find(i => i.id === id);
 
-        if (index !== -1) {
-            let prodottoRimosso = dispensa.splice(index, 1)[0];
-            
-            // Aggiorna la dispensa in memoria
-            localStorage.setItem('eatMeFirst_dispensa', JSON.stringify(dispensa));
+        if (item) {
+            // Segna il prodotto come in esaurimento/da comprare per la pagina liste.html
+            item.lowStock = true;
+            item.preso = false; // Assicura che finisca nella tab "Da Prendere"
 
-            // Chiavi multiple per la lista spesa per garantire la compatibilità con liste.html
-            let possibiliChiavi = ['eatMeFirst_spesa', 'eatMeFirst_listaSpesa', 'lista_spesa', 'spesa'];
+            // Salva nel database condiviso
+            localStorage.setItem('eat_me_first_db', JSON.stringify(db));
 
-            possibiliChiavi.forEach(chiave => {
-                let listaSpesa = JSON.parse(localStorage.getItem(chiave)) || [];
-                
-                // Controlla se l'articolo è già presente in questa chiave specifica
-                let esisteGia = listaSpesa.some(item => item.nome.toLowerCase() === prodottoRimosso.nome.toLowerCase());
-                
-                if (!esisteGia) {
-                    listaSpesa.push({
-                        id: Date.now() + Math.random(),
-                        nome: prodottoRimosso.nome,
-                        quantita: prodottoRimosso.quantita || 1,
-                        comprato: false
-                    });
-                    localStorage.setItem(chiave, JSON.stringify(listaSpesa));
-                }
-            });
+            // Per massima compatibilità, aggiorniamo anche la vecchia chiave isolata se usata da altre parti
+            let dispensaAlternativa = JSON.parse(localStorage.getItem('eatMeFirst_dispensa')) || [];
+            let altItem = dispensaAlternativa.find(i => i.id === id);
+            if (altItem) {
+                altItem.lowStock = true;
+                altItem.preso = false;
+                localStorage.setItem('eatMeFirst_dispensa', JSON.stringify(dispensaAlternativa));
+            }
 
-            alert(`Prodotto "${prodottoRimosso.nome}" scaricato e aggiunto alla lista della spesa!`);
+            alert(`Prodotto "${item.nome}" scaricato! Ora è visibile nella Lista della Spesa.`);
             caricaListaDispensa();
         }
     }
