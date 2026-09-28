@@ -15,24 +15,52 @@
             --border: #dcdde1;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: var(--bg); color: var(--text); padding-bottom: 40px; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
         
         header { 
             background: linear-gradient(135deg, #2c3e50, #16a085); 
             color: white; 
-            padding: 2rem 1rem; 
+            padding: 1rem; 
             text-align: center; 
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        h1 { font-size: 1.6rem; margin-bottom: 5px; }
-        p { font-size: 0.95rem; opacity: 0.9; }
+        h1 { font-size: 1.3rem; margin: 0; }
         
+        /* Hamburger Menu Stile */
+        .menu-btn-nav { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0 5px; }
+        
+        #side-menu {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 260px; height: 100%;
+            background: white;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+            text-align: left;
+        }
+        .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .menu-header h2 { font-size: 1.1rem; color: var(--primary); }
+        .close-menu { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #666; }
+        
+        .menu-item { display: block; padding: 10px 12px; margin-bottom: 8px; color: var(--text); text-decoration: none; border-radius: 6px; font-weight: 500; background: #f8f9fa; transition: background 0.2s; }
+        .menu-item:hover { background: #e9ecef; }
+        .menu-item.danger { background: #fadbd8; color: var(--accent); font-weight: bold; }
+
         .container { max-width: 500px; margin: 1.5rem auto; padding: 0 1rem; display: flex; flex-direction: column; gap: 0.9rem; }
         
-        /* Pulsanti del menu uniformi e colorati con icone */
-        .menu-btn { 
+        /* Pulsanti del menu principali */
+        .menu-card-btn { 
             background: var(--card-bg); 
             color: var(--text); 
             border: 1px solid var(--border); 
@@ -49,19 +77,18 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            position: relative;
         }
-        .menu-btn:hover { 
+        .menu-card-btn:hover { 
             background: #ffffff; 
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
             border-color: var(--secondary);
         }
 
-        /* Differenziamo leggermente i bordi laterali per gruppo per dare colore */
         .btn-dispensa { border-left-color: #3498db; }
         .btn-spesa { border-left-color: #e67e22; }
         .btn-note { border-left-color: var(--accent); }
+        .btn-statistiche { border-left-color: #9b59b6; }
 
         /* Effetto lampeggiante per notifiche Block Notes */
         @keyframes pulse-blink {
@@ -71,7 +98,7 @@
         }
         .blinking-btn { animation: pulse-blink 1.2s infinite; }
 
-        /* Popup Notifica Nuove Note sul Menu */
+        /* Popup Notifica Nuove Note */
         #popup-notifica { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
         #popup-box { background: white; width: 100%; max-width: 400px; padding: 25px 20px; border-radius: 12px; box-shadow: 0 6px 25px rgba(0,0,0,0.25); text-align: center; }
         #popup-box h3 { color: var(--accent); margin-bottom: 10px; font-size: 1.2rem; }
@@ -79,29 +106,65 @@
         .popup-actions { display: flex; gap: 10px; }
         .popup-btn { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
         .btn-chiudi { background: #ecf0f1; color: #7f8c8d; }
-        .btn-chiudi:hover { background: #bdc3c7; color: #2c3e50; }
+        .btn-chiudi:hover { background: #bdc3c7; color: var(--text); }
         .btn-apri { background: var(--secondary); color: white; }
         .btn-apri:hover { background: #117a65; }
+
+        /* Logo Fisso in basso a destra */
+        .fixed-logo {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            z-index: 99;
+            background: white;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>EatMeFirst</h1>
-        <p>Gestione Intelligente Dispensa e Spesa</p>
+        <button class="menu-btn-nav" onclick="toggleMenu()">☰</button>
+        <h1>EatMeFirst - Plancia</h1>
+        <div style="width: 24px;"></div> <!-- Spaziatore simmetrico -->
     </header>
+
+    <!-- Menu a scomparsa (Hamburger) -->
+    <div id="side-menu">
+        <div class="menu-header">
+            <h2>Menu EatMeFirst</h2>
+            <button class="close-menu" onclick="toggleMenu()">✕</button>
+        </div>
+        <a href="menu.html" class="menu-item" style="background: #e2e8f0;">🏠 Plancia Principale</a>
+        <a href="dispensa.html" class="menu-item">📦 Dispensa e Frigorifero</a>
+        <a href="liste.html" class="menu-item">🛒 Lista della Spesa</a>
+        <a href="statistiche.html" class="menu-item">📅 Agenda Scadenze</a>
+        <a href="mia_lista.html" class="menu-item">💭 Ricordarsi di...</a>
+        
+        <div style="margin: 15px 0 10px 0; font-size: 0.75rem; text-transform: uppercase; color: #888; font-weight: bold;">Impostazioni & Dati</div>
+        <a href="#" onclick="esportaDatabase()" class="menu-item">💾 Scarica Backup Database</a>
+        <a href="#" onclick="avviaDetonatore()" class="menu-item danger">💣 Svuota Intera Dispensa</a>
+    </div>
 
     <div class="container">
         <!-- Funzioni Storiche della Dispensa -->
-        <a href="carico.html" class="menu-btn btn-dispensa">📦 Carico Articolo</a>
-        <a href="scarico.html" class="menu-btn btn-dispensa">📤 Scarico Prodotti</a>
-        <a href="dispensa.html" class="menu-btn btn-dispensa">📋 Visualizza Dispensa</a>
+        <a href="carico.html" class="menu-card-btn btn-dispensa">📦 Carico Articolo</a>
+        <a href="scarico.html" class="menu-card-btn btn-dispensa">📤 Scarico Prodotti</a>
+        <a href="dispensa.html" class="menu-card-btn btn-dispensa">📋 Visualizza Dispensa</a>
 
         <!-- Sezioni Spesa e Note -->
-        <a href="liste.html" class="menu-btn btn-spesa">🛒 Lista della Spesa</a>
-        <a href="spesa.html" class="menu-btn btn-spesa">🛍️ Articoli da comperare</a>
-        <a href="mia_lista.html" id="btn-block-notes" class="menu-btn btn-note">💭 Ricordarsi di...</a>
+        <a href="liste.html" class="menu-card-btn btn-spesa">🛒 Lista della Spesa</a>
+        <a href="spesa.html" class="menu-card-btn btn-spesa">🛍️ Articoli da comperare</a>
+        <a href="statistiche.html" class="menu-card-btn btn-statistiche">📅 Agenda Scadenze (30 Giorni)</a>
+        <a href="mia_lista.html" id="btn-block-notes" class="menu-card-btn btn-note">💭 Ricordarsi di...</a>
     </div>
+
+    <!-- Logo fisso in basso a destra -->
+    <img src="IMG/logo_1024_white.png" alt="Logo EatMeFirst" class="fixed-logo">
 
     <!-- Popup Notifica Nuove Note -->
     <div id="popup-notifica">
@@ -116,7 +179,30 @@
     </div>
 
     <script>
-        // Controllo dello stato da localStorage per le notifiche non lette del Block Notes
+        function toggleMenu() {
+            const menu = document.getElementById('side-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Funzione di Backup / Esportazione Database in JSON
+        function esportaDatabase() {
+            let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || {};
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `eat_me_first_backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // Placeholder per il detonatore
+        function avviaDetonatore() {
+            if(confirm("ATTENZIONE: Stai per attivare il sistema di svuotamento totale della dispensa. Vuoi procedere?")) {
+                alert("Qui collegheremo la sequenza video del detonatore che abbiamo progettato!");
+            }
+        }
+
         window.onload = function() {
             let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { note: [] };
             
@@ -124,9 +210,7 @@
             let haNoteNonLette = db.note && db.note.some(n => n.letto === false);
             
             if (haNoteNonLette) {
-                // Attiva il lampeggio sul pulsante "Ricordarsi di..."
                 document.getElementById('btn-block-notes').classList.add('blinking-btn');
-                // Mostra il popup di notifica sul menu
                 document.getElementById('popup-notifica').style.display = 'flex';
             }
         };
