@@ -42,7 +42,8 @@
         }
         .btn-primary { background: #6366f1; color: white; }
         .btn-warning { background: #f59e0b; color: white; }
-        .btn-primary:hover, .btn-warning:hover { opacity: 0.9; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-primary:hover, .btn-warning:hover, .btn-danger:hover { opacity: 0.9; }
 
         /* Stile Accordion Luoghi */
         .luogo-section {
@@ -110,10 +111,6 @@
             border-radius: 4px;
             background: #e2e8f0;
         }
-        .scadenza-urgente {
-            background: #fee2e2;
-            color: #991b1b;
-        }
 
         /* POPUP SCADENZE */
         .modal-overlay {
@@ -143,7 +140,6 @@
         }
         .modal-header h3 { margin: 0; color: #dc2626; }
         
-        /* Animazione Lampeggiante Rosso */
         @keyframes lampeggia {
             0% { background-color: #fee2e2; }
             50% { background-color: #fca5a5; }
@@ -153,7 +149,6 @@
             animation: lampeggia 1.5s infinite;
         }
 
-        /* MODALE SCHEDA PRODOTTO (PREMIUM) */
         .modal-premium {
             display: none;
             position: fixed;
@@ -196,8 +191,9 @@
         <h2>🏠 La Mia Dispensa</h2>
 
         <div class="top-bar">
-            <button class="btn btn-warning" onclick="mostraPopupScadenzeManualita()">⚠️ Prodotti da consumare in fretta</button>
-            <a href="carica.html" class="btn btn-primary">➕ Gestisci / Carica Prodotti</a>
+            <button class="btn btn-warning" onclick="mostraPopupScadenzeManualita()">⚠️ Scadenze</button>
+            <a href="carica.html" class="btn btn-primary">➕ Carica</a>
+            <button class="btn btn-danger" onclick="azzeraTuttoDatabase()">🗑️ Svuota e Azzera Tutto</button>
         </div>
 
         <!-- Contenitore dinamico dei luoghi e prodotti -->
@@ -206,7 +202,7 @@
         </div>
     </div>
 
-    <!-- POPUP AUTOMATICO / MANUALE SCADENZE -->
+    <!-- POPUP SCADENZE -->
     <div id="popupScadenze" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -214,21 +210,17 @@
                 <button onclick="chiudiPopupScadenze()" style="background:none; border:none; font-size:18px; cursor:pointer;">✕</button>
             </div>
             <p style="font-size: 13px; color: #475569;">I seguenti prodotti richiedono la tua attenzione:</p>
-            <div id="lista-scadenze-urgenti">
-                <!-- Inserito via JS -->
-            </div>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="chiudiPopupScadenze()">Ho capito, procedi alla dispensa</button>
+            <div id="lista-scadenze-urgenti"></div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="chiudiPopupScadenze()">Ho capito</button>
         </div>
     </div>
 
-    <!-- SCHEDA PRODOTTO PREMIUM (SOLA LETTURA) -->
+    <!-- SCHEDA PRODOTTO (PREMIUM) -->
     <div id="modalPremium" class="modal-premium">
         <div class="premium-box">
-            <div class="badge-premium">🌟 Funzione Premium</div>
+            <div class="badge-premium">🌟 Dettaglio Prodotto</div>
             <button onclick="chiudiSchedaProdotto()" style="position: absolute; top: 15px; right: 15px; background:none; border:none; font-size:18px; cursor:pointer;">✕</button>
-            <div id="dettaglio-prodotto-contenuto">
-                <!-- Dettagli completi da OpenFoodFacts -->
-            </div>
+            <div id="dettaglio-prodotto-contenuto"></div>
         </div>
     </div>
 
@@ -236,17 +228,14 @@
         let prodottiDispensa = [];
 
         async function caricaDatiDispensa() {
-            // Legge direttamente dal database unificato EatMeFirst
             let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [] };
             
-            // Filtra solo i prodotti che sono effettivamente in dispensa (non presi/consumati)
             prodottiDispensa = (db.dispensa || []).filter(p => !p.preso && !p.lowStock).map(p => ({
                 ...p,
                 posizione: p.ubicazione || p.posizione || 'Altro / Non specificato',
                 barcode: p.codiceBarre || p.barcode
             }));
 
-            // Fallback di retrocompatibilità se il db unificato è vuoto
             if (prodottiDispensa.length === 0) {
                 let dispensaAlt = JSON.parse(localStorage.getItem('eatMeFirst_dispensa')) || [];
                 prodottiDispensa = dispensaAlt.map(p => ({
@@ -269,7 +258,6 @@
                 return;
             }
 
-            // Raggruppa per luogo
             let luoghiMap = {};
             prodottiDispensa.forEach(p => {
                 let luogo = p.posizione || 'Altro / Non specificato';
@@ -277,7 +265,6 @@
                 luoghiMap[luogo].push(p);
             });
 
-            // Per ogni luogo, ordina i prodotti in ordine alfabetico per nome
             Object.keys(luoghiMap).sort().forEach(luogo => {
                 let lista = luoghiMap[luogo];
                 lista.sort((a, b) => a.nome.localeCompare(b.nome));
@@ -320,10 +307,24 @@
             });
         }
 
+        // Funzione per azzerare completamente tutti gli archivi e contatori
+        function azzeraTuttoDatabase() {
+            if (confirm("⚠️ Sei sicuro di voler azzerare TUTTI gli archivi, la dispensa e le liste della spesa? Questa operazione cancellerà tutti i dati salvati.")) {
+                // Rimuove completamente le chiavi dal localStorage
+                localStorage.removeItem('eat_me_first_db');
+                localStorage.removeItem('eatMeFirst_dispensa');
+                localStorage.removeItem('eatme_prodotti');
+                localStorage.removeItem('eatme_ultimo_popup_scadenze');
+                
+                // Ricarica la pagina pulita
+                alert("Tutti gli archivi sono stati azzerati con successo.");
+                location.reload();
+            }
+        }
+
         function verificaPopupGiornaliero() {
             const oggiStr = new Date().toISOString().slice(0, 10);
             const ultimoVisto = localStorage.getItem('eatme_ultimo_popup_scadenze');
-
             let scadenzeUrgenti = prodottiDispensa.filter(p => isScadenzaUrgente(p.scadenza));
 
             if (scadenzeUrgenti.length > 0 && ultimoVisto !== oggiStr) {
