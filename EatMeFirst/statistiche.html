@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Agenda Scadenze</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #27ae60;
+            --warning: #e74c3c;
+            --warning-soft: #f1c40f;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #333333;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
+        header { background: var(--primary); color: white; padding: 1rem; text-align: center; position: sticky; top: 0; z-index: 100; }
+        h1 { font-size: 1.2rem; }
+        
+        .container { max-width: 600px; margin: 1rem auto; padding: 0 1rem; }
+        
+        /* Card principale */
+        .card { background: var(--card-bg); border-radius: 8px; padding: 1.2rem; margin-bottom: 1.2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--primary); }
+        .subtitle { font-size: 0.8rem; color: #666; margin-bottom: 1rem; }
+
+        /* Legenda */
+        .legend { display: flex; gap: 15px; font-size: 0.75rem; margin-bottom: 15px; }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        /* Calendario 30 giorni */
+        #calendario-30-giorni {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 120px;
+            overflow-x: auto;
+            padding: 10px 0 5px 0;
+            border-bottom: 2px solid #ddd;
+        }
+
+        /* Modal Pop-up */
+        #modal-giorno {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .nav-back { display: block; text-align: center; margin-top: 2rem; color: var(--primary); text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>EatMeFirst - Agenda Scadenze</h1>
+    </header>
+
+    <div class="container">
+        
+        <!-- Calendario Scadenze a 30 Giorni -->
+        <div class="card">
+            <h3>📅 Prossimi 30 Giorni</h3>
+            <p class="subtitle">Clicca su una colonna per scoprire quali prodotti scadono in quel giorno.</p>
+            
+            <!-- Legenda colori -->
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot" style="background: var(--warning);"></div> Fresco (Tassativo)</div>
+                <div class="legend-item"><div class="legend-dot" style="background: var(--warning-soft);"></div> Consigliato</div>
+            </div>
+
+            <!-- Contenitore delle barre giornaliere -->
+            <div id="calendario-30-giorni"></div>
+        </div>
+
+        <a href="index.html" class="nav-back">← Torna al Menu Principale</a>
+
+    </div>
+
+    <!-- Pop-up Dettaglio Giorno -->
+    <div id="modal-giorno">
+        <div class="modal-content">
+            <h3 id="modal-data-titolo" style="margin-bottom: 10px; color: var(--primary);">Scadenze del giorno</h3>
+            <div id="modal-lista-prodotti" style="max-height: 220px; overflow-y: auto; margin-bottom: 15px; font-size: 0.9rem;"></div>
+            <button onclick="chiudiModalGiorno()" style="background: var(--primary); color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold;">Chiudi</button>
+        </div>
+    </div>
+
+    <script>
+        let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || {
+            dispensa: []
+        };
+
+        function generaCalendario30Giorni() {
+            const container = document.getElementById('calendario-30-giorni');
+            let htmlContainer = '';
+            
+            let scadenzePerData = {};
+            db.dispensa.forEach(item => {
+                if (!item.scadenza) return;
+                if (!scadenzePerData[item.scadenza]) {
+                    scadenzePerData[item.scadenza] = [];
+                }
+                scadenzePerData[item.scadenza].push(item);
+            });
+
+            let oggi = new Date();
+            for (let i = 0; i < 30; i++) {
+                let d = new Date();
+                d.setDate(oggi.getDate() + i);
+                
+                let anno = d.getFullYear();
+                let mese = String(d.getMonth() + 1).padStart(2, '0');
+                let giorno = String(d.getDate()).padStart(2, '0');
+                let dataIso = `${anno}-${mese}-${giorno}`;
+                
+                let prodottiDelGiorno = scadenzePerData[dataIso] || [];
+                
+                // Divisione tra freschi (tassativi) e consigliati
+                let freschi = prodottiDelGiorno.filter(p => p.tipoScadenza === 'tassativa' || !p.tipoScadenza);
+                let consigliati = prodottiDelGiorno.filter(p => p.tipoScadenza === 'consigliata');
+                
+                let altFreschi = Math.min(75, freschi.length * 18);
+                if (altFreschi < 4 && freschi.length > 0) altFreschi = 10;
+
+                let altConsigliati = Math.min(75, consigliati.length * 18);
+                if (altConsigliati < 4 && consigliati.length > 0) altConsigliati = 10;
+
+                let totaleGiorno = prodottiDelGiorno.length;
+
+                htmlContainer += `
+                    <div onclick="apriDettaglioGiorno('${dataIso}', ${escapeStringaProdotti(prodottiDelGiorno)})" style="flex: 1; display: flex; flex-direction: column; align-items: center; cursor: pointer; min-width: 26px;">
+                        <div style="font-size: 0.65rem; color: #666; margin-bottom: 2px; font-weight: bold;">${totaleGiorno > 0 ? totaleGiorno : ''}</div>
+                        
+                        <div style="width: 100%; background: #f1f2f6; height: 80px; display: flex; align-items: flex-end; justify-content: center; gap: 2px; border-radius: 4px; padding: 0 2px; overflow: hidden;">
+                            <div style="width: 42%; height: ${altFreschi}px; background: var(--warning); border-radius: 3px 3px 0 0;" title="Freschi: ${freschi.length}"></div>
+                            <div style="width: 42%; height: ${altConsigliati}px; background: var(--warning-soft); border-radius: 3px 3px 0 0;" title="Consigliati: ${consigliati.length}"></div>
+                        </div>
+                        
+                        <div style="font-size: 0.65rem; color: #333; margin-top: 4px; font-weight: bold;">${giorno}/${mese.slice(-2)}</div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = htmlContainer;
+        }
+
+        function escapeStringaProdotti(prodotti) {
+            return encodeURIComponent(JSON.stringify(prodotti));
+        }
+
+        function apriDettaglioGiorno(dataIso, prodottiEncoded) {
+            let prodotti = JSON.parse(decodeURIComponent(prodottiEncoded));
+            document.getElementById('modal-data-titolo').innerText = `Scadenze del ${dataIso.split('-').reverse().join('/')}`;
+            
+            let htmlLista = '';
+            if (prodotti.length === 0) {
+                htmlLista = '<p style="color: #666; text-align: center; padding: 15px 0;">Nessun prodotto in scadenza in questo giorno. Ottimo!</p>';
+            } else {
+                prodotti.forEach(p => {
+                    let isConsigliato = p.tipoScadenza === 'consigliata';
+                    let bgColore = isConsigliato ? '#fef9e7' : '#fadbd8';
+                    let bordoColore = isConsigliato ? '#f1c40f' : '#e74c3c';
+                    let etichettaTipo = isConsigliato ? '⚠️ Consigliato (Preferibilmente entro)' : '🚨 Fresco (Scadenza tassativa)';
+
+                    htmlLista += `
+                        <div style="padding: 10px; margin-bottom: 8px; border-radius: 6px; background: ${bgColore}; border-left: 4px solid ${bordoColore}; display: flex; flex-direction: column; gap: 3px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <strong>📦 ${p.nome}</strong>
+                                <span style="font-size: 0.75rem; color: #555;">Q.tà: ${p.qta || 1}</span>
+                            </div>
+                            <div style="font-size: 0.75rem; color: #444; display: flex; justify-content: space-between;">
+                                <span>Ubicazione: ${p.ubicazione || 'N/D'}</span>
+                                <strong style="color: ${bordoColore};">${etichettaTipo}</strong>
+                            </div>
+                        </div>`;
+                });
+            }
+            
+            document.getElementById('modal-lista-prodotti').innerHTML = htmlLista;
+            document.getElementById('modal-giorno').style.display = 'flex';
+        }
+
+        function chiudiModalGiorno() {
+            document.getElementById('modal-giorno').style.display = 'none';
+        }
+
+        window.onload = function() {
+            generaCalendario30Giorni();
+        };
+    </script>
+</body>
+</html>
