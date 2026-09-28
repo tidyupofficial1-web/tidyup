@@ -96,7 +96,7 @@
         <!-- I prodotti verranno inseriti qui dinamicamente -->
     </div>
 
-    <a href="menu.html" class="back-link">⬅ Torna al Menu Principale</a>
+    <a href="index.html" class="nav-back">⬅ Torna al Menu Principale</a>
 </div>
 
 <script>
@@ -111,10 +111,10 @@
         let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [] };
         container.innerHTML = "";
 
-        // Mostra solo i prodotti realmente presenti in dispensa (escludendo quelli già marcati come lowStock o consumati)
+        // Mostra nello scarico SOLO i prodotti che sono realmente in dispensa (cioè non hanno lowStock attivo)
         let prodottiFiltrati = db.dispensa.filter(item => 
-            !item.lowStock && !item.preso && 
-            (item.nome.toLowerCase().includes(filtro) || item.ubicazione.toLowerCase().includes(filtro))
+            !item.lowStock && 
+            (item.nome.toLowerCase().includes(filtro) || (item.ubicazione && item.ubicazione.toLowerCase().includes(filtro)))
         );
 
         if (prodottiFiltrati.length === 0) {
@@ -129,10 +129,10 @@
             card.innerHTML = `
                 <div class="item-info">
                     <h3>${item.nome}</h3>
-                    <p>📦 Q.tà: <b>${item.quantita || 1}</b> | 📍 Ubicazione: <b>${item.ubicazione}</b></p>
+                    <p>📦 Q.tà: <b>${item.quantita || 1}</b> | 📍 Ubicazione: <b>${item.ubicazione || 'N/D'}</b></p>
                     <p>⏳ Scadenza: ${item.scadenza ? item.scadenza : 'Nessuna'}</p>
                 </div>
-                <button class="btn-scarica" onclick="scaricaProdotto(${item.id})">Consuma / Elimina</button>
+                <button class="btn-scarica" onclick="scaricaProdotto(${item.id})">Consuma / Termina</button>
             `;
             container.appendChild(card);
         });
@@ -140,23 +140,16 @@
 
     function scaricaProdotto(id) {
         let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [] };
-        let index = db.dispensa.findIndex(i => i.id === id);
+        let item = db.dispensa.find(i => i.id === id);
 
-        if (index !== -1) {
-            let itemName = db.dispensa[index].nome;
-            
-            // Opzione A: Rimuove del tutto il prodotto dalla dispensa (se preferisci un consumo definitivo)
-            // Se preferisci invece spostarlo nella lista della spesa, decommenta le due righe sotto e rimuovi db.dispensa.splice
-            db.dispensa.splice(index, 1);
-
-            /* Opzione B (Sposta in lista spesa):
-            db.dispensa[index].lowStock = true;
-            db.dispensa[index].preso = false;
-            */
+        if (item) {
+            // Segna il prodotto come terminato: esce dalla dispensa attiva e vola dritto nella Lista della Spesa
+            item.lowStock = true;
+            item.preso = false;
 
             localStorage.setItem('eat_me_first_db', JSON.stringify(db));
 
-            alert(`Prodotto "${itemName}" consumato e rimosso dalla dispensa!`);
+            alert(`Prodotto "${item.nome}" terminato! Spostato nella Lista della Spesa.`);
             caricaListaDispensa();
         }
     }
