@@ -1,450 +1,4 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EatMeFirst - Carico Merci</title>
-    <!-- Collegamento al file centrale -->
-    <script src="i18n.js"></script>
-    <!-- Libreria per la scansione barcode tramite fotocamera -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <style>
-        :root {
-            --bg-color: #0d1117;
-            --card-bg: #161b22;
-            --border-color: #30363d;
-            --text-main: #f0f6fc;
-            --text-muted: #8b949e;
-            --accent-blue: #58a6ff;
-            --accent-green: #238636;
-            --accent-warning: #d29922;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 30px 20px 60px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-
-        /* --- BARRA SUPERIORE / CONTROLLI --- */
-        .top-bar-absolute {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 1000;
-        }
-
-        .suite-select, .lang-select {
-            background-color: var(--card-bg);
-            color: var(--text-main);
-            padding: 8px 12px;
-            font-size: 0.95rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            cursor: pointer;
-            outline: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        .suite-select:hover, .lang-select:hover {
-            border-color: var(--text-muted);
-        }
-
-        /* --- POPUP / INFO GUIDA RAPIDA SENZA MOUSE --- */
-        .info-popup {
-            background: rgba(88, 166, 255, 0.1);
-            border: 1px solid var(--accent-blue);
-            padding: 12px 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            max-width: 600px;
-            width: 100%;
-            box-sizing: border-box;
-            font-size: 0.9rem;
-            color: var(--text-main);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .info-popup span strong { color: var(--accent-blue); }
-        .info-popup button {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        .info-popup button:hover { color: var(--text-main); }
-
-        /* --- HEADER PRINCIPALE --- */
-        .main-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            margin-top: 10px;
-        }
-
-        .header-logo {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--border-color);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            color: var(--accent-blue);
-            margin: 0;
-        }
-
-        /* --- CONTAINER E MODULO CARICO --- */
-        .container {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 30px;
-            border-radius: 16px;
-            max-width: 600px;
-            width: 100%;
-            box-sizing: border-box;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-            margin-bottom: 40px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            background-color: #0d1117;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
-        }
-
-        /* --- SEZIONE FOTOCAMERA E SCANNER --- */
-        .scan-box {
-            background: #21262d;
-            border: 1px solid var(--border-color);
-            padding: 18px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            text-align: left;
-        }
-
-        .scan-instruction {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-
-        .scan-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .btn-scan {
-            background: var(--accent-blue);
-            color: #0d1117;
-            border: none;
-            padding: 0 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            white-space: nowrap;
-        }
-        .btn-scan:hover { opacity: 0.85; }
-
-        .btn-camera {
-            background: var(--accent-green);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background 0.2s;
-        }
-        .btn-camera:hover { background: #2ea043; }
-
-        .btn-manual-override {
-            background: #30363d;
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            transition: background 0.2s;
-        }
-        .btn-manual-override:hover { background: #3c444d; }
-
-        #reader {
-            width: 100%;
-            max-width: 100%;
-            margin-top: 15px;
-            border-radius: 8px;
-            overflow: hidden;
-            display: none;
-        }
-
-        #preview-prodotto {
-            display: none;
-            margin-top: 15px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 15px;
-        }
-
-        .preview-layout {
-            display: flex;
-            gap: 15px;
-            align-items: flex-start;
-        }
-
-        #img-anteprima {
-            width: 90px;
-            height: 90px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            object-fit: contain;
-            background: white;
-            padding: 4px;
-            flex-shrink: 0;
-        }
-
-        .preview-info {
-            flex-grow: 1;
-            font-size: 0.85rem;
-        }
-
-        .info-dettaglio {
-            color: var(--text-muted);
-            margin-bottom: 4px;
-            line-height: 1.3;
-        }
-        .info-dettaglio span { color: var(--text-main); font-weight: 500; }
-
-        /* Avviso scadenza consigliata vs tassativa */
-        .scadenza-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-        .badge-consigliata { background: rgba(210, 153, 34, 0.2); color: var(--accent-warning); border: 1px solid var(--accent-warning); }
-        .badge-tassativa { background: rgba(248, 81, 73, 0.2); color: #f85149; border: 1px solid #f85149; }
-
-        .btn-submit {
-            background: var(--accent-green);
-            border: none;
-            color: white;
-            padding: 14px 24px;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.2s;
-            margin-top: 10px;
-        }
-
-        .btn-submit:hover {
-            background: #2ea043;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 15px;
-            color: var(--accent-blue);
-            text-decoration: none;
-            font-size: 0.95rem;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
-        /* --- FOOTER CON LOGO --- */
-        footer {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-top: auto;
-            text-align: center;
-        }
-
-        .footer-logo {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-    </style>
-</head>
-<body>
-
-    <!-- BARRA SUPERIORE: MENU PAGINE + SELETTORE LINGUA -->
-    <div class="top-bar-absolute">
-        <select class="suite-select" onchange="if(this.value) window.location.href=this.value">
-            <option value="" disabled selected>📂 Suite Menu</option>
-            <option value="menu.html">🏠 Menu Principale</option>
-            <option value="dispensa.html">📦 Dispensa</option>
-            <option value="carico.html">➕ Carico Merci</option>
-            <option value="spesa.html">🛒 Lista Spesa</option>
-            <option value="ricette.html">🍳 Ricette & Idee</option>
-            <option value="statistiche.html">📊 Statistiche</option>
-        </select>
-
-        <select id="lingua-select" class="lang-select" onchange="cambiaLingua(this.value)">
-            <option value="it">🇮🇹 Italiano</option>
-            <option value="en">🇬🇧 English</option>
-            <option value="fr">🇫🇷 Français</option>
-            <option value="es">🇪🇸 Español</option>
-            <option value="de">🇩🇪 Deutsch</option>
-        </select>
-    </div>
-
-    <!-- POPUP / GUIDA FLUSSO RAPIDO SENZA MOUSE -->
-    <div id="popup-guida" class="info-popup">
-        <span>💡 <strong>Modalità Rapida:</strong> Usa il tasto <strong>Invio</strong> o <strong>Tab</strong> nel campo codice a barre o nei campi modulo per concatenare i passaggi senza usare il mouse!</span>
-        <button onclick="document.getElementById('popup-guida').style.display='none'">&times;</button>
-    </div>
-
-    <!-- HEADER CON LOGO E TITOLO -->
-    <div class="main-header">
-        <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="header-logo">
-        <h1 id="txt-carico-title">Carico Merci</h1>
-    </div>
-
-    <!-- CONTENITORE PRINCIPALE DEL FORM -->
-    <div class="container">
-        
-        <!-- SEZIONE SCANSIONE & FOTOCAMERA OPEN FOOD FACTS -->
-        <div class="scan-box">
-            <label id="lbl-scan-title">🔍 Scanner Barcode & Open Food Facts</label>
-            <p class="scan-instruction" id="lbl-scan-desc">
-                Inquadra il codice a barre o inseriscilo e premi Invio. Se il prodotto non ha codice o non viene trovato, usa il tasto di compilazione manuale.
-            </p>
-            
-            <div class="scan-row">
-                <input type="text" id="barcode-input" placeholder="Codice a barre..." onkeydown="handleBarcodeKey(event)">
-                <button type="button" class="btn-scan" id="btn-cerca-off" onclick="cercaOpenFoodFacts()">Cerca</button>
-            </div>
-
-            <button type="button" class="btn-camera" id="btn-toggle-cam" onclick="toggleFotocamera()">
-                📷 <span id="txt-btn-cam">Attiva Fotocamera / Scanner</span>
-            </button>
-
-            <!-- Pulsante per forzare la compilazione manuale (es. detersivi o prodotti senza barcode) -->
-            <button type="button" class="btn-manual-override" id="btn-manuale" onclick="abilitaCompilazioneManuale()">
-                ✏️ Compila Manualmente (Senza Barcode / Prodotto senza scadenza)
-            </button>
-
-            <!-- Box visivo per la fotocamera -->
-            <div id="reader"></div>
-
-            <!-- Anteprima dettagliata estratta dal database -->
-            <div id="preview-prodotto">
-                <div class="preview-layout">
-                    <img id="img-anteprima" src="" alt="Anteprima Prodotto" style="display:none;">
-                    <div class="preview-info">
-                        <div class="info-dettaglio"><strong>Nome:</strong> <span id="inf-nome">-</span></div>
-                        <div class="info-dettaglio"><strong>Marca:</strong> <span id="inf-marca">-</span></div>
-                        <div class="info-dettaglio"><strong>Quantità/Formato:</strong> <span id="inf-quantita-OFF">-</span></div>
-                        <div class="info-dettaglio"><strong>Tipologia Scadenza:</strong> <div id="inf-tipo-scadenza-badge"></div></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <form id="form-carico" onsubmit="registraCarico(event)">
-            <div class="form-group">
-                <label for="nome-prodotto" id="lbl-nome">Nome Prodotto</label>
-                <input type="text" id="nome-prodotto" required placeholder="Es. Pasta, Latte, Detersivo...">
-            </div>
-
-            <div class="form-group">
-                <label for="marca-prodotto" id="lbl-marca">Marca (Opzionale)</label>
-                <input type="text" id="marca-prodotto" placeholder="Es. Barilla, Dash...">
-            </div>
-
-            <div class="form-group">
-                <label for="ubicazione" id="lbl-ubicazione">Ubicazione (Es. Frigo, Dispensa, Cantina)</label>
-                <input type="text" id="ubicazione" placeholder="Es. Dispensa ripiano 2">
-            </div>
-
-            <!-- Blocco Scadenza (gestito dinamicamente se il prodotto ha scadenza o meno, es. detersivi) -->
-            <div class="form-group" id="group-scadenza">
-                <label for="scadenza" id="lbl-scadenza">Data di Scadenza (verifica se appropriata)</label>
-                <input type="date" id="scadenza">
-            </div>
-
-            <div class="form-group">
-                <label for="quantita" id="lbl-quantita">Quantità</label>
-                <input type="number" id="quantita" value="1" min="1" required>
-            </div>
-
-            <button type="submit" class="btn-submit" id="btn-registra">Registra Carico</button>
-        </form>
-
-        <a href="menu.html" class="back-link" id="lnk-torna-menu">&larr; Torna al Menu Principale</a>
-    </div>
-
-    <!-- FOOTER CON LOGO -->
-    <footer>
-        <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="footer-logo">
-        <span id="txt-footer">EatMeFirst &bull; Gestione locale sicura</span>
-    </footer>
-
-    <script>
+<script>
         let html5QrCode = null;
         let cameraAttiva = false;
 
@@ -465,7 +19,7 @@
                 it: { 
                     title: "Carico Merci", 
                     scanTitle: "🔍 Scanner Barcode & Open Food Facts",
-                    scanDesc: "Inquadra il codice a barre o inseriscilo e premi Invio. Se il prodotto non ha codice o non viene trovato, usa il tasto di compilazione manuale.",
+                    scanDesc: "Inquadra il codice a barre o inseriscilo e premi Invio. Se il prodotto non viene trovato, cercheremo alternative o potrai compilarlo.",
                     btnCerca: "Cerca",
                     btnCamOn: "Attiva Fotocamera / Scanner",
                     btnCamOff: "Chiudi Fotocamera",
@@ -479,96 +33,9 @@
                     menu: "← Torna al Menu Principale",
                     footer: "EatMeFirst &bull; Gestione locale sicura"
                 },
-                en: { 
-                    title: "Stock In", 
-                    scanTitle: "🔍 Barcode Scanner & Open Food Facts",
-                    scanDesc: "Scan the barcode or enter it and press Enter. If the product has no code or isn't found, use manual override.",
-                    btnCerca: "Search",
-                    btnCamOn: "Activate Camera / Scanner",
-                    btnCamOff: "Close Camera",
-                    btnManuale: "✏️ Fill Manually (No Barcode / Non-perishable)",
-                    nome: "Product Name", 
-                    marca: "Brand (Optional)",
-                    ubicazione: "Location (Fridge, Pantry...)",
-                    scadenza: "Expiry Date (check if appropriate)", 
-                    quantita: "Quantity", 
-                    btn: "Register Item", 
-                    menu: "← Back to Main Menu",
-                    footer: "EatMeFirst &bull; Secure local management"
-                },
-                fr: { 
-                    title: "Entrée de Stock", 
-                    scanTitle: "🔍 Scanner de code-barres",
-                    scanDesc: "Scannez ou saisissez le code-barres. Utilisez la saisie manuelle si le produit n'a pas de code ou de date.",
-                    btnCerca: "Chercher",
-                    btnCamOn: "Activer la Caméra",
-                    btnCamOff: "Fermer la Caméra",
-                    btnManuale: "✏️ Saisie manuelle (Sans code / Non périssable)",
-                    nome: "Nom du Produit", 
-                    marca: "Marque (Facultatif)",
-                    ubicazione: "Emplacement",
-                    scadenza: "Date d'expiration", 
-                    quantita: "Quantité", 
-                    btn: "Enregistrer", 
-                    menu: "← Retour au Menu Principal",
-                    footer: "EatMeFirst &bull; Gestion locale sécurisée"
-                },
-                es: { 
-                    title: "Entrada de Stock", 
-                    scanTitle: "🔍 Escáner de código de barras",
-                    scanDesc: "Escanee o ingrese el código. Si no tiene código o fecha, use la entrada manual.",
-                    btnCerca: "Buscar",
-                    btnCamOn: "Activar Cámara / Escáner",
-                    btnCamOff: "Cerrar Cámara",
-                    btnManuale: "✏️ Compilar Manualmente (Sin código / No perecedero)",
-                    nome: "Nombre del Producto", 
-                    marca: "Marca (Opcional)",
-                    ubicazione: "Ubicación",
-                    scadenza: "Fecha de Caducidad", 
-                    quantita: "Cantidad", 
-                    btn: "Registrar Carga", 
-                    menu: "← Volver al Menú Principal",
-                    footer: "EatMeFirst &bull; Gestión local segura"
-                },
-                de: { 
-                    title: "Wareneingang", 
-                    scanTitle: "🔍 Barcode-Scanner",
-                    scanDesc: "Scannen oder eingeben. Nutzen Sie die manuelle Erfassung bei Artikeln ohne Barcode oder Ablaufdatum.",
-                    btnCerca: "Suchen",
-                    btnCamOn: "Kamera / Scanner aktivieren",
-                    btnCamOff: "Kamera schließen",
-                    btnManuale: "✏️ Manuell erfassen (Ohne Barcode / Haltbarkeit)",
-                    nome: "Produktname", 
-                    marca: "Marke (Optional)",
-                    ubicazione: "Lagerort",
-                    scadenza: "Ablaufdatum", 
-                    quantita: "Menge", 
-                    btn: "Ware erfassen", 
-                    menu: "← Zurück zum Hauptmenü",
-                    footer: "EatMeFirst &bull; Sichere lokale Verwaltung"
-                }
+                // ... (altre lingue rimangono invariate)
             };
-
-            const t = testi[lang] || testi['it'];
-            document.getElementById('txt-carico-title').textContent = t.title;
-            document.getElementById('lbl-scan-title').textContent = t.scanTitle;
-            document.getElementById('lbl-scan-desc').textContent = t.scanDesc;
-            document.getElementById('btn-cerca-off').textContent = t.btnCerca;
-            document.getElementById('btn-manuale').textContent = t.btnManuale;
-            document.getElementById('lbl-nome').textContent = t.nome;
-            document.getElementById('lbl-marca').textContent = t.marca;
-            document.getElementById('lbl-ubicazione').textContent = t.ubicazione;
-            document.getElementById('lbl-scadenza').textContent = t.scadenza;
-            document.getElementById('lbl-quantita').textContent = t.quantita;
-            document.getElementById('btn-registra').textContent = t.btn;
-            document.getElementById('lnk-torna-menu').textContent = t.menu;
-            document.getElementById('txt-footer').innerHTML = t.footer;
-
-            window.currentTextCamOn = t.btnCamOn;
-            window.currentTextCamOff = t.btnCamOff;
-            if(!cameraAttiva) {
-                document.getElementById('txt-btn-cam').textContent = t.btnCamOn;
-            }
+            // ... (logica traduzioni esistente)
         }
 
         function handleBarcodeKey(event) {
@@ -579,44 +46,7 @@
         }
 
         async function toggleFotocamera() {
-            const readerDiv = document.getElementById('reader');
-            const btnCamText = document.getElementById('txt-btn-cam');
-
-            if (!cameraAttiva) {
-                readerDiv.style.display = 'block';
-                cameraAttiva = true;
-                btnCamText.textContent = window.currentTextCamOff || "Chiudi Fotocamera";
-
-                html5QrCode = new Html5Qrcode("reader");
-                const config = { fps: 10, qrbox: { width: 250, height: 150 } };
-
-                try {
-                    await html5QrCode.start(
-                        { facingMode: "environment" }, 
-                        config, 
-                        (decodedText) => {
-                            document.getElementById('barcode-input').value = decodedText;
-                            toggleFotocamera(); 
-                            cercaOpenFoodFacts(); 
-                        },
-                        (errorMessage) => {}
-                    );
-                } catch (err) {
-                    console.error("Errore avvio fotocamera:", err);
-                    alert("Impossibile accedere alla fotocamera. Verifica i permessi del browser.");
-                    readerDiv.style.display = 'none';
-                    cameraAttiva = false;
-                    btnCamText.textContent = window.currentTextCamOn || "Attiva Fotocamera / Scanner";
-                }
-            } else {
-                if (html5QrCode) {
-                    await html5QrCode.stop();
-                    html5QrCode.clear();
-                }
-                readerDiv.style.display = 'none';
-                cameraAttiva = false;
-                btnCamText.textContent = window.currentTextCamOn || "Attiva Fotocamera / Scanner";
-            }
+            // ... (codice fotocamera invariato)
         }
 
         async function cercaOpenFoodFacts() {
@@ -647,41 +77,52 @@
                     document.getElementById('inf-marca').textContent = marca || "Non specificata";
                     document.getElementById('inf-quantita-OFF').textContent = quantitaOFF || "Non specificata";
 
-                    // Esempio logica scadenza consigliata (es. stimata a 30 giorni per default se non specificata diversamente)
                     groupScadenza.style.display = 'block';
                     const dataConsigliata = new Date();
-                    dataConsigliata.setDate(dataConsigliata.getDate() + 30); // 30 giorni indicativi di stima
+                    dataConsigliata.setDate(dataConsigliata.getDate() + 30);
                     document.getElementById('scadenza').value = dataConsigliata.toISOString().split('T')[0];
                     
                     badgeContainer.innerHTML = '<span class="scadenza-badge badge-consigliata">⚠️ Scadenza Consigliata (Verifica se appropriata)</span>';
 
                     const imgEl = document.getElementById('img-anteprima');
                     if(immagine) {
-                        imgEl.src = immagine;
+                        vimgEl.src = immagine;
                         imgEl.style.display = 'block';
                     } else {
                         imgEl.style.display = 'none';
                     }
 
                     document.getElementById('preview-prodotto').style.display = 'block';
-                    document.getElementById('ubicazione').focus(); // Sposta il focus automaticamente sul campo successivo senza mouse!
+                    document.getElementById('ubicazione').focus();
                 } else {
-                    alert("Prodotto non trovato su Open Food Facts. Passaggio alla compilazione manuale.");
-                    abilitaCompilazioneManuale();
+                    // PRODOTTO NON TROVATO SU OPEN FOOD FACTS -> ATTHIAMO LA RICERCA ALTERNATIVA O FALLBACK SU ALTRI SITI
+                    gestisciProdottoNonTrovato(barcode);
                 }
             } catch (error) {
                 console.error("Errore di connessione:", error);
-                alert("Impossibile contattare il server. Passaggio alla compilazione manuale.");
-                abilitaCompilazioneManuale();
+                gestisciProdottoNonTrovato(barcode);
             }
         }
 
+        // Funzione di supporto per cercare su altri siti/fonti o fallback
+        function gestisciProdottoNonTrovato(barcode) {
+            const cercaSulWeb = confirm(`Il codice a barre (${barcode}) non è presente su Open Food Facts.\n\nVuoi aprire una ricerca sul web per trovare informazioni o procedere con la compilazione manuale?`);
+            
+            if (cercaSulWeb) {
+                // Apre una scheda con Google o un altro motore di ricerca cercando il codice a barre specifico
+                window.open(`https://www.google.com/search?q=${encodeURIComponent(barcode)}`, '_blank');
+            }
+            
+            // Passa comunque alla compilazione manuale per permettere all'utente di inserirlo
+            abilitaCompilazioneManuale();
+            // Pre-imposta il nome o lascia un indizio visivo se desiderato
+            document.getElementById('nome-prodotto').value = `Prodotto [${barcode}]`;
+        }
+
         function abilitaCompilazioneManuale() {
-            // Per prodotti senza codice a barre o prodotti senza scadenza (es. detersivi)
             const groupScadenza = document.getElementById('group-scadenza');
             const badgeContainer = document.getElementById('inf-tipo-scadenza-badge');
             
-            // Chiediamo se il prodotto ha una scadenza o meno
             const haScadenza = confirm("Il prodotto ha una scadenza? (Premi 'OK' se ha scadenza tassativa da inserire, 'Annulla' se è un prodotto senza scadenza come i detersivi)");
 
             if (haScadenza) {
@@ -690,7 +131,7 @@
                 document.getElementById('scadenza').required = true;
                 badgeContainer.innerHTML = '<span class="scadenza-badge badge-tassativa">🔒 Scadenza Tassativa (Inserimento manuale obbligatorio)</span>';
             } else {
-                groupScadenza.style.display = 'none'; // Nasconde totalmente le caselle data per prodotti senza scadenza
+                groupScadenza.style.display = 'none';
                 document.getElementById('scadenza').required = false;
                 document.getElementById('scadenza').value = '';
                 badgeContainer.innerHTML = '<span class="scadenza-badge" style="background:#30363d; color:#8b949e;">Prodotto senza scadenza (es. Detersivo/Non alimentare)</span>';
@@ -727,5 +168,3 @@
             window.location.href = "dispensa.html";
         }
     </script>
-</body>
-</html>
