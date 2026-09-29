@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carico Merci - EatMeFirst</title>
+    <!-- Libreria per lo scanner di codici a barre tramite fotocamera -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -57,10 +59,18 @@
         }
         .btn-manuale {
             background-color: #1f6feb;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         .btn-manuale:hover {
             background-color: #388bfd;
+        }
+        .btn-camera {
+            background-color: #8957e5;
+            margin-bottom: 15px;
+        }
+        .btn-camera:hover {
+            background-color: #8957e5;
+            filter: brightness(1.2);
         }
         .scadenza-badge {
             display: inline-block;
@@ -89,13 +99,33 @@
             margin-top: 10px;
             border-radius: 4px;
         }
+        #reader {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 15px auto;
+            display: none;
+        }
         .menu-link {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 25px;
         }
         .menu-link a {
             color: #58a6ff;
             text-decoration: none;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #30363d;
+            color: #8b949e;
+            font-size: 14px;
+        }
+        .footer-logo {
+            font-weight: bold;
+            color: #58a6ff;
+            font-size: 16px;
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -112,12 +142,15 @@
         </div>
 
         <div class="form-group">
-            <label id="lbl-scan-title">🔍 Codice a Barre / Scanner</label>
-            <p id="lbl-scan-desc" style="font-size: 13px; color: #8b949e;">Inserisci il codice a barre e premi Invio, oppure usa il pulsante per compilare manualmente.</p>
+            <label id="lbl-scan-title">🔍 Scanner Barcode & Open Food Facts</label>
+            <p id="lbl-scan-desc" style="font-size: 13px; color: #8b949e;">Inquadra il codice a barre con la fotocamera o inseriscilo manualmente premendo Invio.</p>
             <input type="text" id="barcode-input" placeholder="Scansiona o digita il codice a barre..." onkeypress="handleBarcodeKey(event)">
         </div>
 
-        <button type="button" class="btn-manuale" onclick="abilitaCompilazioneManuale()">✏️ Compila Manualmente (Senza Barcode)</button>
+        <button type="button" class="btn-camera" onclick="toggleFotocamera()" id="btn-toggle-cam">📷 Attiva Fotocamera / Scanner</button>
+        <div id="reader"></div>
+
+        <button type="button" class="btn-manuale" onclick="abilitaCompilazioneManuale()">✏️ Compila Manualmente (Senza Barcode / Prodotto senza scadenza)</button>
 
         <div id="preview-prodotto">
             <h2>Dettagli Prodotto</h2>
@@ -157,11 +190,19 @@
         </div>
 
         <div class="menu-link">
-            <a href="dispensa.html">← Torna al Menu Principale</a>
+            <a href="index.html">← Torna al Menu Principale</a>
+        </div>
+
+        <div class="footer">
+            <div class="footer-logo">🍏 EatMeFirst</div>
+            <div>Gestione locale sicura &bull; Risparmia cibo, vivi meglio</div>
         </div>
     </div>
 
     <script>
+        let html5QrCode = null;
+        let cameraAttiva = false;
+
         document.addEventListener('DOMContentLoaded', () => {
             const savedLang = localStorage.getItem('eat_me_first_lang') || 'it';
             document.getElementById('lingua-select').value = savedLang;
@@ -179,7 +220,58 @@
             }
         }
 
+        async function toggleFotocamera() {
+            const readerDiv = document.getElementById('reader');
+            const btnCam = document.getElementById('btn-toggle-cam');
+
+            if (!cameraAttiva) {
+                readerDiv.style.display = 'block';
+                btnCam.textContent = "🛑 Chiudi Fotocamera";
+                cameraAttiva = true;
+
+                try {
+                    html5QrCode = new Html5Qrcode("reader");
+                    await html5QrCode.start(
+                        { facingMode: "environment" },
+                        { fps: 10, qrbox: { width: 250, height: 150 } },
+                        (decodedText) => {
+                            document.getElementById('barcode-input').value = decodedText;
+                            chiudiFotocamera();
+                            cercaOpenFoodFacts();
+                        },
+                        (errorMessage) => {
+                            // Errori di scansione frame ignorati per evitare log continui
+                        }
+                    );
+                } catch (err) {
+                    console.error("Impossibile avviare la fotocamera:", err);
+                    alert("Impossibile accedere alla fotocamera. Verifica i permessi del browser.");
+                    chiudiFotocamera();
+                }
+            } else {
+                chiudiFotocamera();
+            }
+        }
+
+        async function chiudiFotocamera() {
+            if (html5QrCode) {
+                try {
+                    await html5QrCode.stop();
+                    html5QrCode.clear();
+                } catch (e) {
+                    console.error("Errore durante la chiusura della fotocamera", e);
+                }
+            }
+            document.getElementById('reader').style.display = 'none';
+            document.getElementById('btn-toggle-cam').textContent = "📷 Attiva Fotocamera / Scanner";
+            cameraAttiva = false;
+        }
+
         async function cercaOpenFoodFacts() {
+            if (cameraAttiva) {
+                await chiudiFotocamera();
+            }
+
             const barcode = document.getElementById('barcode-input').value.trim();
             if (!barcode) {
                 alert("Inserisci o scansiona un codice a barre valido.");
@@ -244,6 +336,10 @@
         }
 
         function abilitaCompilazioneManuale() {
+            if (cameraAttiva) {
+                chiudiFotocamera();
+            }
+
             const groupScadenza = document.getElementById('group-scadenza');
             const badgeContainer = document.getElementById('inf-tipo-scadenza-badge');
             
