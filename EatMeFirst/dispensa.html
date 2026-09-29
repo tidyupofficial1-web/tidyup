@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EatMeFirst - La Mia Dispensa</title>
-    <!-- Collegamento al file centrale delle 5 lingue -->
+    <!-- Collegamento al file centrale delle lingue -->
     <script src="i18n.js"></script>
     <style>
         :root {
@@ -24,7 +24,7 @@
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
-            padding: 30px 20px;
+            padding: 30px 20px 60px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -39,78 +39,26 @@
             right: 25px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
             z-index: 1000;
         }
 
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .dropbtn {
+        .suite-select, .lang-select {
             background-color: var(--card-bg);
             color: var(--text-main);
-            padding: 8px 14px;
+            padding: 8px 12px;
             font-size: 0.95rem;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            outline: none;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transition: background-color 0.2s, border-color 0.2s;
         }
-
-        .dropbtn:hover {
-            background-color: #21262d;
+        .suite-select:hover, .lang-select:hover {
             border-color: var(--text-muted);
         }
 
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: var(--card-bg);
-            min-width: 220px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-            z-index: 1;
-            overflow: hidden;
-            margin-top: 6px;
-            text-align: left;
-        }
-
-        .dropdown-content a {
-            color: var(--text-main);
-            padding: 10px 14px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            transition: background-color 0.2s;
-        }
-
-        .dropdown-content a:hover {
-            background-color: #21262d;
-        }
-
-        .dropdown-logo {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid var(--border-color);
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        /* --- HEADER PRINCIPALE CON LOGO --- */
+        /* --- HEADER PRINCIPALE CON LOGO E TITOLO --- */
         .main-header {
             display: flex;
             align-items: center;
@@ -121,8 +69,8 @@
         }
 
         .header-logo {
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--border-color);
@@ -271,11 +219,9 @@
         .modal-header h3 { margin: 0; color: var(--accent-danger); }
         
         @keyframes lampeggia {
-            <style>
             0% { background-color: rgba(239, 68, 68, 0.2); }
             50% { background-color: rgba(239, 68, 68, 0.5); }
             100% { background-color: rgba(239, 68, 68, 0.2); }
-            </style>
         }
         .lampeggiante {
             animation: lampeggia 1.5s infinite;
@@ -319,39 +265,50 @@
             font-style: italic;
         }
 
+        /* --- FOOTER CON LOGO --- */
         footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
             color: var(--text-muted);
             font-size: 0.85rem;
             margin-top: auto;
             text-align: center;
         }
+
+        .footer-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
 
-    <!-- BARRA SUPERIORE: MENU A TENDINA E SELETTORE LINGUA -->
+    <!-- BARRA SUPERIORE: MENU PAGINE + SELETTORE LINGUA -->
     <div class="top-bar-absolute">
-        <div class="dropdown">
-            <button class="dropbtn">
-                <span>≡ Moduli Suite</span>
-            </button>
-            <div class="dropdown-content">
-                <a href="../index.html">
-                    <img src="../IMG/logo_tidyup.png" alt="TidyUp Logo" class="dropdown-logo">
-                    Home TidyUp Suite
-                </a>
-                <a href="index.html">
-                    <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="dropdown-logo">
-                    EatMeFirst
-                </a>
-                <a href="../NO_FOOD/index.html">
-                    <img src="../NO_FOOD/IMG/logo_sortout.png" alt="SortOut Logo" class="dropdown-logo">
-                    SortOut
-                </a>
-            </div>
-        </div>
-        <!-- Selettore delle 5 lingue -->
-        <div id="header-lang"></div>
+        <select class="suite-select" onchange="if(this.value) window.location.href=this.value">
+            <option value="" disabled selected>📂 ☰ Menu</option>
+            <option value="menu.html">🏠 Menu Principale</option>
+            <option value="dispensa.html">📦 Dispensa</option>
+            <option value="carico.html">➕ Carico Merci</option>
+            <option value="scarico.html">📤 Scarico Prodotti</option>
+            <option value="spesa.html">🛒 Lista Spesa</option>
+            <option value="ricette.html">🍳 Ricette & Idee</option>
+            <option value="statistiche.html">📊 Statistiche</option>
+        </select>
+
+        <select id="lingua-select" class="lang-select" onchange="cambiaLingua(this.value)">
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="de">🇩🇪 Deutsch</option>
+        </select>
     </div>
 
     <!-- HEADER CON LOGO E TITOLO -->
@@ -372,8 +329,10 @@
         </div>
     </div>
 
-    <footer id="txt-footer">
-        EatMeFirst &bull; Dati locali su dispositivo
+    <!-- FOOTER CON LOGO -->
+    <footer>
+        <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="footer-logo">
+        <span id="txt-footer">EatMeFirst &bull; Dati locali su dispositivo</span>
     </footer>
 
     <!-- POPUP SCADENZE -->
@@ -400,15 +359,16 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. Inserisce il selettore delle 5 lingue
-            const containerLang = document.getElementById('header-lang');
-            if (containerLang) {
-                containerLang.innerHTML = creaSelettoreLinguaHTML();
-            }
-
-            applicaTraduzioniDispensa();
+            const savedLang = localStorage.getItem('eat_me_first_lang') || 'it';
+            document.getElementById('lingua-select').value = savedLang;
+            applicaTraduzioniDispensa(savedLang);
             caricaDatiDispensa();
         });
+
+        function cambiaLingua(lang) {
+            localStorage.setItem('eat_me_first_lang', lang);
+            applicaTraduzioniDispensa(lang);
+        }
 
         let prodottiDispensa = [];
 
@@ -560,12 +520,24 @@
             document.getElementById('modalPremium').style.display = 'none';
         }
 
-        function applicaTraduzioniDispensa() {
-            const lang = getLinguaCorrente();
-            const glob = dizionarioGlobale[lang] || dizionarioGlobale['it'];
-            if(glob && glob.footer) {
-                document.getElementById('txt-footer').innerHTML = glob.footer;
-            }
+        function applicaTraduzioniDispensa(lang) {
+            const dizionarioDispensa = {
+                it: { title: "La Mia Dispensa", btnScadenze: "⚠️ Scadenze", btnCarica: "➕ Carica", btnSvuota: "🗑️ Svuota e Azzera", empty: "Nessun prodotto presente nella dispensa. Inizia a caricarne qualcuno!", footer: "EatMeFirst • Dati locali su dispositivo" },
+                en: { title: "My Pantry", btnScadenze: "⚠️ Expirations", btnCarica: "➕ Add", btnSvuota: "🗑️ Clear All", empty: "No products in the pantry. Start adding some!", footer: "EatMeFirst • Local device data" },
+                fr: { title: "Mon Garde-manger", btnScadenze: "⚠️ Péremptions", btnCarica: "➕ Ajouter", btnSvuota: "🗑️ Tout effacer", empty: "Aucun produit dans le garde-manger.", footer: "EatMeFirst • Données locales" },
+                es: { title: "Mi Despensa", btnScadenze: "⚠️ Caducidades", btnCarica: "➕ Cargar", btnSvuota: "🗑️ Vaciar todo", empty: "No hay productos en la despensa.", footer: "EatMeFirst • Datos locales" },
+                de: { title: "Meine Speisekammer", btnScadenze: "⚠️ Verfallsdaten", btnCarica: "➕ Hinzufügen", btnSvuota: "🗑️ Alles leeren", empty: "Keine Produkte in der Speisekammer.", footer: "EatMeFirst • Lokale Daten" }
+            };
+
+            const t = dizionarioDispensa[lang] || dizionarioDispensa['it'];
+            document.getElementById('txt-dispensa-title').textContent = t.title;
+            document.getElementById('btn-scadenze').textContent = t.btnScadenze;
+            document.getElementById('btn-carica').textContent = t.btnCarica;
+            document.getElementById('btn-svuota').textContent = t.btnSvuota;
+            document.getElementById('txt-footer').innerHTML = t.footer;
+            
+            const emptyEl = document.getElementById('txt-empty');
+            if (emptyEl) emptyEl.textContent = t.empty;
         }
 
         function organizzaDispensaPerLuoghi() {
