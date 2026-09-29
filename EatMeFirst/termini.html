@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Termini e Condizioni</title>
+    <!-- Collegamento al file centrale delle lingue -->
+    <script src="i18n.js"></script>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --accent-green: #238636;
+            --accent-purple: #8957e5;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 90px; /* Spazio per il logo in basso a destra */
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-back, .btn-menu {
+            background: #161b22;
+            border: 1px solid #30363d;
+            color: #f0f6fc;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .btn-back:hover, .btn-menu:hover {
+            background: #30363d;
+        }
+
+        .content-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            border-radius: 12px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #58a6ff;
+        }
+
+        h3 {
+            color: #f0f6fc;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        /* Pulsante per aprire/leggere il testo esteso dei termini */
+        .btn-toggle-details {
+            background: transparent;
+            border: 1px dashed #58a6ff;
+            color: #58a6ff;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            width: 100%;
+            margin: 15px 0;
+            text-align: center;
+            transition: background 0.2s;
+        }
+
+        .btn-toggle-details:hover {
+            background: rgba(88, 166, 255, 0.1);
+        }
+
+        /* Sezione Dettagliata a scomparsa */
+        #extended-terms {
+            display: none;
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        #extended-terms h4 {
+            color: #58a6ff;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        #extended-terms h4:first-child {
+            margin-top: 0;
+        }
+
+        #extended-terms ul {
+            list-style-type: none;
+            padding-left: 0;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        #extended-terms li {
+            margin-bottom: 6px;
+            position: relative;
+            padding-left: 18px;
+        }
+
+        #extended-terms li::before {
+            content: "✔";
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+        }
+
+        .confidential-box-small {
+            background: #161b22;
+            border: 1px dashed var(--accent-purple);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .confidential-box-small p {
+            color: #d2a8ff;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* Area di Accettazione */
+        .action-area {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            text-align: left;
+        }
+
+        .checkbox-container input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent-green);
+            flex-shrink: 0;
+        }
+
+        .btn-proceed {
+            background-color: var(--accent-green);
+            color: white;
+            padding: 12px 30px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: opacity 0.2s, transform 0.2s;
+            box-shadow: 0 4px 15px rgba(35, 134, 54, 0.4);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .btn-proceed.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .btn-proceed:hover.active {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* Logo fisso in basso a destra */
+        .footer-logo-fixed {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            background-color: var(--card-bg);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Barra superiore con Indietro, Menu e Selettore Lingue -->
+        <div class="top-bar">
+            <div class="nav-links">
+                <a href="presentazione.html" class="btn-back" id="txt-back">Indietro</a>
+                <a href="menu.html" class="btn-menu" id="txt-menu">Menu</a>
+            </div>
+            <div id="header-lang"></div>
+        </div>
+
+        <!-- Scheda principale con la tua struttura classica -->
+        <div class="content-card">
+            <h1 id="txt-termini-title">Termini e Condizioni d'Uso</h1>
+            
+            <h3 id="txt-sec1-title">1. Natura dell'Applicazione</h3>
+            <p id="txt-sec1-desc">EatMeFirst è un'applicazione web locale progettata per aiutare gli utenti nella gestione autonoma della propria dispensa domestica, delle scadenze e della lista della spesa.</p>
+
+            <h3 id="txt-sec2-title">2. Memorizzazione dei Dati</h3>
+            <p id="txt-sec2-desc">Tutti i dati inseriti (prodotti, scadenze, preferenze di lingua) vengono memorizzati esclusivamente in locale sul tuo dispositivo tramite il sistema <code>localStorage</code> del browser. Nessun dato personale viene trasmesso o salvato su server esterni.</p>
+
+            <!-- Pulsante per aprire il testo completo dettagliato prima di accettare -->
+            <button class="btn-toggle-details" onclick="toggleDetails()" id="txt-toggle-btn">📄 Clicca qui per leggere tutti i dettagli (Codici a barre, Funzioni e Costi)</button>
+
+            <!-- Testo esteso a scomparsa -->
+            <div id="extended-terms">
+                <h4>🔗 L'unico collegamento esterno (Codici a Barre)</h4>
+                <p>Quando scansionerai un codice a barre per inserire un prodotto, l'app interrogherà temporaneamente database pubblici online (es. Open Food Facts) per recuperare nome e foto, evitandoti la digitazione manuale.</p>
+
+                <h4>🛒 Cosa troverai dentro l'applicazione</h4>
+                <ul>
+                    <li><strong>Lista della Spesa Dinamica:</strong> Si compie e si aggiorna da sola man mano che consumi o esaurisci i prodotti.</li>
+                    <li><strong>Statistiche sui Consumi:</strong> Riepiloghi e grafici per capire cosa consumi di più ed evitare gli sprechi.</li>
+                    <li><strong>Dettagli Nutrizionali e Allergeni:</strong> Informazioni chiare su calorie e ingredienti associati ai prodotti.</li>
+                </ul>
+
+                <div class="confidential-box-small">
+                    <p>💬 <strong>Ma chissà quanto costa?</strong> La struttura di base di EatMeFirst è e resterà gratuita per sempre. Funzioni extra avanzate future non saranno mai di vitale importanza: il cuore del programma resterà sempre a costo zero.</p>
+                </div>
+            </div>
+
+            <h3 id="txt-sec3-title">3. Esclusione di Responsabilità</h3>
+            <p id="txt-sec3-desc">L'utente è l'unico responsabile del controllo visivo e olfattivo degli alimenti prima del consumo. Gli sviluppatori declinano ogni responsabilità per eventuali errori di inserimento delle date o per il consumo di prodotti scaduti.</p>
+        </div>
+
+        <!-- Box di Accettazione -->
+        <div class="action-area">
+            <label class="checkbox-container">
+                <input type="checkbox" id="accept-check" onchange="toggleButton()">
+                <span id="txt-checkbox-label">Ho letto i termini, compreso il funzionamento in locale e le condizioni d'uso, e intendo procedere.</span>
+            </label>
+            
+            <a href="configurazione.html" id="next-btn" class="btn-proceed">Conferma e Procedi &rarr;</a>
+        </div>
+    </div>
+
+    <!-- Logo fisso in basso a destra -->
+    <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="footer-logo-fixed">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const containerLang = document.getElementById('header-lang');
+            if (containerLang && typeof creaSelettoreLinguaHTML === 'function') {
+                containerLang.innerHTML = creaSelettoreLinguaHTML();
+            }
+            applicaTraduzioniInterfaccia();
+        });
+
+        function toggleDetails() {
+            const panel = document.getElementById('extended-terms');
+            if (panel.style.display === 'block') {
+                panel.style.display = 'none';
+            } else {
+                panel.style.display = 'block';
+            }
+        }
+
+        function toggleButton() {
+            const checkbox = document.getElementById('accept-check');
+            const btn = document.getElementById('next-btn');
+            
+            if (checkbox.checked) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+
+        function applicaTraduzioniInterfaccia() {
+            if (typeof getLinguaCorrente !== 'function') return;
+            const lang = getLinguaCorrente();
+            
+            const contenuti = {
+                it: {
+                    back: "Indietro",
+                    menu: "Menu",
+                    title: "Termini e Condizioni d'Uso",
+                    s1Title: "1. Natura dell'Applicazione",
+                    s1Desc: "EatMeFirst è un'applicazione web locale progettata per aiutare gli utenti nella gestione autonoma della propria dispensa domestica, delle scadenze e della lista della spesa.",
+                    s2Title: "2. Memorizzazione dei Dati",
+                    s2Desc: "Tutti i dati inseriti (prodotti, scadenze, preferenze di lingua) vengono memorizzati esclusivamente in locale sul tuo dispositivo tramite il sistema localStorage del browser. Nessun dato personale viene trasmesso o salvato su server esterni.",
+                    toggleBtn: "📄 Clicca qui per leggere tutti i dettagli (Codici a barre, Funzioni e Costi)",
+                    s3Title: "3. Esclusione di Responsabilità",
+                    s3Desc: "L'utente è l'unico responsabile del controllo visivo e olfattivo degli alimenti prima del consumo. Gli sviluppatori declinano ogni responsabilità per eventuali errori di inserimento delle date o per il consumo di prodotti scaduti.",
+                    chkLabel: "Ho letto i termini, compreso il funzionamento in locale e le condizioni d'uso, e intendo procedere.",
+                    btnProceed: "Conferma e Procedi →"
+                },
+                en: {
+                    back: "Back",
+                    menu: "Menu",
+                    title: "Terms and Conditions",
+                    s1Title: "1. Nature of the Application",
+                    s1Desc: "EatMeFirst is a local web application designed to help users independently manage their home pantry, expiry dates, and shopping list.",
+                    s2Title: "2. Data Storage",
+                    s2Desc: "All entered data is stored exclusively locally on your device via browser localStorage. No personal data is transmitted to external servers.",
+                    toggleBtn: "📄 Click here to read full details (Barcodes, Features & Pricing)",
+                    s3Title: "3. Disclaimer",
+                    s3Desc: "The user is solely responsible for visually and olfactorily checking foods before consumption. Developers disclaim all liability for entry errors or consumption of expired products.",
+                    chkLabel: "I have read the terms, including local operation and conditions of use, and wish to proceed.",
+                    btnProceed: "Confirm and Proceed →"
+                }
+            };
+
+            const t = contenuti[lang] || contenuti['it'];
+
+            document.getElementById('txt-back').textContent = t.back;
+            document.getElementById('txt-menu').textContent = t.menu;
+            document.getElementById('txt-termini-title').textContent = t.title;
+            document.getElementById('txt-sec1-title').textContent = t.s1Title;
+            document.getElementById('txt-sec1-desc').textContent = t.s1Desc;
+            document.getElementById('txt-sec2-title').textContent = t.s2Title;
+            document.getElementById('txt-sec2-desc').textContent = t.s2Desc;
+            document.getElementById('txt-toggle-btn').textContent = t.toggleBtn;
+            document.getElementById('txt-sec3-title').textContent = t.s3Title;
+            document.getElementById('txt-sec3-desc').textContent = t.s3Desc;
+            document.getElementById('txt-checkbox-label').textContent = t.chkLabel;
+            document.getElementById('next-btn').textContent = t.btnProceed;
+        }
+
+        window.addEventListener('linguaCambiata', () => {
+            applicaTraduzioniInterfaccia();
+        });
+    </script>
+</body>
+</html>
