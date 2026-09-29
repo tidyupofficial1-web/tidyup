@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EatMeFirst - Menu Principale</title>
-    <!-- Collegamento al file centrale delle lingue -->
-    <script src="i18n.js"></script>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -334,8 +332,93 @@
         EatMeFirst &bull; Gestione locale sicura
     </footer>
 
+    <!-- SCRIPT MULTILINGUA E LOGICA INTEGRATA -->
     <script>
+        // Tabella del dizionario globale
+        const dizionarioGlobale = {
+            it: {
+                titolo_app: "EatMeFirst",
+                suite: "Suite",
+                carico: "Carico Articolo",
+                scarico: "Scarico Prodotti",
+                dispensa: "Visualizza Dispensa",
+                spesa_lista: "Lista della Spesa",
+                spesa_comperare: "Articoli da comperare",
+                agenda: "Agenda Scadenze (30 Giorni)",
+                ricordarsi: "Ricordarsi di...",
+                footer: "EatMeFirst &bull; Gestione locale sicura"
+            },
+            en: {
+                titolo_app: "EatMeFirst",
+                suite: "Suite",
+                carico: "Load Item",
+                scarico: "Unload Products",
+                dispensa: "View Pantry",
+                spesa_lista: "Shopping List",
+                spesa_comperare: "Items to buy",
+                agenda: "Expiration Agenda (30 Days)",
+                ricordarsi: "Remember to...",
+                footer: "EatMeFirst &bull; Secure local management"
+            },
+            es: {
+                titolo_app: "EatMeFirst",
+                suite: "Suite",
+                carico: "Cargar Artículo",
+                scarico: "Descargar Productos",
+                dispensa: "Ver Despensa",
+                spesa_lista: "Lista de Compras",
+                spesa_comperare: "Artículos para comprar",
+                agenda: "Agenda de Vencimientos (30 Días)",
+                ricordarsi: "Recordar que...",
+                footer: "EatMeFirst &bull; Gestión local segura"
+            },
+            fr: {
+                titolo_app: "EatMeFirst",
+                suite: "Suite",
+                carico: "Charger Article",
+                scarico: "Décharger Produits",
+                dispensa: "Voir le Garde-manger",
+                spesa_lista: "Liste de Courses",
+                spesa_comperare: "Articles à acheter",
+                agenda: "Agenda des Échéances (30 Jours)",
+                ricordarsi: "Se rappeler de...",
+                footer: "EatMeFirst &bull; Gestion locale sécurisée"
+            },
+            de: {
+                titolo_app: "EatMeFirst",
+                suite: "Suite",
+                carico: "Artikel Laden",
+                scarico: "Produkte Entladen",
+                dispensa: "Vorratskammer Ansehen",
+                spesa_lista: "Einkaufsliste",
+                spesa_comperare: "Artikel zu kaufen",
+                agenda: "Ablaufkalender (30 Tage)",
+                ricordarsi: "Erinnern an...",
+                footer: "EatMeFirst &bull; Sichere lokale Verwaltung"
+            }
+        };
+
+        // Funzione per cambiare lingua
+        function cambiaLingua(lang) {
+            localStorage.setItem('eat_me_first_lang', lang);
+            const traduzioni = dizionarioGlobale[lang] || dizionarioGlobale['it'];
+
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const chiave = element.getAttribute('data-i18n');
+                if (traduzioni[chiave]) {
+                    element.innerHTML = traduzioni[chiave];
+                }
+            });
+        }
+
+        // Avvio automatico al caricamento della pagina
         document.addEventListener('DOMContentLoaded', () => {
+            const langSalvata = localStorage.getItem('eat_me_first_lang') || 'it';
+            const selectLang = document.getElementById('select-lingua');
+            if (selectLang) selectLang.value = langSalvata;
+            cambiaLingua(langSalvata);
+
+            // Controllo notifiche Block Notes
             let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { note: [] };
             let haNoteNonLette = db.note && db.note.some(n => n.letto === false);
             
