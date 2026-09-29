@@ -251,7 +251,7 @@
             <div id="header-lang"></div>
         </div>
 
-        <!-- Scheda principale con la tua struttura classica -->
+        <!-- Scheda principale -->
         <div class="content-card">
             <h1 id="txt-termini-title">Termini e Condizioni d'Uso</h1>
             
@@ -260,6 +260,9 @@
 
             <h3 id="txt-sec2-title">2. Memorizzazione dei Dati</h3>
             <p id="txt-sec2-desc">Tutti i dati inseriti (prodotti, scadenze, preferenze di lingua) vengono memorizzati esclusivamente in locale sul tuo dispositivo tramite il sistema <code>localStorage</code> del browser. Nessun dato personale viene trasmesso o salvato su server esterni.</p>
+
+            <h3 id="txt-sec3-title">3. Proprietà Intellettuale e Brevetto</h3>
+            <p id="txt-sec3-desc">EatMeFirst fa parte della TidyUp Suite ed è un'opera protetta da diritti di proprietà intellettuale e coperta da brevetto/tutela industriale. Tutti i diritti sul codice, logica e interfacce sono riservati. È vietata la copia non autorizzata o la commercializzazione.</p>
 
             <!-- Pulsante per aprire il testo completo dettagliato prima di accettare -->
             <button class="btn-toggle-details" onclick="toggleDetails()" id="txt-toggle-btn">📄 Clicca qui per leggere tutti i dettagli (Codici a barre, Funzioni e Costi)</button>
@@ -281,15 +284,15 @@
                 </div>
             </div>
 
-            <h3 id="txt-sec3-title">3. Esclusione di Responsabilità</h3>
-            <p id="txt-sec3-desc">L'utente è l'unico responsabile del controllo visivo e olfattivo degli alimenti prima del consumo. Gli sviluppatori declinano ogni responsabilità per eventuali errori di inserimento delle date o per il consumo di prodotti scaduti.</p>
+            <h3 id="txt-sec4-title">4. Esclusione di Responsabilità</h3>
+            <p id="txt-sec4-desc">L'utente è l'unico responsabile del controllo visivo e olfattivo degli alimenti prima del consumo. Gli sviluppatori declinano ogni responsabilità per eventuali errori di inserimento delle date o per il consumo di prodotti scaduti.</p>
         </div>
 
         <!-- Box di Accettazione -->
         <div class="action-area">
             <label class="checkbox-container">
                 <input type="checkbox" id="accept-check" onchange="toggleButton()">
-                <span id="txt-checkbox-label">Ho letto i termini, compreso il funzionamento in locale e le condizioni d'uso, e intendo procedere.</span>
+                <span id="txt-checkbox-label">Ho letto i termini, compreso il funzionamento in locale, la tutela della proprietà intellettuale e le condizioni d'uso, e intendo procedere.</span>
             </label>
             
             <a href="configurazione.html" id="next-btn" class="btn-proceed">Conferma e Procedi &rarr;</a>
@@ -341,10 +344,12 @@
                     s1Desc: "EatMeFirst è un'applicazione web locale progettata per aiutare gli utenti nella gestione autonoma della propria dispensa domestica, delle scadenze e della lista della spesa.",
                     s2Title: "2. Memorizzazione dei Dati",
                     s2Desc: "Tutti i dati inseriti (prodotti, scadenze, preferenze di lingua) vengono memorizzati esclusivamente in locale sul tuo dispositivo tramite il sistema localStorage del browser. Nessun dato personale viene trasmesso o salvato su server esterni.",
+                    s3Title: "3. Proprietà Intellettuale e Brevetto",
+                    s3Desc: "EatMeFirst fa parte della TidyUp Suite ed è un'opera protetta da diritti di proprietà intellettuale e coperta da brevetto/tutela industriale. Tutti i diritti sul codice, logica e interfacce sono riservati. È vietata la copia non autorizzata o la commercializzazione.",
                     toggleBtn: "📄 Clicca qui per leggere tutti i dettagli (Codici a barre, Funzioni e Costi)",
-                    s3Title: "3. Esclusione di Responsabilità",
-                    s3Desc: "L'utente è l'unico responsabile del controllo visivo e olfattivo degli alimenti prima del consumo. Gli sviluppatori declinano ogni responsabilità per eventuali errori di inserimento delle date o per il consumo di prodotti scaduti.",
-                    chkLabel: "Ho letto i termini, compreso il funzionamento in locale e le condizioni d'uso, e intendo procedere.",
+                    s4Title: "4. Esclusione di Responsabilità",
+                    s4Desc: "L'utente è l'unico responsabile del controllo visivo e olfattivo degli alimenti prima del consumo. Gli sviluppatori declinano ogni responsabilità per eventuali errori di inserimento delle date o per il consumo di prodotti scaduti.",
+                    chkLabel: "Ho letto i termini, compreso il funzionamento in locale, la tutela della proprietà intellettuale e le condizioni d'uso, e intendo procedere.",
                     btnProceed: "Conferma e Procedi →"
                 },
                 en: {
@@ -355,10 +360,12 @@
                     s1Desc: "EatMeFirst is a local web application designed to help users independently manage their home pantry, expiry dates, and shopping list.",
                     s2Title: "2. Data Storage",
                     s2Desc: "All entered data is stored exclusively locally on your device via browser localStorage. No personal data is transmitted to external servers.",
+                    s3Title: "3. Intellectual Property & Patent",
+                    s3Desc: "EatMeFirst is part of the TidyUp Suite and is protected by intellectual property rights and patent/industrial protection. All rights reserved.",
                     toggleBtn: "📄 Click here to read full details (Barcodes, Features & Pricing)",
-                    s3Title: "3. Disclaimer",
-                    s3Desc: "The user is solely responsible for visually and olfactorily checking foods before consumption. Developers disclaim all liability for entry errors or consumption of expired products.",
-                    chkLabel: "I have read the terms, including local operation and conditions of use, and wish to proceed.",
+                    s4Title: "4. Disclaimer",
+                    s4Desc: "The user is solely responsible for visually and olfactorily checking foods before consumption. Developers disclaim all liability for entry errors or consumption of expired products.",
+                    chkLabel: "I have read the terms, including local operation, intellectual property protection, and conditions of use, and wish to proceed.",
                     btnProceed: "Confirm and Proceed →"
                 }
             };
@@ -372,9 +379,11 @@
             document.getElementById('txt-sec1-desc').textContent = t.s1Desc;
             document.getElementById('txt-sec2-title').textContent = t.s2Title;
             document.getElementById('txt-sec2-desc').textContent = t.s2Desc;
-            document.getElementById('txt-toggle-btn').textContent = t.toggleBtn;
             document.getElementById('txt-sec3-title').textContent = t.s3Title;
             document.getElementById('txt-sec3-desc').textContent = t.s3Desc;
+            document.getElementById('txt-toggle-btn').textContent = t.toggleBtn;
+            document.getElementById('txt-sec4-title').textContent = t.s4Title;
+            document.getElementById('txt-sec4-desc').textContent = t.s4Desc;
             document.getElementById('txt-checkbox-label').textContent = t.chkLabel;
             document.getElementById('next-btn').textContent = t.btnProceed;
         }
