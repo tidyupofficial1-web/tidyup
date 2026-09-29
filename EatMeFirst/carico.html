@@ -17,6 +17,7 @@
             --text-muted: #8b949e;
             --accent-blue: #58a6ff;
             --accent-green: #238636;
+            --accent-warning: #d29922;
         }
 
         body {
@@ -32,7 +33,7 @@
             box-sizing: border-box;
         }
 
-        /* --- BARRA SUPERIORE / CONTROLLI (MENU PAGINE + LINGUA) --- */
+        /* --- BARRA SUPERIORE / CONTROLLI --- */
         .top-bar-absolute {
             position: absolute;
             top: 20px;
@@ -58,13 +59,39 @@
             border-color: var(--text-muted);
         }
 
-        /* --- HEADER PRINCIPALE CON LOGO E TITOLO --- */
+        /* --- POPUP / INFO GUIDA RAPIDA SENZA MOUSE --- */
+        .info-popup {
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid var(--accent-blue);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            max-width: 600px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .info-popup span strong { color: var(--accent-blue); }
+        .info-popup button {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .info-popup button:hover { color: var(--text-main); }
+
+        /* --- HEADER PRINCIPALE --- */
         .main-header {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             margin-top: 10px;
         }
 
@@ -122,6 +149,7 @@
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
         }
 
         /* --- SEZIONE FOTOCAMERA E SCANNER --- */
@@ -161,7 +189,7 @@
         .btn-scan:hover { opacity: 0.85; }
 
         .btn-camera {
-            background: #238636;
+            background: var(--accent-green);
             color: white;
             border: none;
             padding: 10px 16px;
@@ -177,6 +205,20 @@
             transition: background 0.2s;
         }
         .btn-camera:hover { background: #2ea043; }
+
+        .btn-manual-override {
+            background: #30363d;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .btn-manual-override:hover { background: #3c444d; }
 
         #reader {
             width: 100%;
@@ -222,6 +264,18 @@
             line-height: 1.3;
         }
         .info-dettaglio span { color: var(--text-main); font-weight: 500; }
+
+        /* Avviso scadenza consigliata vs tassativa */
+        .scadenza-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .badge-consigliata { background: rgba(210, 153, 34, 0.2); color: var(--accent-warning); border: 1px solid var(--accent-warning); }
+        .badge-tassativa { background: rgba(248, 81, 73, 0.2); color: #f85149; border: 1px solid #f85149; }
 
         .btn-submit {
             background: var(--accent-green);
@@ -298,6 +352,12 @@
         </select>
     </div>
 
+    <!-- POPUP / GUIDA FLUSSO RAPIDO SENZA MOUSE -->
+    <div id="popup-guida" class="info-popup">
+        <span>💡 <strong>Modalità Rapida:</strong> Usa il tasto <strong>Invio</strong> o <strong>Tab</strong> nel campo codice a barre o nei campi modulo per concatenare i passaggi senza usare il mouse!</span>
+        <button onclick="document.getElementById('popup-guida').style.display='none'">&times;</button>
+    </div>
+
     <!-- HEADER CON LOGO E TITOLO -->
     <div class="main-header">
         <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="header-logo">
@@ -311,16 +371,21 @@
         <div class="scan-box">
             <label id="lbl-scan-title">🔍 Scanner Barcode & Open Food Facts</label>
             <p class="scan-instruction" id="lbl-scan-desc">
-                Inquadra il codice a barre con la fotocamera o inseriscilo manualmente per recuperare automaticamente nome, marca, ingredienti e dati nutrizionali.
+                Inquadra il codice a barre o inseriscilo e premi Invio. Se il prodotto non ha codice o non viene trovato, usa il tasto di compilazione manuale.
             </p>
             
             <div class="scan-row">
-                <input type="text" id="barcode-input" placeholder="Codice a barre...">
+                <input type="text" id="barcode-input" placeholder="Codice a barre..." onkeydown="handleBarcodeKey(event)">
                 <button type="button" class="btn-scan" id="btn-cerca-off" onclick="cercaOpenFoodFacts()">Cerca</button>
             </div>
 
             <button type="button" class="btn-camera" id="btn-toggle-cam" onclick="toggleFotocamera()">
                 📷 <span id="txt-btn-cam">Attiva Fotocamera / Scanner</span>
+            </button>
+
+            <!-- Pulsante per forzare la compilazione manuale (es. detersivi o prodotti senza barcode) -->
+            <button type="button" class="btn-manual-override" id="btn-manuale" onclick="abilitaCompilazioneManuale()">
+                ✏️ Compila Manualmente (Senza Barcode / Prodotto senza scadenza)
             </button>
 
             <!-- Box visivo per la fotocamera -->
@@ -334,8 +399,7 @@
                         <div class="info-dettaglio"><strong>Nome:</strong> <span id="inf-nome">-</span></div>
                         <div class="info-dettaglio"><strong>Marca:</strong> <span id="inf-marca">-</span></div>
                         <div class="info-dettaglio"><strong>Quantità/Formato:</strong> <span id="inf-quantita-OFF">-</span></div>
-                        <div class="info-dettaglio"><strong>Ingredienti:</strong> <span id="inf-ingredienti">-</span></div>
-                        <div class="info-dettaglio"><strong>Nutri-Score:</strong> <span id="inf-nutriscore">-</span></div>
+                        <div class="info-dettaglio"><strong>Tipologia Scadenza:</strong> <div id="inf-tipo-scadenza-badge"></div></div>
                     </div>
                 </div>
             </div>
@@ -344,17 +408,23 @@
         <form id="form-carico" onsubmit="registraCarico(event)">
             <div class="form-group">
                 <label for="nome-prodotto" id="lbl-nome">Nome Prodotto</label>
-                <input type="text" id="nome-prodotto" required placeholder="Es. Pasta, Latte, Biscotti...">
+                <input type="text" id="nome-prodotto" required placeholder="Es. Pasta, Latte, Detersivo...">
             </div>
 
             <div class="form-group">
                 <label for="marca-prodotto" id="lbl-marca">Marca (Opzionale)</label>
-                <input type="text" id="marca-prodotto" placeholder="Es. Barilla, Granarolo...">
+                <input type="text" id="marca-prodotto" placeholder="Es. Barilla, Dash...">
             </div>
 
             <div class="form-group">
-                <label for="scadenza" id="lbl-scadenza">Data di Scadenza</label>
-                <input type="date" id="scadenza" required>
+                <label for="ubicazione" id="lbl-ubicazione">Ubicazione (Es. Frigo, Dispensa, Cantina)</label>
+                <input type="text" id="ubicazione" placeholder="Es. Dispensa ripiano 2">
+            </div>
+
+            <!-- Blocco Scadenza (gestito dinamicamente se il prodotto ha scadenza o meno, es. detersivi) -->
+            <div class="form-group" id="group-scadenza">
+                <label for="scadenza" id="lbl-scadenza">Data di Scadenza (verifica se appropriata)</label>
+                <input type="date" id="scadenza">
             </div>
 
             <div class="form-group">
@@ -382,6 +452,7 @@
             const savedLang = localStorage.getItem('eat_me_first_lang') || 'it';
             document.getElementById('lingua-select').value = savedLang;
             applicaTraduzioniCarico(savedLang);
+            document.getElementById('barcode-input').focus();
         });
 
         function cambiaLingua(lang) {
@@ -394,13 +465,15 @@
                 it: { 
                     title: "Carico Merci", 
                     scanTitle: "🔍 Scanner Barcode & Open Food Facts",
-                    scanDesc: "Inquadra il codice a barre con la fotocamera o inseriscilo manualmente per recuperare automaticamente nome, marca, ingredienti e dati nutrizionali.",
+                    scanDesc: "Inquadra il codice a barre o inseriscilo e premi Invio. Se il prodotto non ha codice o non viene trovato, usa il tasto di compilazione manuale.",
                     btnCerca: "Cerca",
                     btnCamOn: "Attiva Fotocamera / Scanner",
                     btnCamOff: "Chiudi Fotocamera",
+                    btnManuale: "✏️ Compila Manualmente (Senza Barcode / Prodotto senza scadenza)",
                     nome: "Nome Prodotto", 
                     marca: "Marca (Opzionale)",
-                    scadenza: "Data di Scadenza", 
+                    ubicazione: "Ubicazione (Es. Frigo, Dispensa)",
+                    scadenza: "Data di Scadenza (verifica se appropriata)", 
                     quantita: "Quantità", 
                     btn: "Registra Carico", 
                     menu: "← Torna al Menu Principale",
@@ -409,13 +482,15 @@
                 en: { 
                     title: "Stock In", 
                     scanTitle: "🔍 Barcode Scanner & Open Food Facts",
-                    scanDesc: "Scan the barcode with your camera or enter it manually to automatically retrieve product name, brand, ingredients, and nutrition data.",
+                    scanDesc: "Scan the barcode or enter it and press Enter. If the product has no code or isn't found, use manual override.",
                     btnCerca: "Search",
                     btnCamOn: "Activate Camera / Scanner",
                     btnCamOff: "Close Camera",
+                    btnManuale: "✏️ Fill Manually (No Barcode / Non-perishable)",
                     nome: "Product Name", 
                     marca: "Brand (Optional)",
-                    scadenza: "Expiry Date", 
+                    ubicazione: "Location (Fridge, Pantry...)",
+                    scadenza: "Expiry Date (check if appropriate)", 
                     quantita: "Quantity", 
                     btn: "Register Item", 
                     menu: "← Back to Main Menu",
@@ -423,13 +498,15 @@
                 },
                 fr: { 
                     title: "Entrée de Stock", 
-                    scanTitle: "🔍 Scanner de code-barres (Open Food Facts)",
-                    scanDesc: "Scannez le code-barres avec votre caméra ou saisissez-le pour récupérer automatiquement le nom, la marque, les ingrédients et les données.",
+                    scanTitle: "🔍 Scanner de code-barres",
+                    scanDesc: "Scannez ou saisissez le code-barres. Utilisez la saisie manuelle si le produit n'a pas de code ou de date.",
                     btnCerca: "Chercher",
                     btnCamOn: "Activer la Caméra",
                     btnCamOff: "Fermer la Caméra",
+                    btnManuale: "✏️ Saisie manuelle (Sans code / Non périssable)",
                     nome: "Nom du Produit", 
                     marca: "Marque (Facultatif)",
+                    ubicazione: "Emplacement",
                     scadenza: "Date d'expiration", 
                     quantita: "Quantité", 
                     btn: "Enregistrer", 
@@ -439,12 +516,14 @@
                 es: { 
                     title: "Entrada de Stock", 
                     scanTitle: "🔍 Escáner de código de barras",
-                    scanDesc: "Escanee el código de barras con la cámara o ingréselo para recuperar automáticamente el nombre, la marca, los ingredientes y los datos.",
+                    scanDesc: "Escanee o ingrese el código. Si no tiene código o fecha, use la entrada manual.",
                     btnCerca: "Buscar",
                     btnCamOn: "Activar Cámara / Escáner",
                     btnCamOff: "Cerrar Cámara",
+                    btnManuale: "✏️ Compilar Manualmente (Sin código / No perecedero)",
                     nome: "Nombre del Producto", 
                     marca: "Marca (Opcional)",
+                    ubicazione: "Ubicación",
                     scadenza: "Fecha de Caducidad", 
                     quantita: "Cantidad", 
                     btn: "Registrar Carga", 
@@ -453,13 +532,15 @@
                 },
                 de: { 
                     title: "Wareneingang", 
-                    scanTitle: "🔍 Barcode-Scanner & Open Food Facts",
-                    scanDesc: "Scannen Sie den Barcode mit der Kamera oder geben Sie ihn ein, um Produktname, Marke, Zutaten und Nährwertdaten abzurufen.",
+                    scanTitle: "🔍 Barcode-Scanner",
+                    scanDesc: "Scannen oder eingeben. Nutzen Sie die manuelle Erfassung bei Artikeln ohne Barcode oder Ablaufdatum.",
                     btnCerca: "Suchen",
                     btnCamOn: "Kamera / Scanner aktivieren",
                     btnCamOff: "Kamera schließen",
+                    btnManuale: "✏️ Manuell erfassen (Ohne Barcode / Haltbarkeit)",
                     nome: "Produktname", 
                     marca: "Marke (Optional)",
+                    ubicazione: "Lagerort",
                     scadenza: "Ablaufdatum", 
                     quantita: "Menge", 
                     btn: "Ware erfassen", 
@@ -473,8 +554,10 @@
             document.getElementById('lbl-scan-title').textContent = t.scanTitle;
             document.getElementById('lbl-scan-desc').textContent = t.scanDesc;
             document.getElementById('btn-cerca-off').textContent = t.btnCerca;
+            document.getElementById('btn-manuale').textContent = t.btnManuale;
             document.getElementById('lbl-nome').textContent = t.nome;
             document.getElementById('lbl-marca').textContent = t.marca;
+            document.getElementById('lbl-ubicazione').textContent = t.ubicazione;
             document.getElementById('lbl-scadenza').textContent = t.scadenza;
             document.getElementById('lbl-quantita').textContent = t.quantita;
             document.getElementById('btn-registra').textContent = t.btn;
@@ -485,6 +568,13 @@
             window.currentTextCamOff = t.btnCamOff;
             if(!cameraAttiva) {
                 document.getElementById('txt-btn-cam').textContent = t.btnCamOn;
+            }
+        }
+
+        function handleBarcodeKey(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                cercaOpenFoodFacts();
             }
         }
 
@@ -532,7 +622,7 @@
         async function cercaOpenFoodFacts() {
             const barcode = document.getElementById('barcode-input').value.trim();
             if (!barcode) {
-                alert("Inserisci o scansiona un codice a barre valido.");
+                alert("Inserisci o scansiona un codice a barre valido o usa la compilazione manuale.");
                 return;
             }
 
@@ -540,13 +630,14 @@
                 const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
                 const data = await response.json();
 
+                const groupScadenza = document.getElementById('group-scadenza');
+                const badgeContainer = document.getElementById('inf-tipo-scadenza-badge');
+
                 if (data && data.status === 1) {
                     const prodotto = data.product;
                     const nome = prodotto.product_name || prodotto.product_name_it || "";
                     const marca = prodotto.brands || "";
                     const quantitaOFF = prodotto.quantity || "";
-                    const ingredienti = prodotto.ingredients_text_it || prodotto.ingredients_text || "Non disponibili";
-                    const nutriscore = prodotto.nutriscore_grade ? prodotto.nutriscore_grade.toUpperCase() : "Non disponibile";
                     const immagine = prodotto.image_front_url || "";
 
                     if(nome) document.getElementById('nome-prodotto').value = nome;
@@ -555,8 +646,14 @@
                     document.getElementById('inf-nome').textContent = nome || "Sconosciuto";
                     document.getElementById('inf-marca').textContent = marca || "Non specificata";
                     document.getElementById('inf-quantita-OFF').textContent = quantitaOFF || "Non specificata";
-                    document.getElementById('inf-ingredienti').textContent = ingredienti;
-                    document.getElementById('inf-nutriscore').textContent = nutriscore;
+
+                    // Esempio logica scadenza consigliata (es. stimata a 30 giorni per default se non specificata diversamente)
+                    groupScadenza.style.display = 'block';
+                    const dataConsigliata = new Date();
+                    dataConsigliata.setDate(dataConsigliata.getDate() + 30); // 30 giorni indicativi di stima
+                    document.getElementById('scadenza').value = dataConsigliata.toISOString().split('T')[0];
+                    
+                    badgeContainer.innerHTML = '<span class="scadenza-badge badge-consigliata">⚠️ Scadenza Consigliata (Verifica se appropriata)</span>';
 
                     const imgEl = document.getElementById('img-anteprima');
                     if(immagine) {
@@ -567,27 +664,56 @@
                     }
 
                     document.getElementById('preview-prodotto').style.display = 'block';
+                    document.getElementById('ubicazione').focus(); // Sposta il focus automaticamente sul campo successivo senza mouse!
                 } else {
-                    alert("Prodotto non trovato nel database Open Food Facts.");
+                    alert("Prodotto non trovato su Open Food Facts. Passaggio alla compilazione manuale.");
+                    abilitaCompilazioneManuale();
                 }
             } catch (error) {
                 console.error("Errore di connessione:", error);
-                alert("Impossibile contattare Open Food Facts. Verifica la connessione a internet.");
+                alert("Impossibile contattare il server. Passaggio alla compilazione manuale.");
+                abilitaCompilazioneManuale();
             }
+        }
+
+        function abilitaCompilazioneManuale() {
+            // Per prodotti senza codice a barre o prodotti senza scadenza (es. detersivi)
+            const groupScadenza = document.getElementById('group-scadenza');
+            const badgeContainer = document.getElementById('inf-tipo-scadenza-badge');
+            
+            // Chiediamo se il prodotto ha una scadenza o meno
+            const haScadenza = confirm("Il prodotto ha una scadenza? (Premi 'OK' se ha scadenza tassativa da inserire, 'Annulla' se è un prodotto senza scadenza come i detersivi)");
+
+            if (haScadenza) {
+                groupScadenza.style.display = 'block';
+                document.getElementById('scadenza').value = '';
+                document.getElementById('scadenza').required = true;
+                badgeContainer.innerHTML = '<span class="scadenza-badge badge-tassativa">🔒 Scadenza Tassativa (Inserimento manuale obbligatorio)</span>';
+            } else {
+                groupScadenza.style.display = 'none'; // Nasconde totalmente le caselle data per prodotti senza scadenza
+                document.getElementById('scadenza').required = false;
+                document.getElementById('scadenza').value = '';
+                badgeContainer.innerHTML = '<span class="scadenza-badge" style="background:#30363d; color:#8b949e;">Prodotto senza scadenza (es. Detersivo/Non alimentare)</span>';
+            }
+
+            document.getElementById('preview-prodotto').style.display = 'block';
+            document.getElementById('nome-prodotto').focus();
         }
 
         function registraCarico(event) {
             event.preventDefault();
 
+            const gruppoScadenzaVisibile = document.getElementById('group-scadenza').style.display !== 'none';
+            const dataScadenzaVal = gruppoScadenzaVisibile ? document.getElementById('scadenza').value : "Nessuna scadenza";
+
             const nuovoArticolo = {
                 id: Date.now(),
                 nome: document.getElementById('nome-prodotto').value.trim(),
                 marca: document.getElementById('marca-prodotto').value.trim(),
-                scadenza: document.getElementById('scadenza').value,
+                ubicazione: document.getElementById('ubicazione').value.trim() || "Dispensa",
+                scadenza: dataScadenzaVal,
                 quantita: parseInt(document.getElementById('quantita').value) || 1,
                 immagine: document.getElementById('img-anteprima').src || "",
-                ingredienti: document.getElementById('inf-ingredienti').textContent || "",
-                nutriscore: document.getElementById('inf-nutriscore').textContent || "",
                 dataCarico: new Date().toISOString()
             };
 
