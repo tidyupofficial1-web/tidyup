@@ -42,6 +42,8 @@
             align-items: center;
             margin-bottom: 25px;
             width: 100%;
+            gap: 15px;
+            flex-wrap: wrap;
         }
 
         .nav-links {
@@ -63,6 +65,17 @@
 
         .btn-back:hover, .btn-menu:hover {
             background: #30363d;
+        }
+
+        /* Stile per garantire la visibilità del selettore lingue generato da i18n.js */
+        #header-lang select {
+            background: #161b22;
+            color: #f0f6fc;
+            border: 1px solid #30363d;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
         }
 
         .content-card {
@@ -91,6 +104,28 @@
             color: var(--text-muted);
             font-size: 0.95rem;
             margin-bottom: 15px;
+        }
+
+        /* Box di attenzione per le allergie */
+        .allergy-box {
+            background: rgba(248, 81, 73, 0.1);
+            border: 1px solid #f85149;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .allergy-box h4 {
+            color: #ff7b72;
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .allergy-box p {
+            color: #f0f6fc;
+            margin: 0;
+            font-size: 0.9rem;
         }
 
         /* Pulsante per aprire/leggere il testo esteso dei termini */
@@ -264,6 +299,12 @@
             <h3 id="txt-sec3-title">3. Proprietà Intellettuale e Brevetto</h3>
             <p id="txt-sec3-desc">EatMeFirst fa parte della TidyUp Suite ed è un'opera protetta da diritti di proprietà intellettuale e coperta da brevetto/tutela industriale. Tutti i diritti sul codice, logica e interfacce sono riservati. È vietata la copia non autorizzata o la commercializzazione.</p>
 
+            <!-- AVVISO ALLERGIE E INFORMAZIONI SULLE CONFEZIONI -->
+            <div class="allergy-box">
+                <h4 id="txt-allergy-title">⚠️ Avviso importante su Allergeni e Ingredienti</h4>
+                <p id="txt-allergy-desc">Le informazioni nutrizionali e sugli ingredienti mostrate nell'app (tramite scansione o inserimento) sono indicative. È obbligatorio verificare sempre direttamente le etichette e le informazioni stampate sulle confezioni originali dei prodotti per accertarsi della presenza di eventuali allergeni o ingredienti a cui si è allergici o intolleranti. Non affidarsi ciecamente a quanto proposto dall'applicazione.</p>
+            </div>
+
             <!-- Pulsante per aprire il testo completo dettagliato prima di accettare -->
             <button class="btn-toggle-details" onclick="toggleDetails()" id="txt-toggle-btn">📄 Clicca qui per leggere tutti i dettagli (Codici a barre, Funzioni e Costi)</button>
 
@@ -276,7 +317,7 @@
                 <ul>
                     <li><strong>Lista della Spesa Dinamica:</strong> Si compie e si aggiorna da sola man mano che consumi o esaurisci i prodotti.</li>
                     <li><strong>Statistiche sui Consumi:</strong> Riepiloghi e grafici per capire cosa consumi di più ed evitare gli sprechi.</li>
-                    <li><strong>Dettagli Nutrizionali e Allergeni:</strong> Informazioni chiare su calorie e ingredienti associati ai prodotti.</li>
+                    <li><strong>Dettagli Nutrizionali e Allergeni:</strong> Informazioni di supporto (da verificare sempre sulle confezioni).</li>
                 </ul>
 
                 <div class="confidential-box-small">
@@ -285,14 +326,14 @@
             </div>
 
             <h3 id="txt-sec4-title">4. Esclusione di Responsabilità</h3>
-            <p id="txt-sec4-desc">L'utente è l'unico responsabile del controllo visivo e olfattivo degli alimenti prima del consumo. Gli sviluppatori declinano ogni responsabilità per eventuali errori di inserimento delle date o per il consumo di prodotti scaduti.</p>
+            <p id="txt-sec4-desc">L'utente è l'unico responsabile del controllo visivo e olfattivo degli alimenti prima del consumo, nonché della verifica degli allergeni sulle confezioni. Gli sviluppatori declinano ogni responsabilità per errori di inserimento, consumo di prodotti scaduti o reazioni dovute a intolleranze non verificate sulle etichette originali.</p>
         </div>
 
         <!-- Box di Accettazione -->
         <div class="action-area">
             <label class="checkbox-container">
                 <input type="checkbox" id="accept-check" onchange="toggleButton()">
-                <span id="txt-checkbox-label">Ho letto i termini, compreso il funzionamento in locale, la tutela della proprietà intellettuale e le condizioni d'uso, e intendo procedere.</span>
+                <span id="txt-checkbox-label">Ho letto i termini, compreso il funzionamento in locale, la tutela della proprietà intellettuale e l'avviso obbligatorio su allergeni e confezioni, e intendo procedere.</span>
             </label>
             
             <a href="configurazione.html" id="next-btn" class="btn-proceed">Conferma e Procedi &rarr;</a>
@@ -346,10 +387,12 @@
                     s2Desc: "Tutti i dati inseriti (prodotti, scadenze, preferenze di lingua) vengono memorizzati esclusivamente in locale sul tuo dispositivo tramite il sistema localStorage del browser. Nessun dato personale viene trasmesso o salvato su server esterni.",
                     s3Title: "3. Proprietà Intellettuale e Brevetto",
                     s3Desc: "EatMeFirst fa parte della TidyUp Suite ed è un'opera protetta da diritti di proprietà intellettuale e coperta da brevetto/tutela industriale. Tutti i diritti sul codice, logica e interfacce sono riservati. È vietata la copia non autorizzata o la commercializzazione.",
+                    allergyTitle: "⚠️ Avviso importante su Allergeni e Ingredienti",
+                    allergyDesc: "Le informazioni nutrizionali e sugli ingredienti mostrate nell'app (tramite scansione o inserimento) sono indicative. È obbligatorio verificare sempre direttamente le etichette e le informazioni stampate sulle confezioni originali dei prodotti per accertarsi della presenza di eventuali allergeni o ingredienti a cui si è allergici o intolleranti. Non affidarsi ciecamente a quanto proposto dall'applicazione.",
                     toggleBtn: "📄 Clicca qui per leggere tutti i dettagli (Codici a barre, Funzioni e Costi)",
                     s4Title: "4. Esclusione di Responsabilità",
-                    s4Desc: "L'utente è l'unico responsabile del controllo visivo e olfattivo degli alimenti prima del consumo. Gli sviluppatori declinano ogni responsabilità per eventuali errori di inserimento delle date o per il consumo di prodotti scaduti.",
-                    chkLabel: "Ho letto i termini, compreso il funzionamento in locale, la tutela della proprietà intellettuale e le condizioni d'uso, e intendo procedere.",
+                    s4Desc: "L'utente è l'unico responsabile del controllo visivo e olfattivo degli alimenti prima del consumo, nonché della verifica degli allergeni sulle confezioni. Gli sviluppatori declinano ogni responsabilità per errori di inserimento, consumo di prodotti scaduti o reazioni dovute a intolleranze non verificate sulle etichette originali.",
+                    chkLabel: "Ho letto i termini, compreso il funzionamento in locale, la tutela della proprietà intellettuale e l'avviso obbligatorio su allergeni e confezioni, e intendo procedere.",
                     btnProceed: "Conferma e Procedi →"
                 },
                 en: {
@@ -362,10 +405,12 @@
                     s2Desc: "All entered data is stored exclusively locally on your device via browser localStorage. No personal data is transmitted to external servers.",
                     s3Title: "3. Intellectual Property & Patent",
                     s3Desc: "EatMeFirst is part of the TidyUp Suite and is protected by intellectual property rights and patent/industrial protection. All rights reserved.",
+                    allergyTitle: "⚠️ Important Notice on Allergens and Ingredients",
+                    allergyDesc: "Nutritional and ingredient information shown in the app is indicative. You must always check the labels and information printed directly on the original product packaging to verify any allergens or ingredients you may be sensitive to. Do not rely blindly on the application.",
                     toggleBtn: "📄 Click here to read full details (Barcodes, Features & Pricing)",
                     s4Title: "4. Disclaimer",
-                    s4Desc: "The user is solely responsible for visually and olfactorily checking foods before consumption. Developers disclaim all liability for entry errors or consumption of expired products.",
-                    chkLabel: "I have read the terms, including local operation, intellectual property protection, and conditions of use, and wish to proceed.",
+                    s4Desc: "The user is solely responsible for checking foods before consumption and verifying allergens on packaging. Developers disclaim all liability for unverified allergens or product consumption.",
+                    chkLabel: "I have read the terms, including local operation, IP protection, and the mandatory allergen notice, and wish to proceed.",
                     btnProceed: "Confirm and Proceed →"
                 }
             };
@@ -381,6 +426,8 @@
             document.getElementById('txt-sec2-desc').textContent = t.s2Desc;
             document.getElementById('txt-sec3-title').textContent = t.s3Title;
             document.getElementById('txt-sec3-desc').textContent = t.s3Desc;
+            document.getElementById('txt-allergy-title').textContent = t.allergyTitle;
+            document.getElementById('txt-allergy-desc').textContent = t.allergyDesc;
             document.getElementById('txt-toggle-btn').textContent = t.toggleBtn;
             document.getElementById('txt-sec4-title').textContent = t.s4Title;
             document.getElementById('txt-sec4-desc').textContent = t.s4Desc;
