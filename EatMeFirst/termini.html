@@ -67,8 +67,8 @@
             background: #30363d;
         }
 
-        /* Stile per garantire la visibilità del selettore lingue generato da i18n.js */
-        #header-lang select {
+        /* Stile visibile per il selettore delle 5 lingue */
+        #header-lang select, .language-selector select {
             background: #161b22;
             color: #f0f6fc;
             border: 1px solid #30363d;
@@ -281,7 +281,7 @@
         <div class="top-bar">
             <div class="nav-links">
                 <a href="presentazione.html" class="btn-back" id="txt-back">Indietro</a>
-                <a href="menu.html" class="btn-menu" id="txt-menu">Menu</a>
+                <a href="index.html" class="btn-menu" id="txt-menu">Menu</a>
             </div>
             <div id="header-lang"></div>
         </div>
@@ -311,17 +311,17 @@
             <!-- Testo esteso a scomparsa -->
             <div id="extended-terms">
                 <h4>🔗 L'unico collegamento esterno (Codici a Barre)</h4>
-                <p>Quando scansionerai un codice a barre per inserire un prodotto, l'app interrogherà temporaneamente database pubblici online (es. Open Food Facts) per recuperare nome e foto, evitandoti la digitazione manuale.</p>
+                <p id="txt-ext-desc">Quando scansionerai un codice a barre per inserire un prodotto, l'app interrogherà temporaneamente database pubblici online (es. Open Food Facts) per recuperare nome e foto, evitandoti la digitazione manuale.</p>
 
                 <h4>🛒 Cosa troverai dentro l'applicazione</h4>
-                <ul>
+                <ul id="txt-features-list">
                     <li><strong>Lista della Spesa Dinamica:</strong> Si compie e si aggiorna da sola man mano che consumi o esaurisci i prodotti.</li>
                     <li><strong>Statistiche sui Consumi:</strong> Riepiloghi e grafici per capire cosa consumi di più ed evitare gli sprechi.</li>
                     <li><strong>Dettagli Nutrizionali e Allergeni:</strong> Informazioni di supporto (da verificare sempre sulle confezioni).</li>
                 </ul>
 
                 <div class="confidential-box-small">
-                    <p>💬 <strong>Ma chissà quanto costa?</strong> La struttura di base di EatMeFirst è e resterà gratuita per sempre. Funzioni extra avanzate future non saranno mai di vitale importanza: il cuore del programma resterà sempre a costo zero.</p>
+                    <p id="txt-conf-desc">💬 <strong>Ma chissà quanto costa?</strong> La struttura di base di EatMeFirst è e resterà gratuita per sempre. Funzioni extra avanzate future non saranno mai di vitale importanza: il cuore del programma resterà sempre a costo zero.</p>
                 </div>
             </div>
 
@@ -346,11 +346,31 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const containerLang = document.getElementById('header-lang');
-            if (containerLang && typeof creaSelettoreLinguaHTML === 'function') {
-                containerLang.innerHTML = creaSelettoreLinguaHTML();
+            if (containerLang) {
+                if (typeof creaSelettoreLinguaHTML === 'function') {
+                    containerLang.innerHTML = creaSelettoreLinguaHTML();
+                } else {
+                    // Fallback di sicurezza con tutte e 5 le lingue supportate
+                    containerLang.innerHTML = `
+                        <select id="lang-select" onchange="cambiaLinguaLocale(this.value)">
+                            <option value="it">🇮🇹 Italiano</option>
+                            <option value="en">🇬🇧 English</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="de">🇩🇪 Deutsch</option>
+                            <option value="es">🇪🇸 Español</option>
+                        </select>
+                    `;
+                }
             }
             applicaTraduzioniInterfaccia();
         });
+
+        function cambiaLinguaLocale(lang) {
+            localStorage.setItem('eat_lang', lang);
+            applicaTraduzioniInterfaccia();
+            // Notifica anche il file i18n.js se gestisce eventi globali
+            window.dispatchEvent(new CustomEvent('linguaCambiata', { detail: lang }));
+        }
 
         function toggleDetails() {
             const panel = document.getElementById('extended-terms');
@@ -373,10 +393,19 @@
         }
 
         function applicaTraduzioniInterfaccia() {
-            if (typeof getLinguaCorrente !== 'function') return;
-            const lang = getLinguaCorrente();
-            
-            const contenuti = {
+            // Recupera la lingua corrente da localStorage o dalla funzione globale
+            let lang = 'it';
+            if (typeof getLinguaCorrente === 'function') {
+                lang = getLinguaCorrente();
+            } else {
+                lang = localStorage.getItem('eat_lang') || 'it';
+            }
+
+            // Sincronizza l'eventuale select esistente
+            const selectEl = document.querySelector('#header-lang select');
+            if (selectEl) selectEl.value = lang;
+
+            const dizionario = {
                 it: {
                     back: "Indietro",
                     menu: "Menu",
@@ -390,6 +419,8 @@
                     allergyTitle: "⚠️ Avviso importante su Allergeni e Ingredienti",
                     allergyDesc: "Le informazioni nutrizionali e sugli ingredienti mostrate nell'app (tramite scansione o inserimento) sono indicative. È obbligatorio verificare sempre direttamente le etichette e le informazioni stampate sulle confezioni originali dei prodotti per accertarsi della presenza di eventuali allergeni o ingredienti a cui si è allergici o intolleranti. Non affidarsi ciecamente a quanto proposto dall'applicazione.",
                     toggleBtn: "📄 Clicca qui per leggere tutti i dettagli (Codici a barre, Funzioni e Costi)",
+                    extDesc: "Quando scansionerai un codice a barre per inserire un prodotto, l'app interrogherà temporaneamente database pubblici online (es. Open Food Facts) per recuperare nome e foto, evitandoti la digitazione manuale.",
+                    confDesc: "💬 Ma chissà quanto costa? La struttura di base di EatMeFirst è e resterà gratuita per sempre. Funzioni extra avanzate future non saranno mai di vitale importanza: il cuore del programma resterà sempre a costo zero.",
                     s4Title: "4. Esclusione di Responsabilità",
                     s4Desc: "L'utente è l'unico responsabile del controllo visivo e olfattivo degli alimenti prima del consumo, nonché della verifica degli allergeni sulle confezioni. Gli sviluppatori declinano ogni responsabilità per errori di inserimento, consumo di prodotti scaduti o reazioni dovute a intolleranze non verificate sulle etichette originali.",
                     chkLabel: "Ho letto i termini, compreso il funzionamento in locale, la tutela della proprietà intellettuale e l'avviso obbligatorio su allergeni e confezioni, e intendo procedere.",
@@ -408,14 +439,76 @@
                     allergyTitle: "⚠️ Important Notice on Allergens and Ingredients",
                     allergyDesc: "Nutritional and ingredient information shown in the app is indicative. You must always check the labels and information printed directly on the original product packaging to verify any allergens or ingredients you may be sensitive to. Do not rely blindly on the application.",
                     toggleBtn: "📄 Click here to read full details (Barcodes, Features & Pricing)",
+                    extDesc: "When scanning a barcode to add a product, the app temporarily queries public online databases (e.g., Open Food Facts) to fetch the name and photo, saving you manual typing.",
+                    confDesc: "💬 What about pricing? The core structure of EatMeFirst is and will remain free forever. Future advanced extra features will never be essential: the core of the program will always be at zero cost.",
                     s4Title: "4. Disclaimer",
                     s4Desc: "The user is solely responsible for checking foods before consumption and verifying allergens on packaging. Developers disclaim all liability for unverified allergens or product consumption.",
                     chkLabel: "I have read the terms, including local operation, IP protection, and the mandatory allergen notice, and wish to proceed.",
                     btnProceed: "Confirm and Proceed →"
+                },
+                fr: {
+                    back: "Retour",
+                    menu: "Menu",
+                    title: "Termes et Conditions",
+                    s1Title: "1. Nature de l'Application",
+                    s1Desc: "EatMeFirst est une application Web locale conçue pour aider les utilisateurs à gérer de manière autonome leur garde-manger, leurs dates de péremption et leur liste de courses.",
+                    s2Title: "2. Stockage des Données",
+                    s2Desc: "Toutes les données saisies sont stockées exclusivement en local sur votre appareil via le localStorage du navigateur. Aucune donnée personnelle n'est transmise à des serveurs externes.",
+                    s3Title: "3. Propriété Intellectuelle et Brevet",
+                    s3Desc: "EatMeFirst fait partie de la TidyUp Suite et est protégé par des droits de propriété intellectuelle et un brevet. Tous droits réservés.",
+                    allergyTitle: "⚠️ Avis important sur les Allergènes et Ingrédients",
+                    allergyDesc: "Les informations nutritionnelles et les ingrédients affichés dans l'application sont indicatifs. Il est obligatoire de toujours vérifier directement les étiquettes sur les emballages d'origine des produits.",
+                    toggleBtn: "📄 Cliquez ici pour lire tous les détails (Codes-barres, Fonctions et Coûts)",
+                    extDesc: "Lors de la numérisation d'un code-barres, l'application interroge temporairement des bases de données publiques en ligne pour récupérer le nom et la photo.",
+                    confDesc: "💬 Et le prix ? La structure de base d'EatMeFirst est et restera gratuite pour toujours.",
+                    s4Title: "4. Limitation de Responsabilité",
+                    s4Desc: "L'utilisateur est seul responsable du contrôle des aliments avant consommation et de la vérification des allergènes sur les emballages.",
+                    chkLabel: "J'ai lu les termes, y compris le fonctionnement local, la protection de la propriété intellectuelle et l'avis obligatoire sur les allergènes.",
+                    btnProceed: "Confirmer et Continuer →"
+                },
+                de: {
+                    back: "Zurück",
+                    menu: "Menü",
+                    title: "Allgemeine Geschäftsbedingungen",
+                    s1Title: "1. Art der Anwendung",
+                    s1Desc: "EatMeFirst ist eine lokale Web-App, die Benutzern hilft, ihre Speisekammer, Mindesthaltbarkeitsdaten und Einkaufsliste eigenständig zu verwalten.",
+                    s2Title: "2. Datenspeicherung",
+                    s2Desc: "Alle eingegebenen Daten werden ausschließlich lokal auf Ihrem Gerät über den localStorage des Browsers gespeichert. Keine Datenübertragung an externe Server.",
+                    s3Title: "3. Geistiges Eigentum und Patent",
+                    s3Desc: "EatMeFirst ist Teil der TidyUp Suite und durch gewerbliche Schutzrechte und Patente geschützt. Alle Rechte vorbehalten.",
+                    allergyTitle: "⚠️ Wichtiger Hinweis zu Allergenen und Zutaten",
+                    allergyDesc: "Die in der App angezeigten Nährwert- und Zutateninformationen sind Richtwerte. Es ist zwingend erforderlich, stets die Etiketten auf der Originalverpackung zu überprüfen.",
+                    toggleBtn: "📄 Klicken Sie hier, um alle Details zu lesen (Barcodes, Funktionen & Preise)",
+                    extDesc: "Beim Scannen eines Barcodes fragt die App temporär öffentliche Online-Datenbanken ab, um Name und Foto abzurufen.",
+                    confDesc: "💬 Was kostet das? Die Grundstruktur von EatMeFirst ist und bleibt für immer kostenlos.",
+                    s4Title: "4. Haftungsausschluss",
+                    s4Desc: "Der Benutzer ist allein verantwortlich für die Kontrolle von Lebensmitteln vor dem Verzehr und die Überprüfung von Allergenen auf der Verpackung.",
+                    chkLabel: "Ich habe die Bedingungen gelesen, einschließlich des lokalen Betriebs, des IP-Schutzes und des obligatorischen Allergiehinweises.",
+                    btnProceed: "Bestätigen und Fortfahren →"
+                },
+                es: {
+                    back: "Volver",
+                    menu: "Menú",
+                    title: "Términos y Condiciones",
+                    s1Title: "1. Naturaleza de la Aplicación",
+                    s1Desc: "EatMeFirst es una aplicación web local diseñada para ayudar a los usuarios a gestionar de forma autónoma su despensa, fechas de caducidad y lista de la compra.",
+                    s2Title: "2. Almacenamiento de Datos",
+                    s2Desc: "Todos los datos introducidos se almacenan exclusivamente en local en su dispositivo mediante el localStorage del navegador. No se transmiten datos a servidores externos.",
+                    s3Title: "3. Propiedad Intelectual y Patente",
+                    s3Desc: "EatMeFirst forma parte de TidyUp Suite y está protegido por derechos de propiedad intelectual y patente. Todos los derechos reservados.",
+                    allergyTitle: "⚠️ Aviso importante sobre Alérgenos e Ingredientes",
+                    allergyDesc: "La información nutricional y de ingredientes mostrada en la app es orientativa. Es obligatorio comprobar siempre directamente las etiquetas en los envases originales.",
+                    toggleBtn: "📄 Haga clic aquí para leer todos los detalles (Códigos de barras, Funciones y Costes)",
+                    extDesc: "Al escanear un código de barras, la aplicación consultará temporalmente bases de datos públicas online para recuperar el nombre y la foto.",
+                    confDesc: "💬 ¿Cuánto cuesta? La estructura básica de EatMeFirst es y seguirá siendo gratuita para siempre.",
+                    s4Title: "4. Exención de Responsabilidad",
+                    s4Desc: "El usuario es el único responsable de comprobar los alimentos antes de su consumo y de verificar los alérgenos en el envase.",
+                    chkLabel: "He leído los términos, incluido el funcionamiento local, la protección de propiedad intelectual y el aviso obligatorio de alérgenos.",
+                    btnProceed: "Confirmar y Continuar →"
                 }
             };
 
-            const t = contenuti[lang] || contenuti['it'];
+            const t = dizionario[lang] || dizionario['it'];
 
             document.getElementById('txt-back').textContent = t.back;
             document.getElementById('txt-menu').textContent = t.menu;
@@ -429,6 +522,8 @@
             document.getElementById('txt-allergy-title').textContent = t.allergyTitle;
             document.getElementById('txt-allergy-desc').textContent = t.allergyDesc;
             document.getElementById('txt-toggle-btn').textContent = t.toggleBtn;
+            document.getElementById('txt-ext-desc').textContent = t.extDesc;
+            document.getElementById('txt-conf-desc').innerHTML = t.confDesc;
             document.getElementById('txt-sec4-title').textContent = t.s4Title;
             document.getElementById('txt-sec4-desc').textContent = t.s4Desc;
             document.getElementById('txt-checkbox-label').textContent = t.chkLabel;
