@@ -12,7 +12,7 @@
             --border-color: #30363d;
             --text-main: #f0f6fc;
             --text-muted: #8b949e;
-            --accent-blue: #1f6feb;
+            --accent-blue: #58a6ff;
             --accent-green: #238636;
             --accent-red: #da3633;
         }
@@ -20,22 +20,79 @@
         body { 
             background-color: var(--bg-color); 
             margin: 0; 
-            padding: 20px; 
+            padding: 30px 20px 60px 20px; 
             color: var(--text-main); 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* --- BARRA SUPERIORE / CONTROLLI (MENU PAGINE + LINGUA) --- */
+        .top-bar-absolute {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .suite-select, .lang-select {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .suite-select:hover, .lang-select:hover {
+            border-color: var(--text-muted);
+        }
+
+        /* --- HEADER PRINCIPALE CON LOGO E TITOLO --- */
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            margin-top: 10px;
+        }
+
+        .header-logo {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: var(--accent-blue);
+            margin: 0;
         }
 
         .container { 
-            max-width: 750px; 
+            max-width: 600px; 
+            width: 100%;
             margin: 0 auto; 
             background: var(--card-bg); 
             border: 1px solid var(--border-color);
             padding: 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+            border-radius: 16px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3); 
+            box-sizing: border-box;
+            margin-bottom: 40px;
         }
-
-        h1 { color: #58a6ff; font-size: 1.8rem; text-align: center; margin-bottom: 25px; }
 
         .search-box { margin-bottom: 20px; }
         input { 
@@ -44,7 +101,7 @@
             background: #0d1117; 
             border: 1px solid var(--border-color); 
             color: var(--text-main);
-            border-radius: 6px; 
+            border-radius: 8px; 
             font-size: 1rem; 
             box-sizing: border-box;
         }
@@ -80,29 +137,150 @@
 
         .empty-msg { text-align: center; color: var(--text-muted); padding: 20px; }
 
-        .back-link { display: block; text-align: center; margin-top: 25px; color: #58a6ff; text-decoration: none; font-weight: bold; }
+        .back-link { display: inline-block; margin-top: 15px; color: var(--accent-blue); text-decoration: none; font-size: 0.95rem; }
+        .back-link:hover { text-decoration: underline; }
+
+        /* --- FOOTER CON LOGO --- */
+        footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: auto;
+            text-align: center;
+        }
+
+        .footer-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>📤 Scarico / Consumo Prodotti</h1>
+    <!-- BARRA SUPERIORE: MENU PAGINE + SELETTORE LINGUA -->
+    <div class="top-bar-absolute">
+        <select class="suite-select" onchange="if(this.value) window.location.href=this.value">
+            <option value="" disabled selected>📂 ☰ Menu</option>
+            <option value="menu.html">🏠 Menu Principale</option>
+            <option value="dispensa.html">📦 Dispensa</option>
+            <option value="carico.html">➕ Carico Merci</option>
+            <option value="scarico.html">📤 Scarico Prodotti</option>
+            <option value="spesa.html">🛒 Lista Spesa</option>
+            <option value="ricette.html">🍳 Ricette & Idee</option>
+            <option value="statistiche.html">📊 Statistiche</option>
+        </select>
 
-    <div class="search-box">
-        <input type="text" id="filtroProdotti" placeholder="Cerca prodotto in dispensa..." oninput="caricaListaDispensa()">
+        <select id="lingua-select" class="lang-select" onchange="cambiaLingua(this.value)">
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="de">🇩🇪 Deutsch</option>
+        </select>
     </div>
 
-    <div id="listaContainer">
-        <!-- I prodotti verranno inseriti qui dinamicamente -->
+    <!-- HEADER CON LOGO E TITOLO -->
+    <div class="main-header">
+        <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="header-logo">
+        <h1 id="txt-scarico-title">Scarico / Consumo Prodotti</h1>
     </div>
 
-    <a href="index.html" class="nav-back">⬅ Torna al Menu Principale</a>
-</div>
+    <div class="container">
+        <div class="search-box">
+            <input type="text" id="filtroProdotti" placeholder="Cerca prodotto in dispensa..." oninput="caricaListaDispensa()">
+        </div>
+
+        <div id="listaContainer">
+            <!-- I prodotti verranno inseriti qui dinamicamente -->
+        </div>
+
+        <a href="menu.html" class="back-link" id="lnk-torna-menu">&larr; Torna al Menu Principale</a>
+    </div>
+
+    <!-- FOOTER CON LOGO -->
+    <footer>
+        <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="footer-logo">
+        <span id="txt-footer">EatMeFirst &bull; Gestione locale sicura</span>
+    </footer>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        const savedLang = localStorage.getItem('eat_me_first_lang') || 'it';
+        document.getElementById('lingua-select').value = savedLang;
+        applicaTraduzioniScarico(savedLang);
         caricaListaDispensa();
     });
+
+    function cambiaLingua(lang) {
+        localStorage.setItem('eat_me_first_lang', lang);
+        applicaTraduzioniScarico(lang);
+    }
+
+    function applicaTraduzioniScarico(lang) {
+        const testi = {
+            it: {
+                title: "Scarico / Consumo Prodotti",
+                placeholder: "Cerca prodotto in dispensa...",
+                empty: "Nessun prodotto disponibile in dispensa da scaricare.",
+                btnConsuma: "Consuma / Termina",
+                menu: "← Torna al Menu Principale",
+                footer: "EatMeFirst • Gestione locale sicura",
+                alertTerminato: "terminato! Spostato nella Lista della Spesa."
+            },
+            en: {
+                title: "Stock Out / Consumption",
+                placeholder: "Search pantry item...",
+                empty: "No products available in the pantry to check out.",
+                btnConsuma: "Consume / Finish",
+                menu: "← Back to Main Menu",
+                footer: "EatMeFirst • Secure local management",
+                alertTerminato: "finished! Moved to Shopping List."
+            },
+            fr: {
+                title: "Sortie de Stock",
+                placeholder: "Rechercher dans le garde-manger...",
+                empty: "Aucun produit disponible.",
+                btnConsuma: "Consommer / Finir",
+                menu: "← Retour au Menu Principal",
+                footer: "EatMeFirst • Gestion locale sécurisée",
+                alertTerminato: "terminé ! Déplacé vers la liste de courses."
+            },
+            es: {
+                title: "Salida de Stock",
+                placeholder: "Buscar producto...",
+                empty: "No hay productos disponibles.",
+                btnConsuma: "Consumir / Terminar",
+                menu: "← Volver al Menú Principal",
+                footer: "EatMeFirst • Gestión local segura",
+                alertTerminato: "¡terminado! Movido a la lista de compras."
+            },
+            de: {
+                title: "Warenausgang / Verbrauch",
+                placeholder: "Produkt suchen...",
+                empty: "Keine Produkte in der Speisekammer.",
+                btnConsuma: "Verbrauchen / Beenden",
+                menu: "← Zurück zum Hauptmenü",
+                footer: "EatMeFirst • Sichere lokale Verwaltung",
+                alertTerminato: "aufgebraucht! In die Einkaufsliste verschoben."
+            }
+        };
+
+        const t = testi[lang] || testi['it'];
+        document.getElementById('txt-scarico-title').textContent = t.title;
+        document.getElementById('filtroProdotti').placeholder = t.placeholder;
+        document.getElementById('lnk-torna-menu').textContent = t.menu;
+        document.getElementById('txt-footer').innerHTML = t.footer;
+        window.currentAlertText = t.alertTerminato;
+        window.currentBtnConsuma = t.btnConsuma;
+        caricaListaDispensa();
+    }
 
     function caricaListaDispensa() {
         let container = document.getElementById('listaContainer');
@@ -111,7 +289,6 @@
         let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [] };
         container.innerHTML = "";
 
-        // Mostra nello scarico SOLO i prodotti che sono realmente in dispensa (cioè non hanno lowStock attivo)
         let prodottiFiltrati = db.dispensa.filter(item => 
             !item.lowStock && 
             (item.nome.toLowerCase().includes(filtro) || (item.ubicazione && item.ubicazione.toLowerCase().includes(filtro)))
@@ -126,13 +303,14 @@
             let card = document.createElement('div');
             card.className = 'item-card';
 
+            const btnText = window.currentBtnConsuma || "Consuma / Termina";
             card.innerHTML = `
                 <div class="item-info">
                     <h3>${item.nome}</h3>
                     <p>📦 Q.tà: <b>${item.quantita || 1}</b> | 📍 Ubicazione: <b>${item.ubicazione || 'N/D'}</b></p>
                     <p>⏳ Scadenza: ${item.scadenza ? item.scadenza : 'Nessuna'}</p>
                 </div>
-                <button class="btn-scarica" onclick="scaricaProdotto(${item.id})">Consuma / Termina</button>
+                <button class="btn-scarica" onclick="scaricaProdotto(${item.id})">${btnText}</button>
             `;
             container.appendChild(card);
         });
@@ -143,13 +321,13 @@
         let item = db.dispensa.find(i => i.id === id);
 
         if (item) {
-            // Segna il prodotto come terminato: esce dalla dispensa attiva e vola dritto nella Lista della Spesa
             item.lowStock = true;
             item.preso = false;
 
             localStorage.setItem('eat_me_first_db', JSON.stringify(db));
 
-            alert(`Prodotto "${item.nome}" terminato! Spostato nella Lista della Spesa.`);
+            const msgSuffix = window.currentAlertText || "terminato! Spostato nella Lista della Spesa.";
+            alert(`Prodotto "${item.nome}" ${msgSuffix}`);
             caricaListaDispensa();
         }
     }
