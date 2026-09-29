@@ -1,41 +1,175 @@
-<script>
-        let html5QrCode = null;
-        let cameraAttiva = false;
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carico Merci - EatMeFirst</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #161b22;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        h1, h2 {
+            color: #58a6ff;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #238636;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #2ea043;
+        }
+        .btn-manuale {
+            background-color: #1f6feb;
+            margin-bottom: 15px;
+        }
+        .btn-manuale:hover {
+            background-color: #388bfd;
+        }
+        .scadenza-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .badge-consigliata {
+            background-color: #9e6a03;
+            color: #fff;
+        }
+        .badge-tassativa {
+            background-color: #da3633;
+            color: #fff;
+        }
+        #preview-prodotto {
+            display: none;
+            border-top: 1px solid #30363d;
+            margin-top: 20px;
+            padding-top: 15px;
+        }
+        #img-anteprima {
+            max-width: 100px;
+            display: none;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        .menu-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .menu-link a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
 
+    <div class="container">
+        <h1>Carico Merci</h1>
+        
+        <div style="text-align: right; margin-bottom: 15px;">
+            <select id="lingua-select" onchange="cambiaLingua(this.value)" style="width: auto; display: inline-block;">
+                <option value="it">Italiano</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label id="lbl-scan-title">🔍 Codice a Barre / Scanner</label>
+            <p id="lbl-scan-desc" style="font-size: 13px; color: #8b949e;">Inserisci il codice a barre e premi Invio, oppure usa il pulsante per compilare manualmente.</p>
+            <input type="text" id="barcode-input" placeholder="Scansiona o digita il codice a barre..." onkeypress="handleBarcodeKey(event)">
+        </div>
+
+        <button type="button" class="btn-manuale" onclick="abilitaCompilazioneManuale()">✏️ Compila Manualmente (Senza Barcode)</button>
+
+        <div id="preview-prodotto">
+            <h2>Dettagli Prodotto</h2>
+            <form onsubmit="registraCarico(event)">
+                <div class="form-group">
+                    <label>Nome Prodotto</label>
+                    <input type="text" id="nome-prodotto" required>
+                    <small style="color: #8b949e;">OFF: <span id="inf-nome">-</span></small>
+                </div>
+
+                <div class="form-group">
+                    <label>Marca (Opzionale)</label>
+                    <input type="text" id="marca-prodotto">
+                    <small style="color: #8b949e;">OFF: <span id="inf-marca">-</span></small>
+                </div>
+
+                <div class="form-group">
+                    <label>Ubicazione (Es. Frigo, Dispensa)</label>
+                    <input type="text" id="ubicazione" value="Dispensa">
+                </div>
+
+                <div class="form-group" id="group-scadenza" style="display:none;">
+                    <label>Data di Scadenza</label>
+                    <input type="date" id="scadenza">
+                    <div id="inf-tipo-scadenza-badge"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Quantità</label>
+                    <input type="number" id="quantita" value="1" min="1" required>
+                </div>
+
+                <img id="img-anteprima" src="" alt="Anteprima prodotto">
+
+                <button type="submit">Registra Carico</button>
+            </form>
+        </div>
+
+        <div class="menu-link">
+            <a href="dispensa.html">← Torna al Menu Principale</a>
+        </div>
+    </div>
+
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const savedLang = localStorage.getItem('eat_me_first_lang') || 'it';
             document.getElementById('lingua-select').value = savedLang;
-            applicaTraduzioniCarico(savedLang);
             document.getElementById('barcode-input').focus();
         });
 
         function cambiaLingua(lang) {
             localStorage.setItem('eat_me_first_lang', lang);
-            applicaTraduzioniCarico(lang);
-        }
-
-        function applicaTraduzioniCarico(lang) {
-            const testi = {
-                it: { 
-                    title: "Carico Merci", 
-                    scanTitle: "🔍 Scanner Barcode & Open Food Facts",
-                    scanDesc: "Inquadra il codice a barre o inseriscilo e premi Invio. Se il prodotto non viene trovato, cercheremo alternative o potrai compilarlo.",
-                    btnCerca: "Cerca",
-                    btnCamOn: "Attiva Fotocamera / Scanner",
-                    btnCamOff: "Chiudi Fotocamera",
-                    btnManuale: "✏️ Compila Manualmente (Senza Barcode / Prodotto senza scadenza)",
-                    nome: "Nome Prodotto", 
-                    marca: "Marca (Opzionale)",
-                    ubicazione: "Ubicazione (Es. Frigo, Dispensa)",
-                    scadenza: "Data di Scadenza (verifica se appropriata)", 
-                    quantita: "Quantità", 
-                    btn: "Registra Carico", 
-                    menu: "← Torna al Menu Principale",
-                    footer: "EatMeFirst &bull; Gestione locale sicura"
-                },
-                // ... (altre lingue rimangono invariate)
-            };
-            // ... (logica traduzioni esistente)
         }
 
         function handleBarcodeKey(event) {
@@ -45,14 +179,10 @@
             }
         }
 
-        async function toggleFotocamera() {
-            // ... (codice fotocamera invariato)
-        }
-
         async function cercaOpenFoodFacts() {
             const barcode = document.getElementById('barcode-input').value.trim();
             if (!barcode) {
-                alert("Inserisci o scansiona un codice a barre valido o usa la compilazione manuale.");
+                alert("Inserisci o scansiona un codice a barre valido.");
                 return;
             }
 
@@ -67,7 +197,6 @@
                     const prodotto = data.product;
                     const nome = prodotto.product_name || prodotto.product_name_it || "";
                     const marca = prodotto.brands || "";
-                    const quantitaOFF = prodotto.quantity || "";
                     const immagine = prodotto.image_front_url || "";
 
                     if(nome) document.getElementById('nome-prodotto').value = nome;
@@ -75,18 +204,18 @@
 
                     document.getElementById('inf-nome').textContent = nome || "Sconosciuto";
                     document.getElementById('inf-marca').textContent = marca || "Non specificata";
-                    document.getElementById('inf-quantita-OFF').textContent = quantitaOFF || "Non specificata";
 
                     groupScadenza.style.display = 'block';
                     const dataConsigliata = new Date();
                     dataConsigliata.setDate(dataConsigliata.getDate() + 30);
                     document.getElementById('scadenza').value = dataConsigliata.toISOString().split('T')[0];
+                    document.getElementById('scadenza').required = true;
                     
                     badgeContainer.innerHTML = '<span class="scadenza-badge badge-consigliata">⚠️ Scadenza Consigliata (Verifica se appropriata)</span>';
 
                     const imgEl = document.getElementById('img-anteprima');
                     if(immagine) {
-                        vimgEl.src = immagine;
+                        imgEl.src = immagine;
                         imgEl.style.display = 'block';
                     } else {
                         imgEl.style.display = 'none';
@@ -95,7 +224,6 @@
                     document.getElementById('preview-prodotto').style.display = 'block';
                     document.getElementById('ubicazione').focus();
                 } else {
-                    // PRODOTTO NON TROVATO SU OPEN FOOD FACTS -> ATTHIAMO LA RICERCA ALTERNATIVA O FALLBACK SU ALTRI SITI
                     gestisciProdottoNonTrovato(barcode);
                 }
             } catch (error) {
@@ -104,18 +232,14 @@
             }
         }
 
-        // Funzione di supporto per cercare su altri siti/fonti o fallback
         function gestisciProdottoNonTrovato(barcode) {
             const cercaSulWeb = confirm(`Il codice a barre (${barcode}) non è presente su Open Food Facts.\n\nVuoi aprire una ricerca sul web per trovare informazioni o procedere con la compilazione manuale?`);
             
             if (cercaSulWeb) {
-                // Apre una scheda con Google o un altro motore di ricerca cercando il codice a barre specifico
                 window.open(`https://www.google.com/search?q=${encodeURIComponent(barcode)}`, '_blank');
             }
             
-            // Passa comunque alla compilazione manuale per permettere all'utente di inserirlo
             abilitaCompilazioneManuale();
-            // Pre-imposta il nome o lascia un indizio visivo se desiderato
             document.getElementById('nome-prodotto').value = `Prodotto [${barcode}]`;
         }
 
@@ -123,18 +247,18 @@
             const groupScadenza = document.getElementById('group-scadenza');
             const badgeContainer = document.getElementById('inf-tipo-scadenza-badge');
             
-            const haScadenza = confirm("Il prodotto ha una scadenza? (Premi 'OK' se ha scadenza tassativa da inserire, 'Annulla' se è un prodotto senza scadenza come i detersivi)");
+            const haScadenza = confirm("Il prodotto ha una scadenza? (Premi 'OK' se ha scadenza tassativa, 'Annulla' se è un prodotto senza scadenza come i detersivi)");
 
             if (haScadenza) {
                 groupScadenza.style.display = 'block';
                 document.getElementById('scadenza').value = '';
                 document.getElementById('scadenza').required = true;
-                badgeContainer.innerHTML = '<span class="scadenza-badge badge-tassativa">🔒 Scadenza Tassativa (Inserimento manuale obbligatorio)</span>';
+                badgeContainer.innerHTML = '<span class="scadenza-badge badge-tassativa">🔒 Scadenza Tassativa (Inserimento obbligatorio)</span>';
             } else {
                 groupScadenza.style.display = 'none';
                 document.getElementById('scadenza').required = false;
                 document.getElementById('scadenza').value = '';
-                badgeContainer.innerHTML = '<span class="scadenza-badge" style="background:#30363d; color:#8b949e;">Prodotto senza scadenza (es. Detersivo/Non alimentare)</span>';
+                badgeContainer.innerHTML = '<span class="scadenza-badge" style="background:#30363d; color:#8b949e;">Prodotto senza scadenza</span>';
             }
 
             document.getElementById('preview-prodotto').style.display = 'block';
@@ -168,3 +292,5 @@
             window.location.href = "dispensa.html";
         }
     </script>
+</body>
+</html>
