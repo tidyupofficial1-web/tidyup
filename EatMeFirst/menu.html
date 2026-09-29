@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EatMeFirst - Menu Principale</title>
-    <!-- Collegamento al file centrale delle 5 lingue -->
+    <!-- Collegamento al file centrale delle lingue -->
     <script src="i18n.js"></script>
     <style>
         :root {
@@ -63,7 +63,6 @@
 
         h1 { font-size: 1.2rem; margin: 0; color: var(--accent-blue); }
         
-        /* --- BARRA SUPERIORE / MENU A TENDINA E LINGUA --- */
         .top-bar-controls {
             display: flex;
             align-items: center;
@@ -137,7 +136,20 @@
             display: block;
         }
 
-        /* Hamburger Menu Stile */
+        .lang-select {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            padding: 8px 10px;
+            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            outline: none;
+        }
+        .lang-select:hover {
+            border-color: var(--text-muted);
+        }
+
         .menu-btn-nav { background: none; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; padding: 0 5px; }
         
         #side-menu {
@@ -164,7 +176,6 @@
 
         .container { max-width: 500px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; display: flex; flex-direction: column; gap: 0.9rem; }
         
-        /* Pulsanti del menu principali */
         .menu-card-btn { 
             background: var(--card-bg); 
             color: var(--text-main); 
@@ -195,7 +206,6 @@
         .btn-note { border-left-color: var(--accent-danger); }
         .btn-statistiche { border-left-color: #a855f7; }
 
-        /* Effetto lampeggiante per notifiche Block Notes */
         @keyframes pulse-blink {
             0% { border-left-color: var(--accent-danger); background-color: rgba(239, 68, 68, 0.05); }
             50% { border-left-color: #b91c1c; background-color: rgba(239, 68, 68, 0.15); }
@@ -203,7 +213,6 @@
         }
         .blinking-btn { animation: pulse-blink 1.2s infinite; }
 
-        /* Popup Notifica Nuove Note */
         #popup-notifica { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
         #popup-box { background: var(--card-bg); border: 1px solid var(--border-color); width: 100%; max-width: 400px; padding: 25px 20px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); text-align: center; }
         #popup-box h3 { color: var(--accent-danger); margin-bottom: 10px; font-size: 1.2rem; }
@@ -215,7 +224,6 @@
         .btn-apri { background: var(--accent-blue); color: #0d1117; }
         .btn-apri:hover { opacity: 0.85; }
 
-        /* Logo Fisso in basso a destra */
         .fixed-logo {
             position: fixed;
             bottom: 15px;
@@ -244,14 +252,13 @@
         <div class="header-left">
             <button class="menu-btn-nav" onclick="toggleMenu()">☰</button>
             <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="header-logo">
-            <h1>EatMeFirst</h1>
+            <h1 data-i18n="titolo_app">EatMeFirst</h1>
         </div>
         
-        <!-- CONTROLLI IN ALTO A DESTRA: MENU SUITE + LINGUA -->
         <div class="top-bar-controls">
             <div class="dropdown">
                 <button class="dropbtn">
-                    <span>≡ Suite</span>
+                    <span data-i18n="suite">≡ Suite</span>
                 </button>
                 <div class="dropdown-content">
                     <a href="../index.html">
@@ -268,8 +275,16 @@
                     </a>
                 </div>
             </div>
-            <!-- Selettore delle 5 lingue -->
-            <div id="header-lang"></div>
+            
+            <div id="header-lang">
+                <select id="select-lingua" class="lang-select" onchange="cambiaLingua(this.value)">
+                    <option value="it">🇮🇹 IT</option>
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="es">🇪🇸 ES</option>
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="de">🇩🇪 DE</option>
+                </select>
+            </div>
         </div>
     </header>
 
@@ -290,23 +305,20 @@
         <a href="#" onclick="avviaDetonatore()" class="menu-item danger">💣 Svuota Intera Dispensa</a>
     </div>
 
+    <!-- Pulsanti con chiavi data-i18n collegate -->
     <div class="container">
-        <!-- Funzioni Storiche della Dispensa -->
-        <a href="carico.html" class="menu-card-btn btn-dispensa">📦 Carico Articolo</a>
-        <a href="scarico.html" class="menu-card-btn btn-dispensa">📤 Scarico Prodotti</a>
-        <a href="dispensa.html" class="menu-card-btn btn-dispensa">📋 Visualizza Dispensa</a>
+        <a href="carico.html" class="menu-card-btn btn-dispensa">📦 <span data-i18n="carico">Carico Articolo</span></a>
+        <a href="scarico.html" class="menu-card-btn btn-dispensa">📤 <span data-i18n="scarico">Scarico Prodotti</span></a>
+        <a href="dispensa.html" class="menu-card-btn btn-dispensa">📋 <span data-i18n="dispensa">Visualizza Dispensa</span></a>
 
-        <!-- Sezioni Spesa e Note -->
-        <a href="liste.html" class="menu-card-btn btn-spesa">🛒 Lista della Spesa</a>
-        <a href="spesa.html" class="menu-card-btn btn-spesa">🛍️ Articoli da comperare</a>
-        <a href="statistiche.html" class="menu-card-btn btn-statistiche">📅 Agenda Scadenze (30 Giorni)</a>
-        <a href="mia_lista.html" id="btn-block-notes" class="menu-card-btn btn-note">💭 Ricordarsi di...</a>
+        <a href="liste.html" class="menu-card-btn btn-spesa">🛒 <span data-i18n="spesa_lista">Lista della Spesa</span></a>
+        <a href="spesa.html" class="menu-card-btn btn-spesa">🛍️ <span data-i18n="spesa_comperare">Articoli da comperare</span></a>
+        <a href="statistiche.html" class="menu-card-btn btn-statistiche">📅 <span data-i18n="agenda">Agenda Scadenze (30 Giorni)</span></a>
+        <a href="mia_lista.html" id="btn-block-notes" class="menu-card-btn btn-note">💭 <span data-i18n="ricordarsi">Ricordarsi di...</span></a>
     </div>
 
-    <!-- Logo fisso in basso a destra -->
     <img src="IMG/logo_1024_white.png" alt="Logo EatMeFirst" class="fixed-logo">
 
-    <!-- Popup Notifica Nuove Note -->
     <div id="popup-notifica">
         <div id="popup-box">
             <h3>Nuovi Appunti nel Block Notes!</h3>
@@ -318,23 +330,13 @@
         </div>
     </div>
 
-    <footer id="txt-footer" style="margin-top: 40px;">
+    <footer id="txt-footer" data-i18n="footer" style="margin-top: 40px;">
         EatMeFirst &bull; Gestione locale sicura
     </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Inserisce il selettore delle 5 lingue
-            const containerLang = document.getElementById('header-lang');
-            if (containerLang) {
-                containerLang.innerHTML = creaSelettoreLinguaHTML();
-            }
-
-            applicaTraduzioniFooter();
-
             let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { note: [] };
-            
-            // Verifica se ci sono note non lette (letto === false)
             let haNoteNonLette = db.note && db.note.some(n => n.letto === false);
             
             if (haNoteNonLette) {
@@ -350,7 +352,6 @@
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
-        // Funzione di Backup / Esportazione Database in JSON
         function esportaDatabase() {
             let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || {};
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
@@ -362,7 +363,6 @@
             downloadAnchor.remove();
         }
 
-        // Placeholder per il detonatore
         function avviaDetonatore() {
             if(confirm("ATTENZIONE: Stai per attivare il sistema di svuotamento totale della dispensa. Vuoi procedere?")) {
                 alert("Qui collegheremo la sequenza video del detonatore che abbiamo progettato!");
@@ -375,14 +375,6 @@
 
         function apriBlockNotes() {
             window.location.href = 'mia_lista.html';
-        }
-
-        function applicaTraduzioniFooter() {
-            const lang = getLinguaCorrente();
-            const glob = dizionarioGlobale[lang] || dizionarioGlobale['it'];
-            if(glob && glob.footer) {
-                document.getElementById('txt-footer').innerHTML = glob.footer;
-            }
         }
     </script>
 </body>
