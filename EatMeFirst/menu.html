@@ -332,9 +332,8 @@
         EatMeFirst &bull; Gestione locale sicura
     </footer>
 
-    <!-- SCRIPT MULTILINGUA E LOGICA INTEGRATA -->
+    <!-- SCRIPT COMPLETO CON MEMORIZZAZIONE DELLA LINGUA -->
     <script>
-        // Tabella del dizionario globale
         const dizionarioGlobale = {
             it: {
                 titolo_app: "EatMeFirst",
@@ -398,7 +397,6 @@
             }
         };
 
-        // Funzione per cambiare lingua
         function cambiaLingua(lang) {
             localStorage.setItem('eat_me_first_lang', lang);
             const traduzioni = dizionarioGlobale[lang] || dizionarioGlobale['it'];
@@ -411,11 +409,13 @@
             });
         }
 
-        // Avvio automatico al caricamento della pagina
+        // Al caricamento, legge la lingua salvata in precedenza e la imposta subito
         document.addEventListener('DOMContentLoaded', () => {
             const langSalvata = localStorage.getItem('eat_me_first_lang') || 'it';
             const selectLang = document.getElementById('select-lingua');
-            if (selectLang) selectLang.value = langSalvata;
+            if (selectLang) {
+                selectLang.value = langSalvata;
+            }
             cambiaLingua(langSalvata);
 
             // Controllo notifiche Block Notes
