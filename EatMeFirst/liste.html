@@ -4,86 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EatMeFirst - Lista della Spesa</title>
-    <!-- Collegamento al file centrale delle 5 lingue e al foglio di stile globale -->
-    <script src="i18n.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- BARRA SUPERIORE: MENU A TENDINA E SELETTORE LINGUA -->
-    <div class="top-bar-absolute">
-        <div class="dropdown">
-            <button class="dropbtn">
-                <span>≡ Moduli Suite</span>
-            </button>
-            <div class="dropdown-content">
-                <a href="../index.html">
-                    <img src="../IMG/logo_tidyup.png" alt="TidyUp Logo" class="dropdown-logo">
-                    Home TidyUp Suite
-                </a>
-                <a href="index.html">
-                    <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="dropdown-logo">
-                    EatMeFirst
-                </a>
-                <a href="../NO_FOOD/index.html">
-                    <img src="../NO_FOOD/IMG/logo_sortout.png" alt="SortOut Logo" class="dropdown-logo">
-                    SortOut
-                </a>
-            </div>
+    <header>
+        <div class="header-left">
+            <img src="logo.png" alt="Logo" class="header-logo">
+            <h1 data-i18n="spesa_lista">Lista della Spesa</h1>
         </div>
-        <!-- Selettore delle 5 lingue -->
-        <div id="header-lang"></div>
-    </div>
-
-    <!-- HEADER CON LOGO E TITOLO -->
-    <div class="main-header">
-        <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="header-logo">
-        <h1 id="txt-liste-title">Lista della Spesa</h1>
-    </div>
+        <div class="top-bar-controls">
+            <select id="select-lingua" class="lang-select" onchange="cambiaLingua(this.value)">
+                <option value="it">🇮🇹 IT</option>
+                <option value="en">🇬🇧 EN</option>
+                <option value="es">🇪🇸 ES</option>
+                <option value="fr">🇫🇷 FR</option>
+                <option value="de">🇩🇪 DE</option>
+            </select>
+        </div>
+    </header>
 
     <div class="container">
         
-        <!-- Clip Video Carrello Spesa -->
-        <div id="video-container">
-            <video id="clip-carrello" autoplay muted playsinline>
-                <source src="IMG/carrello_spesa.mp4" type="video/mp4">
-                Il tuo browser non supporta il formato video.
+        <!-- Video Container opzionale -->
+        <div id="video-container" class="card" style="padding: 10px;">
+            <video id="clip-carrello" autoplay muted>
+                <source src="carrello.mp4" type="video/mp4">
             </video>
         </div>
 
-        <!-- Sotto-tab: Da Prendere / Già Presi -->
+        <!-- Selettore dei Tab (Da Prendere / Già Presi) -->
         <div class="sub-tabs">
-            <div id="tab-btn-prendere" class="sub-tab active" onclick="cambiaVistaSpesa('prendere')">Da Prendere</div>
-            <div id="tab-btn-presi" class="sub-tab" onclick="cambiaVistaSpesa('presi')">Già Presi (Carrello)</div>
+            <div id="tab-btn-prendere" class="sub-tab active" onclick="cambiaVistaSpesa('prendere')" data-i18n="tabPrendere">Da Prendere</div>
+            <div id="tab-btn-presi" class="sub-tab" onclick="cambiaVistaSpesa('presi')" data-i18n="tabPresi">Già Presi (Carrello)</div>
         </div>
 
-        <!-- Sezione Da Prendere -->
+        <!-- Sezione Articoli da Acquistare -->
         <div id="sezione-prendere" class="card">
-            <h3 id="txt-sezione-prendere-titolo" style="color: var(--text-main); margin-bottom: 5px;">Articoli da Acquistare</h3>
-            <p id="txt-sezione-prendere-disc" style="font-size:0.82rem; color:var(--text-muted); margin-bottom:12px;">
-                Metti la spunta sui prodotti presi. Quelli non spuntati rimarranno qui per la prossima spesa.
-            </p>
+            <h3 data-i18n="titoloSezionePrendere" style="margin-bottom: 8px; color: var(--accent-blue);">Articoli da Acquistare</h3>
+            <p data-i18n="descSezionePrendere" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Metti la spunta sui prodotti presi. Quelli non spuntati rimarranno qui per la prossima spesa.</p>
             <div id="lista-da-prendere"></div>
         </div>
 
-        <!-- Sezione Già Presi -->
+        <!-- Sezione Prodotti nel Carrello -->
         <div id="sezione-presi" class="card" style="display: none;">
-            <h3 id="txt-sezione-presi-titolo" style="color: var(--text-main); margin-bottom: 5px;">Prodotti nel Carrello (Già Presi)</h3>
-            <p id="txt-sezione-presi-disc" style="font-size:0.82rem; color:var(--text-muted); margin-bottom:12px;">
-                Riepilogo dei prodotti acquistati. Cliccando il pulsante sotto verranno pulite le visualizzazioni sbarrate, lasciando intatti quelli non presi.
-            </p>
+            <h3 data-i18n="titoloSezionePresi" style="margin-bottom: 8px; color: var(--accent-green);">Prodotti nel Carrello (Già Presi)</h3>
+            <p data-i18n="descSezionePresi" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Riepilogo dei prodotti acquistati. Cliccando il pulsante sotto verranno pulite le visualizzazioni sbarrate, lasciando intatti quelli non presi.</p>
             <div id="lista-gia-presi"></div>
-            <button id="btn-pulisci-testi" class="btn-clean" onclick="pulisciProdottiPresi()">Pulisci testi sbarrati</button>
+            <button class="btn-clean" onclick="pulisciProdottiPresi()" data-i18n="btnPulisci">Pulisci testi sbarrati</button>
         </div>
 
-        <a id="nav-back-link" href="index.html" class="nav-back">&larr; Torna al Menu Principale</a>
+        <!-- Link di ritorno al Menu -->
+        <a href="index.html" class="nav-back" data-i18n="navBack">&larr; Torna al Menu Principale</a>
+
     </div>
 
-    <footer id="txt-footer" style="margin-top: 40px;">
-        EatMeFirst &bull; Gestione locale sicura
+    <footer>
+        <span data-i18n="footer">EatMeFirst &bull; Gestione locale sicura</span>
     </footer>
 
-    <!-- Collegamento alla logica JavaScript corretta -->
+    <script src="script.js"></script>
     <script src="liste.js"></script>
 </body>
 </html>
