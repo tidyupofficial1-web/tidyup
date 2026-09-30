@@ -20,8 +20,8 @@
 
         <h1>Carico Merci</h1>
         
-        <div class="form-group" data-help="Inquadra il codice a barre del prodotto con la fotocamera o digitinalo manualmente premendo Invio o la Barra Spaziatrice per avviare il riconoscimento automatico da Open Food Facts.">
-            <label>🔍 Scanner Barcode & Open Food Facts</label>
+        <div class="form-group" data-help="Inquadra il codice a barre del prodotto con la fotocamera o digitinalo manualmente premendo Invio o la Barra Spaziatrice per avviare il riconoscimento automatico dai database globali.">
+            <label>🔍 Scanner Barcode & Database Globali</label>
             <input type="text" id="barcode-input" placeholder="Scansiona o digita il codice a barre..." onkeydown="handleBarcodeKey(event)">
         </div>
 
@@ -34,6 +34,8 @@
             <h2>Dettagli Prodotto</h2>
             <form onsubmit="registraCarico(event)">
                 
+                <input type="hidden" id="data-carico">
+
                 <div class="form-group" data-help="Seleziona la categoria merceologica corretta. Aiuterà il sistema a gestire le scadenze e le ubicazioni ideali.">
                     <label>Categoria</label>
                     <select id="categoria-prodotto" required>
@@ -46,20 +48,21 @@
                         <option value="Bevande">🧃 Bevande</option>
                         <option value="Igiene">🧴 Igiene</option>
                         <option value="Pulizia">🧹 Pulizia</option>
+                        <option value="Casa & Varie">🔋 Casa, Pile & Animali</option>
                         <option value="Altro">📦 Altro</option>
                     </select>
                 </div>
 
                 <div class="form-group" data-help="Nome del prodotto compilato automaticamente dal codice a barre. Puoi integrarlo o modificarlo a piacimento (massimo 45 caratteri per mantenere le schermate pulite).">
                     <label>Descrizione / Nome Prodotto (Max 45 caratteri)</label>
-                    <input type="text" id="nome-prodotto" maxlength="45" placeholder="Es. Uova Bio, Mozzarella..." required oninput="stimaScadenzaDallaDescrizione(this.value)">
-                    <small style="color: #8b949e;">OFF: <span id="inf-nome">-</span></small>
+                    <input type="text" id="nome-prodotto" maxlength="45" placeholder="Es. Uova Bio, Pile stilo, Croccantini..." required oninput="stimaScadenzaDallaDescrizione(this.value)">
+                    <small style="color: #8b949e;">Database: <span id="inf-nome">-</span></small>
                 </div>
 
                 <div class="form-group" data-help="Inserisci il marchio del produttore o la provenienza (es. 'Mercato rionale', 'Fatto in casa'). Opzionale.">
                     <label>Marca / Origine (Opzionale, Max 30 caratteri)</label>
                     <input type="text" id="marca-prodotto" maxlength="30" placeholder="Es. Casalingo, Barilla...">
-                    <small style="color: #8b949e;">OFF: <span id="inf-marca">-</span></small>
+                    <small style="color: #8b949e;">Brand: <span id="inf-marca">-</span></small>
                 </div>
 
                 <div class="form-group" data-help="Scegli dove conserverai fisicamente il prodotto. La scelta influisce sui promemoria di conservazione.">
@@ -72,8 +75,8 @@
                     </select>
                 </div>
 
-                <!-- Gestione Quantità e Unità di Misura (Conversione Confezione -> Pezzi/Grammi) -->
-                <div class="form-group" data-help="Qui avviene la magia: se compri una confezione multipla (es. 18 uova o 6 bottiglie), indica qui il totale dei singoli pezzi o grammi contenuti, così quando scaricherai consumerai solo quelli parzialmente.">
+                <!-- Gestione Quantità e Unità di Misura -->
+                <div class="form-group" data-help="Se compri una confezione multipla (es. 18 uova o 6 bottiglie), indica qui il totale dei singoli pezzi o grammi contenuti, così quando scaricherai consumerai solo quelli parzialmente.">
                     <label>Quantità Interna Totale (Pezzi o Grammi)</label>
                     <div style="display: flex; gap: 10px;">
                         <input type="number" id="quantita" value="1" min="1" required style="flex: 2;">
@@ -83,16 +86,14 @@
                             <option value="ml">Millilitri (ml)</option>
                         </select>
                     </div>
-                    <small style="color: #58a6ff;" id="inf-conversione">💡 1 Confezione intera</small>
+                    <small style="color: #58a6ff;" id="inf-conversione">💡 Confezione standard</small>
                 </div>
 
                 <!-- Sezione Data di Scadenza -->
                 <div class="form-group" id="group-scadenza" data-help="Inserisci la data di scadenza reale (tassativa) o verifica quella stimata automaticamente dall'applicazione.">
                     <label>Data di Scadenza</label>
                     <div class="date-inputs-container">
-                        <input type="number" id="scad-gg" placeholder="GG" min="1" max="31">
-                        <input type="number" id="scad-mm" placeholder="MM" min="1" max="12">
-                        <input type="number" id="scad-aa" placeholder="AAAA" min="2026" max="2040">
+                        <input type="date" id="scadenza" style="width: 100%; text-align: center;">
                     </div>
                     <div id="inf-tipo-scadenza-badge"></div>
                 </div>

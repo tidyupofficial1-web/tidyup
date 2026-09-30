@@ -35,12 +35,13 @@ input, select {
     color: #c9d1d9;
     border-radius: 4px;
 }
+input:focus, select:focus {
+    border-color: #58a6ff;
+    outline: none;
+}
 .date-inputs-container {
     display: flex;
     gap: 10px;
-}
-.date-inputs-container input {
-    text-align: center;
 }
 button {
     background-color: #238636;
@@ -100,8 +101,11 @@ button:hover {
 }
 #reader {
     width: 100%;
-    max-width: 500px;
+    max-width: 400px;
+    min-height: 250px;
     margin: 0 auto 15px auto;
+    border: 2px dashed #58a6ff;
+    border-radius: 8px;
     display: none;
 }
 .help-toggle-bar {

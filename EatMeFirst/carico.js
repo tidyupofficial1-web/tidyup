@@ -1,6 +1,7 @@
-let mostraAiutiAttivo = true;
 let html5QrCode = null;
 let cameraAttiva = false;
+let tipoScadenzaCorrente = "consigliata"; 
+let mostraAiutiAttivo = true;
 
 document.addEventListener('DOMContentLoaded', () => {
     const savedHelpPref = localStorage.getItem('eat_me_first_help');
@@ -9,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('chk-mostra-aiuti').checked = false;
     }
 
+    document.getElementById('barcode-input').focus();
     inizializzaListenerCampi();
     impostaDataOdierna();
 });
@@ -44,76 +46,79 @@ function chiudiTooltip() {
 function impostaDataOdierna() {
     const oggi = new Date().toISOString().split('T')[0];
     const campoData = document.getElementById('data-carico');
-    if(campoData && !campoData.value) {
-        campoData.value = oggi;
+    if(campoData) campoData.value = oggi;
+}
+
+function handleBarcodeKey(event) {
+    if (event.key === 'Enter' || event.code === 'Space') {
+        event.preventDefault();
+        cercaBarcodeMultiplo();
     }
 }
 
-// Gestione Fotocamera con Html5Qrcode
-async function avviaFotocamera() {
+// Gestione Fotocamera Robusta per Mobile e Web
+async function toggleFotocamera() {
     const readerDiv = document.getElementById('reader');
-    readerDiv.style.display = 'block';
+    const btnCam = document.getElementById('btn-toggle-cam');
 
-    if (cameraAttiva) return;
-
-    try {
-        html5QrCode = new Html5Qrcode("reader");
-        await html5QrCode.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: { width: 250, height: 150 } },
-            async (decodedText) => {
-                document.getElementById('barcode-input').value = decodedText;
-                await chiudiFotocamera();
-                cercaBarcodeMultiplo();
-            },
-            (errorMessage) => {
-                // Errori di scansione fotogramma ignorati per fluidità
-            }
-        );
+    if (!cameraAttiva) {
+        readerDiv.style.display = 'block';
+        btnCam.textContent = "🛑 Chiudi Fotocamera";
         cameraAttiva = true;
-    } catch (err) {
-        console.error("Errore avvio fotocamera:", err);
-        alert("Impossibile avviare la fotocamera. Verifica i permessi del browser.");
-        readerDiv.style.display = 'none';
-        cameraAttiva = false;
+
+        try {
+            html5QrCode = new Html5Qrcode("reader");
+            await html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 220, height: 140 } },
+                async (decodedText) => {
+                    document.getElementById('barcode-input').value = decodedText;
+                    await chiudiFotocamera();
+                    cercaBarcodeMultiplo();
+                },
+                (errorMessage) => {}
+            );
+        } catch (err) {
+            console.error("Errore fotocamera:", err);
+            alert("Impossibile accedere alla fotocamera. Verifica i permessi del browser sul cellulare.");
+            await chiudiFotocamera();
+        }
+    } else {
+        await chiudiFotocamera();
     }
 }
 
 async function chiudiFotocamera() {
-    if (html5QrCode && cameraAttiva) {
+    if (html5QrCode) {
         try {
-            await html5QrCode.stop();
+            if (html5QrCode.isScanning) {
+                await html5QrCode.stop();
+            }
             html5QrCode.clear();
-        } catch (e) {
-            console.error("Errore chiusura fotocamera", e);
-        }
-        cameraAttiva = false;
+        } catch (e) {}
     }
+    html5QrCode = null;
     document.getElementById('reader').style.display = 'none';
+    document.getElementById('btn-toggle-cam').textContent = "📷 Attiva Fotocamera / Scanner";
+    cameraAttiva = false;
 }
 
-// Ricerca sequenziale su 3 database: Alimentari -> Cosmetici/Igiene -> Prodotti Vari (Casa, Animali, Pile)
+// Ricerca Multipla: Open Food Facts -> Open Beauty Facts -> Open Products Facts
 async function cercaBarcodeMultiplo() {
     if (cameraAttiva) await chiudiFotocamera();
 
     const barcode = document.getElementById('barcode-input').value.trim();
-    if (!barcode) {
-        alert("Inserisci o scansiona un codice a barre valido.");
-        return;
-    }
+    if (!barcode) return;
 
     try {
-        // 1. Tentativo: Open Food Facts (Alimentari)
         let response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
         let data = await response.json();
 
-        // 2. Tentativo: Open Beauty Facts (Cosmetici e Igiene personale)
         if (!data || data.status !== 1) {
             response = await fetch(`https://world.openbeautyfacts.org/api/v0/product/${barcode}.json`);
             data = await response.json();
         }
 
-        // 3. Tentativo: Open Products Facts (Casa, animali, pile, stoviglie, varia)
         if (!data || data.status !== 1) {
             response = await fetch(`https://world.openproductsfacts.org/api/v0/product/${barcode}.json`);
             data = await response.json();
@@ -130,7 +135,7 @@ async function cercaBarcodeMultiplo() {
             if(nome) document.getElementById('nome-prodotto').value = nome;
             if(marca) document.getElementById('marca-prodotto').value = marca;
 
-            document.getElementById('inf-nome').textContent = nome || "Sconosciuto";
+            document.getElementById('inf-nome').textContent = nome || "Trovato";
             document.getElementById('inf-marca').textContent = marca || "Non specificata";
 
             estraiQuantitaIntelligente(prodotto.quantity || "");
@@ -150,7 +155,6 @@ async function cercaBarcodeMultiplo() {
             gestisciProdottoNonTrovato(barcode);
         }
     } catch (error) {
-        console.error("Errore di rete durante la ricerca del barcode:", error);
         gestisciProdottoNonTrovato(barcode);
     }
 }
@@ -160,64 +164,81 @@ function estraiQuantitaIntelligente(rawQuantity) {
     const match = rawQuantity.match(/(\d+)/);
     if (match) {
         document.getElementById('quantita').value = match[1];
+        document.getElementById('inf-conversione').textContent = `💡 Riconosciuto: "${rawQuantity}"`;
     }
 }
 
-function impostaScadenzaConsigliata(giorni) {
-    const dataCorrente = new Date();
-    dataCorrente.setDate(dataCorrente.getDate() + giorni);
-    document.getElementById('scadenza').value = dataCorrente.toISOString().split('T')[0];
-}
-
-function gestisciProdottoNonTrovato(barcode) {
-    document.getElementById('inf-nome').textContent = "Prodotto non catalogato";
-    document.getElementById('inf-marca').textContent = "Inserisci i dati manualmente";
-    document.getElementById('img-anteprima').style.display = 'none';
+function abilitaCompilazioneManuale() {
+    if (cameraAttiva) chiudiFotocamera();
     document.getElementById('preview-prodotto').style.display = 'block';
-    
-    document.getElementById('nome-prodotto').value = "";
-    document.getElementById('marca-prodotto').value = "";
-    document.getElementById('quantita').value = "1";
-    
     document.getElementById('nome-prodotto').focus();
 }
 
-function salvaProdotto() {
-    const nome = document.getElementById('nome-prodotto').value.trim();
-    const barcode = document.getElementById('barcode-input').value.trim();
-    const ubicazione = document.getElementById('ubicazione').value;
-    const scadenza = document.getElementById('scadenza').value;
-    const quantita = parseInt(document.getElementById('quantita').value) || 1;
-    const marca = document.getElementById('marca-prodotto').value.trim();
+function impostaScadenzaConsigliata(giorniInPiu) {
+    tipoScadenzaCorrente = "consigliata";
+    const dataProposta = new Date();
+    dataProposta.setDate(dataProposta.getDate() + giorniInPiu);
+    document.getElementById('scadenza').value = dataProposta.toISOString().split('T')[0];
+    document.getElementById('inf-tipo-scadenza-badge').innerHTML = '<span class="scadenza-badge badge-consigliata">⏳ Scadenza Consigliata</span>';
+}
 
-    if (!nome) {
-        alert("Il nome del prodotto è obbligatorio.");
-        document.getElementById('nome-prodotto').focus();
-        return;
+function stimaScadenzaDallaDescrizione(testo) {
+    if (tipoScadenzaCorrente !== "consigliata") return;
+    const t = testo.toLowerCase();
+    let giorni = 30;
+
+    if (t.includes('latte') || t.includes('fresco') || t.includes('mozzarella') || t.includes('ricotta')) {
+        giorni = 7;
+    } else if (t.includes('carne') || t.includes('pesce')) {
+        giorni = 3;
+    } else if (t.includes('pane')) {
+        giorni = 4;
     }
 
-    let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [], spesa: [] };
+    const d = new Date();
+    d.setDate(d.getDate() + giorni);
+    document.getElementById('scadenza').value = d.toISOString().split('T')[0];
+}
 
-    const nuovoItem = {
+function gestisciProdottoNonTrovato(barcode) {
+    document.getElementById('inf-nome').textContent = "Non catalogato";
+    document.getElementById('inf-marca').textContent = "Inserimento manuale";
+    document.getElementById('img-anteprima').style.display = 'none';
+    document.getElementById('preview-prodotto').style.display = 'block';
+    
+    document.getElementById('nome-prodotto').value = `Prodotto [${barcode}]`;
+    document.getElementById('marca-prodotto').value = "";
+    document.getElementById('quantita').value = "1";
+    document.getElementById('nome-prodotto').focus();
+}
+
+function registraCarico(event) {
+    event.preventDefault();
+
+    const nome = document.getElementById('nome-prodotto').value.trim();
+    const barcode = document.getElementById('barcode-input').value.trim();
+    const scadenzaVal = document.getElementById('scadenza').value || "Nessuna scadenza";
+
+    const nuovoArticolo = {
         id: Date.now(),
         barcode: barcode,
+        categoria: document.getElementById('categoria-prodotto').value,
         nome: nome,
-        marca: marca,
-        ubicazione: ubicazione,
-        scadenza: scadenza,
-        quantita: quantita,
-        unitaMisura: "pezzi",
-        lowStock: false,
+        marca: document.getElementById('marca-prodotto').value.trim(),
+        ubicazione: document.getElementById('ubicazione').value,
+        scadenza: scadenzaVal,
+        quantita: parseInt(document.getElementById('quantita').value) || 1,
+        unitaMisura: document.getElementById('unita-misura').value,
+        immagine: document.getElementById('img-anteprima').src || "",
         dataCarico: document.getElementById('data-carico').value
     };
 
-    db.dispensa.push(nuovoItem);
+    let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [], spesa: [] };
+    if (!db.dispensa) db.dispensa = [];
+    
+    db.dispensa.push(nuovoArticolo);
     localStorage.setItem('eat_me_first_db', JSON.stringify(db));
 
-    alert(`Prodotto "${nome}" salvato con successo in ${ubicazione}!`);
-    
-    // Reset form
-    document.getElementById('barcode-input').value = "";
-    document.getElementById('preview-prodotto').style.display = 'none';
-    document.getElementById('barcode-input').focus();
+    alert("Articolo caricato con successo nella dispensa!");
+    window.location.href = "dispensa.html";
 }
