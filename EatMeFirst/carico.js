@@ -113,7 +113,7 @@ async function chiudiFotocamera() {
     cameraAttiva = false;
 }
 
-// Ricerca Multipla con rilevamento intelligente della Categoria e dell'Ubicazione passata
+// Ricerca Multipla con gestione corretta della quantità singola (es. tubetti) e scadenze
 async function cercaBarcodeMultiplo() {
     if (cameraAttiva) await chiudiFotocamera();
 
@@ -152,14 +152,14 @@ async function cercaBarcodeMultiplo() {
             document.getElementById('inf-nome').textContent = nome || "Trovato";
             document.getElementById('inf-marca').textContent = marca || "Non specificata";
 
-            // Assegnazione Categoria Intelligente in base al database di origine
             impostaCategoriaIntelligente(fonteTrovata, nome);
-
-            // Controllo Storico Ubicazione: se l'utente lo aveva già caricato in passato, riproponiamo la sua ubicazione
             impostaUbicazioneStorica(barcode, nome);
 
-            estraiQuantitaIntelligente(prodotto.quantity || "");
-            impostaScadenzaConsigliata(30);
+            // Corretto: per prodotti singoli o tubetti (es. dentifricio) la quantità è 1 pezzo
+            gestisciQuantitaPezzoSingolo(prodotto.quantity || "");
+            
+            // Imposta correttamente la scadenza stimata (es. 90 o 365 giorni per non alimentari)
+            impostaScadenzaIntelligentePerCategoria(fonteTrovata, nome);
 
             const imgEl = document.getElementById('img-anteprima');
             if(immagine) {
@@ -198,7 +198,6 @@ function impostaCategoriaIntelligente(fonte, nomeProdotto) {
     }
 }
 
-// Verifica nel database locale se questo prodotto era già stato salvato in precedenza per riproporre la sua ubicazione esatta
 function impostaUbicazioneStorica(barcode, nome) {
     let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [], spesa: [] };
     const storicoItem = (db.dispensa || []).reverse().find(item => (barcode && item.barcode === barcode) || item.name === nome);
@@ -207,31 +206,60 @@ function impostaUbicazioneStorica(barcode, nome) {
     if (storicoItem && storicoItem.ubicazione) {
         selectUbicazione.value = storicoItem.ubicazione;
     } else {
-        selectUbicazione.value = "Dispensa"; // Default neutro se mai inserito prima
+        selectUbicazione.value = "Dispensa";
     }
 }
 
-function estraiQuantitaIntelligente(rawQuantity) {
-    if (!rawQuantity) return;
-    const match = rawQuantity.match(/(\d+)/);
-    if (match) {
-        document.getElementById('quantita').value = match[1];
-        document.getElementById('inf-conversione').textContent = `💡 Riconosciuto: "${rawQuantity}"`;
+function gestisciQuantitaPezzoSingolo(rawQuantity) {
+    // Per articoli non alimentari o flaconi singoli (es. 75 ml di dentifricio), la quantità è 1 pezzo
+    document.getElementById('quantita').value = "1";
+    document.getElementById('unita-misura').value = "pezzi";
+    if (rawQuantity) {
+        document.getElementById('inf-conversione').textContent = `💡 Confezione singola (${rawQuantity})`;
+    } else {
+        document.getElementById('inf-conversione').textContent = `💡 Confezione singola`;
     }
+}
+
+function impostaScadenzaIntelligentePerCategoria(fonte, nomeProdotto) {
+    tipoScadenzaCorrente = "consigliata";
+    const t = nomeProdotto.toLowerCase();
+    let giorni = 30;
+
+    if (fonte === "igiene" || fonte === "casa" || t.includes('dentifricio') || t.includes('pile') || t.includes('piatti')) {
+        giorni = 365; // 1 anno di default per prodotti non deperibili
+    } else if (t.includes('latte') || t.includes('fresco')) {
+        giorni = 7;
+    } else if (t.includes('carne') || t.includes('pesce')) {
+        giorni = 3;
+    }
+
+    const dataProposta = new Date();
+    dataProposta.setDate(dataProposta.getDate() + giorni);
+    document.getElementById('scadenza').value = dataProposta.toISOString().split('T')[0];
+    document.getElementById('inf-tipo-scadenza-badge').innerHTML = '<span class="scadenza-badge badge-consigliata">⏳ Scadenza Stimata</span>';
+}
+
+function stimaScadenzaDallaDescrizione(testo) {
+    if (tipoScadenzaCorrente !== "consigliata") return;
+    const t = testo.toLowerCase();
+    let giorni = 30;
+
+    if (t.includes('dentifricio') || t.includes('pile') || t.includes('piatti') || t.includes('fazzoletti')) {
+        giorni = 365;
+    } else if (t.includes('latte') || t.includes('fresco')) {
+        giorni = 7;
+    }
+
+    const d = new Date();
+    d.setDate(d.getDate() + giorni);
+    document.getElementById('scadenza').value = d.toISOString().split('T')[0];
 }
 
 function abilitaCompilazioneManuale() {
     if (cameraAttiva) chiudiFotocamera();
     document.getElementById('preview-prodotto').style.display = 'block';
     document.getElementById('nome-prodotto').focus();
-}
-
-function impostaScadenzaConsigliata(giorniInPiu) {
-    tipoScadenzaCorrente = "consigliata";
-    const dataProposta = new Date();
-    dataProposta.setDate(dataProposta.getDate() + giorniInPiu);
-    document.getElementById('scadenza').value = dataProposta.toISOString().split('T')[0];
-    document.getElementById('inf-tipo-scadenza-badge').innerHTML = '<span class="scadenza-badge badge-consigliata">⏳ Scadenza Consigliata</span>';
 }
 
 function gestisciProdottoNonTrovato(barcode) {

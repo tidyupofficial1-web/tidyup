@@ -25,19 +25,24 @@ label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
+    color: #e6edf3;
 }
+/* Campi di inserimento con FONDO BIANCO e testo scuro come richiesto */
 input, select {
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
-    background-color: #0d1117;
+    background-color: #ffffff;
     border: 1px solid #30363d;
-    color: #c9d1d9;
+    color: #24292e;
     border-radius: 4px;
+    font-size: 15px;
+    font-weight: 500;
 }
 input:focus, select:focus {
     border-color: #58a6ff;
     outline: none;
+    box-shadow: 0 0 5px rgba(88, 166, 255, 0.5);
 }
 .date-inputs-container {
     display: flex;
@@ -46,12 +51,13 @@ input:focus, select:focus {
 button {
     background-color: #238636;
     color: white;
-    padding: 10px 15px;
+    padding: 12px 15px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     width: 100%;
     font-size: 16px;
+    font-weight: bold;
     margin-top: 10px;
 }
 button:hover {

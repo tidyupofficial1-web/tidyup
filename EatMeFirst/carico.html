@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carico Merci - EatMeFirst</title>
-    <!-- Libreria per lo scanner di codici a barre tramite fotocamera -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <link rel="stylesheet" href="carico.css">
 </head>
@@ -20,8 +19,8 @@
 
         <h1>Carico Merci</h1>
         
-        <div class="form-group" data-help="Inquadra il codice a barre del prodotto con la fotocamera o digitinalo manualmente premendo Invio o la Barra Spaziatrice per avviare il riconoscimento automatico dai database globali.">
-            <label>🔍 Scanner Barcode & Database Globali</label>
+        <div class="form-group" data-help="Inquadra il codice a barre o digitalo manualmente. Puoi confermare l'inserimento premendo la Barra Spaziatrice o il tasto Invio sulla tastiera per avviare subito la ricerca nei database.">
+            <label>🔍 Scanner Barcode & Database Globali (Usa Spazio o Invio per cercare)</label>
             <input type="text" id="barcode-input" placeholder="Scansiona o digita il codice a barre..." onkeydown="handleBarcodeKey(event)">
         </div>
 
@@ -36,7 +35,7 @@
                 
                 <input type="hidden" id="data-carico">
 
-                <div class="form-group" data-help="Seleziona la categoria merceologica corretta. Aiuterà il sistema a gestire le scadenze e le ubicazioni ideali.">
+                <div class="form-group" data-help="Seleziona la categoria merceologica corretta. L'app la compila in automatico ma puoi cambiarla liberamente.">
                     <label>Categoria</label>
                     <select id="categoria-prodotto" required>
                         <option value="Latticini">🥛 Latticini</option>
@@ -53,20 +52,20 @@
                     </select>
                 </div>
 
-                <div class="form-group" data-help="Nome del prodotto compilato automaticamente dal codice a barre. Puoi integrarlo o modificarlo a piacimento (massimo 45 caratteri per mantenere le schermate pulite).">
+                <div class="form-group" data-help="Nome del prodotto compilato automaticamente. Massimo 45 caratteri per mantenere le schermate pulite e leggibili.">
                     <label>Descrizione / Nome Prodotto (Max 45 caratteri)</label>
-                    <input type="text" id="nome-prodotto" maxlength="45" placeholder="Es. Uova Bio, Pile stilo, Croccantini..." required oninput="stimaScadenzaDallaDescrizione(this.value)">
+                    <input type="text" id="nome-prodotto" maxlength="45" placeholder="Es. Dentifricio AZ, Uova Bio..." required oninput="stimaScadenzaDallaDescrizione(this.value)">
                     <small style="color: #8b949e;">Database: <span id="inf-nome">-</span></small>
                 </div>
 
-                <div class="form-group" data-help="Inserisci il marchio del produttore o la provenienza (es. 'Mercato rionale', 'Fatto in casa'). Opzionale.">
+                <div class="form-group" data-help="Inserisci il marchio del produttore o l'origine (es. 'Mercato rionale', 'Fatto in casa'). Opzionale.">
                     <label>Marca / Origine (Opzionale, Max 30 caratteri)</label>
                     <input type="text" id="marca-prodotto" maxlength="30" placeholder="Es. Casalingo, Barilla...">
                     <small style="color: #8b949e;">Brand: <span id="inf-marca">-</span></small>
                 </div>
 
-                <div class="form-group" data-help="Scegli dove conserverai fisicamente il prodotto. La scelta influisce sui promemoria di conservazione.">
-                    <label>Ubicazione</label>
+                <div class="form-group" data-help="Scegli dove riporre il prodotto. L'app ricorderà la scelta fatta per questo articolo per i prossimi carichi futuri.">
+                    <label>Ubicazione (Apprende dai tuoi inserimenti precedenti)</label>
                     <select id="ubicazione">
                         <option value="Dispensa">Dispensa</option>
                         <option value="Frigorifero">Frigorifero</option>
@@ -76,8 +75,8 @@
                 </div>
 
                 <!-- Gestione Quantità e Unità di Misura -->
-                <div class="form-group" data-help="Se compri una confezione multipla (es. 18 uova o 6 bottiglie), indica qui il totale dei singoli pezzi o grammi contenuti, così quando scaricherai consumerai solo quelli parzialmente.">
-                    <label>Quantità Interna Totale (Pezzi o Grammi)</label>
+                <div class="form-group" data-help="Per oggetti singoli come tubetti di dentifricio o flaconi, la quantità è 1 pezzo. Gestisci qui eventuali confezioni multiple (es. 6 bottiglie).">
+                    <label>Quantità Confezione</label>
                     <div style="display: flex; gap: 10px;">
                         <input type="number" id="quantita" value="1" min="1" required style="flex: 2;">
                         <select id="unita-misura" style="flex: 1;">
@@ -86,11 +85,11 @@
                             <option value="ml">Millilitri (ml)</option>
                         </select>
                     </div>
-                    <small style="color: #58a6ff;" id="inf-conversione">💡 Confezione standard</small>
+                    <small style="color: #58a6ff;" id="inf-conversione">💡 Unità standard singola</small>
                 </div>
 
                 <!-- Sezione Data di Scadenza -->
-                <div class="form-group" id="group-scadenza" data-help="Inserisci la data di scadenza reale (tassativa) o verifica quella stimata automaticamente dall'applicazione.">
+                <div class="form-group" id="group-scadenza" data-help="Verifica la data di scadenza proposta o selezionala dal calendario se si tratta di un prodotto fresco o con scadenza ravvicinata.">
                     <label>Data di Scadenza</label>
                     <div class="date-inputs-container">
                         <input type="date" id="scadenza" style="width: 100%; text-align: center;">
