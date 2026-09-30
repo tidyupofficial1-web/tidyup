@@ -27,7 +27,6 @@ label {
     font-weight: bold;
     color: #e6edf3;
 }
-/* Campi di inserimento con FONDO BIANCO e testo scuro come richiesto */
 input, select {
     width: 100%;
     padding: 10px;
@@ -121,8 +120,6 @@ button:hover {
     border-bottom: 1px solid #30363d;
     padding-bottom: 10px;
 }
-
-/* Stile Modale / Popup Aiuto Contestuale */
 .tooltip-modal {
     display: none;
     position: fixed;
@@ -152,7 +149,6 @@ button:hover {
     line-height: 1.4;
     margin-bottom: 20px;
 }
-
 .menu-link {
     text-align: center;
     margin-top: 25px;

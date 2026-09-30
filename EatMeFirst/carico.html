@@ -64,14 +64,12 @@
                     <small style="color: #8b949e;">Brand: <span id="inf-marca">-</span></small>
                 </div>
 
-                <div class="form-group" data-help="Scegli dove riporre il prodotto. L'app ricorderà la scelta fatta per questo articolo per i prossimi carichi futuri.">
-                    <label>Ubicazione (Apprende dai tuoi inserimenti precedenti)</label>
-                    <select id="ubicazione">
-                        <option value="Dispensa">Dispensa</option>
-                        <option value="Frigorifero">Frigorifero</option>
-                        <option value="Freezer">Freezer</option>
-                        <option value="Cantina / Altro">Cantina / Altro</option>
+                <div class="form-group" data-help="Seleziona l'ubicazione. La prima volta sarà vuota: scegli o crea il luogo dove metti il prodotto. Nelle volte successive ti verrà proposto tra i posti salvati in precedenza.">
+                    <label>Ubicazione (Dinamica basata sui tuoi inserimenti)</label>
+                    <select id="ubicazione" required>
+                        <option value="" disabled selected>-- Seleziona o crea un'ubicazione --</option>
                     </select>
+                    <small style="color: #8b949e;">💡 Puoi aggiungere nuove ubicazioni al volo.</small>
                 </div>
 
                 <!-- Gestione Quantità e Unità di Misura -->
@@ -89,7 +87,7 @@
                 </div>
 
                 <!-- Sezione Data di Scadenza -->
-                <div class="form-group" id="group-scadenza" data-help="Verifica la data di scadenza proposta o selezionala dal calendario se si tratta di un prodotto fresco o con scadenza ravvicinata.">
+                <div class="form-group" id="group-scadenza" data-help="Verifica la data di scadenza proposta o selezionala dal calendario. Puoi sempre modificarla o allungarla se il prodotto dura di più.">
                     <label>Data di Scadenza</label>
                     <div class="date-inputs-container">
                         <input type="date" id="scadenza" style="width: 100%; text-align: center;">

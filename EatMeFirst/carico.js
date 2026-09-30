@@ -113,7 +113,7 @@ async function chiudiFotocamera() {
     cameraAttiva = false;
 }
 
-// Ricerca Multipla con gestione corretta della quantità singola (es. tubetti) e scadenze
+// Ricerca Multipla con gestione ubicazioni dinamiche e storico
 async function cercaBarcodeMultiplo() {
     if (cameraAttiva) await chiudiFotocamera();
 
@@ -154,11 +154,7 @@ async function cercaBarcodeMultiplo() {
 
             impostaCategoriaIntelligente(fonteTrovata, nome);
             impostaUbicazioneStorica(barcode, nome);
-
-            // Corretto: per prodotti singoli o tubetti (es. dentifricio) la quantità è 1 pezzo
             gestisciQuantitaPezzoSingolo(prodotto.quantity || "");
-            
-            // Imposta correttamente la scadenza stimata (es. 90 o 365 giorni per non alimentari)
             impostaScadenzaIntelligentePerCategoria(fonteTrovata, nome);
 
             const imgEl = document.getElementById('img-anteprima');
@@ -198,20 +194,56 @@ function impostaCategoriaIntelligente(fonte, nomeProdotto) {
     }
 }
 
+// Gestione Ubicazioni Dinamiche (Partono vuote e si popolano solo con i salvataggi utente)
+function aggiornaListaUbicazioniDinamiche(ubicazioneSelezionata = "") {
+    let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [], spesa: [] };
+    const selectUbicazione = document.getElementById('ubicazione');
+    
+    const ubicazioniSalvate = [...new Set((db.dispensa || []).map(item => item.ubicazione).filter(Boolean))];
+    
+    selectUbicazione.innerHTML = '<option value="" disabled selected>-- Seleziona un\'ubicazione --</option>';
+    
+    ubicazioniSalvate.forEach(ub => {
+        const opt = document.createElement('option');
+        opt.value = ub;
+        opt.textContent = ub;
+        selectUbicazione.appendChild(opt);
+    });
+
+    const optNuova = document.createElement('option');
+    optNuova.value = "__nuova__";
+    optNuova.textContent = "➕ Aggiungi nuova ubicazione...";
+    selectUbicazione.appendChild(optNuova);
+
+    if (ubicazioneSelezionata && ubicazioniSalvate.includes(ubicazioneSelezionata)) {
+        selectUbicazione.value = ubicazioneSelezionata;
+    }
+
+    selectUbicazione.onchange = function() {
+        if (this.value === "__nuova__") {
+            const nuovoLuogo = prompt("Inserisci il nome della nuova ubicazione (es. Frigo alto, Cantina scaffale 2):");
+            if (nuovoLuogo && nuovoLuogo.trim() !== "") {
+                const nomeNuovo = nuovoLuogo.trim();
+                const optNew = document.createElement('option');
+                optNew.value = nomeNuovo;
+                optNew.textContent = nomeNuovo;
+                selectUbicazione.insertBefore(optNew, selectUbicazione.lastElementChild);
+                selectUbicazione.value = nomeNuovo;
+            } else {
+                selectUbicazione.value = "";
+            }
+        }
+    };
+}
+
 function impostaUbicazioneStorica(barcode, nome) {
     let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [], spesa: [] };
     const storicoItem = (db.dispensa || []).reverse().find(item => (barcode && item.barcode === barcode) || item.name === nome);
-
-    const selectUbicazione = document.getElementById('ubicazione');
-    if (storicoItem && storicoItem.ubicazione) {
-        selectUbicazione.value = storicoItem.ubicazione;
-    } else {
-        selectUbicazione.value = "Dispensa";
-    }
+    const ubicazioneTrovata = storicoItem ? storicoItem.ubicazione : "";
+    aggiornaListaUbicazioniDinamiche(ubicazioneTrovata);
 }
 
 function gestisciQuantitaPezzoSingolo(rawQuantity) {
-    // Per articoli non alimentari o flaconi singoli (es. 75 ml di dentifricio), la quantità è 1 pezzo
     document.getElementById('quantita').value = "1";
     document.getElementById('unita-misura').value = "pezzi";
     if (rawQuantity) {
@@ -227,7 +259,7 @@ function impostaScadenzaIntelligentePerCategoria(fonte, nomeProdotto) {
     let giorni = 30;
 
     if (fonte === "igiene" || fonte === "casa" || t.includes('dentifricio') || t.includes('pile') || t.includes('piatti')) {
-        giorni = 365; // 1 anno di default per prodotti non deperibili
+        giorni = 365;
     } else if (t.includes('latte') || t.includes('fresco')) {
         giorni = 7;
     } else if (t.includes('carne') || t.includes('pesce')) {
@@ -258,6 +290,7 @@ function stimaScadenzaDallaDescrizione(testo) {
 
 function abilitaCompilazioneManuale() {
     if (cameraAttiva) chiudiFotocamera();
+    aggiornaListaUbicazioniDinamiche("");
     document.getElementById('preview-prodotto').style.display = 'block';
     document.getElementById('nome-prodotto').focus();
 }
@@ -266,6 +299,7 @@ function gestisciProdottoNonTrovato(barcode) {
     document.getElementById('inf-nome').textContent = "Non catalogato";
     document.getElementById('inf-marca').textContent = "Inserimento manuale";
     document.getElementById('img-anteprima').style.display = 'none';
+    aggiornaListaUbicazioniDinamiche("");
     document.getElementById('preview-prodotto').style.display = 'block';
     
     document.getElementById('nome-prodotto').value = `Prodotto [${barcode}]`;
@@ -279,6 +313,14 @@ function registraCarico(event) {
 
     const nome = document.getElementById('nome-prodotto').value.trim();
     const barcode = document.getElementById('barcode-input').value.trim();
+    const ubicazioneScelta = document.getElementById('ubicazione').value;
+
+    if (!ubicazioneScelta || ubicazioneScelta === "__nuova__") {
+        alert("Seleziona o crea un'ubicazione valida per il prodotto.");
+        document.getElementById('ubicazione').focus();
+        return;
+    }
+
     const scadenzaVal = document.getElementById('scadenza').value || "Nessuna scadenza";
 
     const nuovoArticolo = {
@@ -287,7 +329,7 @@ function registraCarico(event) {
         categoria: document.getElementById('categoria-prodotto').value,
         nome: nome,
         marca: document.getElementById('marca-prodotto').value.trim(),
-        ubicazione: document.getElementById('ubicazione').value,
+        ubicazione: ubicazioneScelta,
         scadenza: scadenzaVal,
         quantita: parseInt(document.getElementById('quantita').value) || 1,
         unitaMisura: document.getElementById('unita-misura').value,
