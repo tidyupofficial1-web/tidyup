@@ -6,6 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     applicaTraduzioniInterfaccia(langSalvata);
     renderizzaListe();
+
+    // Controlla se l'utente ha scelto di non vedere più la guida all'avvio
+    const nonMostrareGuida = localStorage.getItem('eat_me_first_nascondi_guida_liste') === 'true';
+    if (!nonMostrareGuida) {
+        apriGuidaListe();
+    }
 });
 
 let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || {
@@ -70,7 +76,7 @@ function cambiaVistaSpesa(vista) {
 const dizionarioListe = {
     it: {
         spesa_lista: "Lista della Spesa",
-        btnGuidaTitle: "Guida alla Lista",
+        btnGuidaTesto: "ℹ️ Guida",
         tabPrendere: "Da Prendere",
         tabPresi: "Già Presi (Carrello)",
         titoloSezionePrendere: "Articoli da Acquistare",
@@ -92,11 +98,12 @@ const dizionarioListe = {
         guidaTesto1: "<b>🔴 Rosso (Gratuito):</b> Prodotti esauriti o che finiranno prima del tuo prossimo giro al supermercato.",
         guidaTesto2: "<b>🟡 Giallo (Smart/Premium):</b> Suggerimenti predittivi basati sul consumo stimato e sulle scadenze vicine.",
         guidaTesto3: "Spunta i prodotti mentre fai la spesa e usa 'Pulisci testi sbarrati' per ripulire il carrello.",
-        guidaChiudi: "Ho capito"
+        nonMostrarePiu: "Non mostrare più questo messaggio all'avvio",
+        guidaChiudi: "Ho capito, procedi"
     },
     en: {
         spesa_lista: "Shopping List",
-        btnGuidaTitle: "Shopping Guide",
+        btnGuidaTesto: "ℹ️ Guide",
         tabPrendere: "To Buy",
         tabPresi: "Already Taken (Cart)",
         titoloSezionePrendere: "Items to Buy",
@@ -118,34 +125,38 @@ const dizionarioListe = {
         guidaTesto1: "<b>🔴 Red (Free):</b> Out-of-stock items or items running out before your next trip.",
         guidaTesto2: "<b>🟡 Yellow (Smart/Premium):</b> Predictive suggestions based on estimated consumption.",
         guidaTesto3: "Check items while shopping and use 'Clear crossed items' when back home.",
-        guidaChiudi: "Got it"
+        nonMostrarePiu: "Don't show this message again at startup",
+        guidaChiudi: "Got it, let's go"
     },
     es: {
-        spesa_lista: "Lista de la Compra", btnGuidaTitle: "Guía", tabPrendere: "Comprar", tabPresi: "En Carrito",
+        spesa_lista: "Lista de la Compra", btnGuidaTesto: "ℹ️ Guía", tabPrendere: "Comprar", tabPresi: "En Carrito",
         titoloSezionePrendere: "Artículos a Comprar", descSezionePrendere: "Marca los productos cogidos.",
         titoloSezionePresi: "Productos en el Carrito", descSezionePresi: "Resumen de compras.", btnPulisci: "Limpiar tachados",
         navBack: "← Volver al Menú", footer: "EatMeFirst • Gestión segura", esaurito: "Agotado", inScadenza: "Smart",
         ubicazione: "Ubicación", scadenza: "Caducidad", preso: "Cogido", vuotoPrendere: "No hay productos.",
         vuotoCarrello: "Carrito vacío.", premiumLockedMsg: "🔒 Función Premium bloqueada.",
-        guidaTitolo: "💡 Ayuda", guidaTesto1: "🔴 Productos agotados.", guidaTesto2: "🟡 Sugerencias Smart.", guidaTesto3: "Usa la lista con facilidad.", guidaChiudi: "Entendido"
+        guidaTitolo: "💡 Ayuda", guidaTesto1: "🔴 Productos agotados.", guidaTesto2: "🟡 Sugerencias Smart.", guidaTesto3: "Usa la lista con facilidad.",
+        nonMostrarePiu: "No volver a mostrar", guidaChiudi: "Entendido"
     },
     fr: {
-        spesa_lista: "Liste de Courses", btnGuidaTitle: "Guide", tabPrendere: "À Acheter", tabPresi: "Panier",
+        spesa_lista: "Liste de Courses", btnGuidaTesto: "ℹ️️ Guide", tabPrendere: "À Acheter", tabPresi: "Panier",
         titoloSezionePrendere: "Articles à Acheter", descSezionePrendere: "Cochez les produits pris.",
         titoloSezionePresi: "Articles dans le Panier", descSezionePresi: "Résumé des achats.", btnPulisci: "Effacer barrés",
         navBack: "← Retour au Menu", footer: "EatMeFirst • Gestion locale", esaurito: "Épuisé", inScadenza: "Smart",
         ubicazione: "Emplacement", scadenza: "Expiration", preso: "Pris", vuotoPrendere: "Aucun article.",
         vuotoCarrello: "Panier vide.", premiumLockedMsg: "🔒 Fonction Premium verrouillée.",
-        guidaTitolo: "💡 Aide", guidaTesto1: "🔴 Articles épuisés.", guidaTesto2: "🟡 Suggestions Smart.", guidaTesto3: "Cochez vos articles.", guidaChiudi: "Compris"
+        guidaTitolo: "💡 Aide", guidaTesto1: "🔴 Articles épuisés.", guidaTesto2: "🟡 Suggestions Smart.", guidaTesto3: "Cochez vos articles.",
+        nonMostrarePiu: "Ne plus afficher", guidaChiudi: "Compris"
     },
     de: {
-        spesa_lista: "Einkaufsliste", btnGuidaTitle: "Hilfe", tabPrendere: "Zu kaufen", tabPresi: "Wagen",
+        spesa_lista: "Einkaufsliste", btnGuidaTesto: "ℹ️ Hilfe", tabPrendere: "Zu kaufen", tabPresi: "Wagen",
         titoloSezionePrendere: "Einkaufsartikel", descSezionePrendere: "Haken Sie gekaufte Artikel ab.",
         titoloSezionePresi: "Artikel im Wagen", descSezionePresi: "Zusammenfassung.", btnPulisci: "Durchgestrichene löschen",
         navBack: "← Zum Menü", footer: "EatMeFirst • Sichere lokale Verwaltung", esaurito: "Ausverkauft", inScadenza: "Smart",
         ubicazione: "Standort", scadenza: "Verfallsdatum", preso: "Mitgenommen", vuotoPrendere: "Keine Artikel.",
         vuotoCarrello: "Wagen leer.", premiumLockedMsg: "🔒 Premium-Funktion gesperrt.",
-        guidaTitolo: "💡 Hilfe", guidaTesto1: "🔴 Ausverkaufte Artikel.", guidaTesto2: "🟡 Smart-Vorschläge.", guidaTesto3: "Viel Spaß beim Einkaufen.", guidaChiudi: "Verstanden"
+        guidaTitolo: "💡 Hilfe", guidaTesto1: "🔴 Ausverkaufte Artikel.", guidaTesto2: "🟡 Smart-Vorschläge.", guidaTesto3: "Viel Spaß beim Einkaufen.",
+        nonMostrarePiu: "Nicht mehr anzeigen", guidaChiudi: "Verstanden"
     }
 };
 
@@ -163,12 +174,6 @@ function applicaTraduzioniInterfaccia(lang) {
             el.innerHTML = t[chiave];
         }
     });
-    document.querySelectorAll('[data-i18n-title]').forEach(el => {
-        const chiave = el.getAttribute('data-i18n-title');
-        if (t[chiave]) {
-            el.title = t[chiave];
-        }
-    });
 }
 
 function apriGuidaListe() {
@@ -176,6 +181,10 @@ function apriGuidaListe() {
 }
 
 function chiudiGuidaListe() {
+    const chkNascondi = document.getElementById('chk-non-mostrare');
+    if (chkNascondi && chkNascondi.checked) {
+        localStorage.setItem('eat_me_first_nascondi_guida_liste', 'true');
+    }
     document.getElementById('modal-guida').style.display = 'none';
 }
 
