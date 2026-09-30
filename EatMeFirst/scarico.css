@@ -13,6 +13,30 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
+
+/* Header con Logo a sinistra e Lingue a destra */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+}
+.language-selector select {
+    background-color: #21262d;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+}
+.language-selector select:focus {
+    border-color: #58a6ff;
+    outline: none;
+}
+
 h1, h2 {
     color: #58a6ff;
     text-align: center;
@@ -27,7 +51,6 @@ label {
     font-weight: bold;
     color: #e6edf3;
 }
-/* Sfondo bianco per i campi d'input, perfettamente coerente con il carico */
 input {
     width: 100%;
     padding: 10px;
@@ -67,7 +90,6 @@ input:focus {
     font-size: 0.85rem;
     color: #8b949e;
 }
-/* Sezione consumo parziale pezzi */
 .consumo-controllo {
     display: flex;
     align-items: center;
@@ -113,7 +135,6 @@ input:focus {
     border-bottom: 1px solid #30363d;
     padding-bottom: 10px;
 }
-/* Stile Modale / Popup Aiuto Contestuale */
 .tooltip-modal {
     display: none;
     position: fixed;

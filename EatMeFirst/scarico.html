@@ -9,9 +9,9 @@
 <body>
 
     <div class="container">
-        <!-- Header con Logo e Selettore Lingua -->
+        <!-- Header con Logo a sinistra e Selettore Lingua a destra -->
         <div class="app-header">
-            <div class="brand-logo">🍏 EatMeFirst</div>
+            <div class="footer-logo" style="margin-bottom: 0;">🍏 EatMeFirst</div>
             <div class="language-selector">
                 <select id="select-lingua" onchange="cambiaLingua(this.value)">
                     <option value="it">🇮🇹 Italiano</option>
@@ -36,6 +36,34 @@
         <div class="form-group" data-help-it="Digita il nome del prodotto o l'ubicazione (es. Dispensa, Scaffale) per trovarlo rapidamente in elenco." data-help-en="Type the product name or location (e.g. Pantry, Shelf) to find it quickly." data-help-es="Escribe el nombre del producto o ubicación (ej. Despensa, Estante) para encontrarlo rápidamente." data-help-fr="Tapez le nom du produit ou l'emplacement pour le trouver rapidement.">
             <label data-i18n="etichettaCerca">🔍 Cerca in Dispensa</label>
             <input type="text" id="filtroProdotti" placeholder="Cerca prodotto..." oninput="caricaListaDispensa()" onkeydown="handleSearchKey(event)">
+        </div>
+
+        <div id="listaContainer">
+            <!-- I prodotti verranno inseriti qui dinamicamente -->
+        </div>
+
+        <div class="menu-link">
+            <a href="menu.html" data-i18n="tornaMenu">← Torna al Menu Principale</a>
+        </div>
+
+        <div class="footer">
+            <div class="footer-logo">🍏 EatMeFirst</div>
+            <div data-i18n="footerTesto">Gestione locale sicura &bull; Risparmia cibo, vivi meglio</div>
+        </div>
+    </div>
+
+    <!-- Popup / Modale Guida Contestuale -->
+    <div id="tooltip-modal" class="tooltip-modal">
+        <div class="tooltip-content">
+            <h3 data-i18n="suggerimentoTitolo">💡 Suggerimento Utile</h3>
+            <p id="tooltip-text"></p>
+            <button type="button" onclick="chiudiTooltip()" data-i18n="btnCapito">Ho capito</button>
+        </div>
+    </div>
+
+    <script src="scarico.js"></script>
+</body>
+</html>input="caricaListaDispensa()" onkeydown="handleSearchKey(event)">
         </div>
 
         <div id="listaContainer">
