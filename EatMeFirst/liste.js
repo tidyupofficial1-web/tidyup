@@ -34,7 +34,18 @@ function salvaDb() {
     renderizzaListe();
 }
 
-// Converte la data da AAAA-MM-GG a GG/MM/AA (formato italiano)
+// Funzione globale di cambio lingua collegata a i18n.js
+function cambiaLingua(lang) {
+    if (typeof impostaLinguaCorrente === 'function') {
+        impostaLinguaCorrente(lang);
+    } else {
+        localStorage.setItem('eat_me_first_lang', lang);
+    }
+    applicaTraduzioniInterfaccia();
+    renderizzaListe();
+}
+
+// Converte la data da AAAA-MM-GG a GG/MM/AA
 function formattaDataItaliana(dataStr) {
     if (!dataStr) return '';
     let parti = dataStr.split('-');
@@ -65,8 +76,8 @@ function cambiaVistaSpesa(vista) {
 }
 
 function renderizzaListe() {
-    const lang = getLinguaCorrente();
-    // Dizionario completo per la pagina liste
+    const lang = typeof getLinguaCorrente === 'function' ? getLinguaCorrente() : (localStorage.getItem('eat_me_first_lang') || 'it');
+    
     const etichette = {
         it: {
             ubicazione: "Ubicazione",
@@ -152,7 +163,6 @@ function renderizzaListe() {
 
     const t = etichette[lang] || etichette['it'];
 
-    // Aggiorna i testi fissi dell'interfaccia tramite gli ID dedicati
     document.getElementById('tab-btn-prendere').innerText = t.tabPrendere;
     document.getElementById('tab-btn-presi').innerText = t.tabPresi;
     document.getElementById('txt-sezione-prendere-titolo').innerText = t.titoloSezionePrendere;
@@ -227,13 +237,10 @@ function pulisciProdottiPresi() {
 }
 
 function applicaTraduzioniInterfaccia() {
-    const lang = getLinguaCorrente();
-    const glob = dizionarioGlobale[lang] || dizionarioGlobale['it'];
-    if(glob && glob.footer) {
-        document.getElementById('txt-footer').innerHTML = glob.footer;
-    }
-    // Rende dinamico anche il titolo principale della spesa se gestito nel dizionario globale o locale
-    if(glob && glob.shoppingListTitle) {
-        document.getElementById('txt-liste-title').innerText = glob.shoppingListTitle;
+    const lang = typeof getLinguaCorrente === 'function' ? getLinguaCorrente() : (localStorage.getItem('eat_me_first_lang') || 'it');
+    if(typeof dizionarioGlobale !== 'undefined' && dizionarioGlobale[lang]) {
+        let glob = dizionarioGlobale[lang];
+        if(glob.footer) document.getElementById('txt-footer').innerHTML = glob.footer;
+        if(glob.shoppingListTitle) document.getElementById('txt-liste-title').innerText = glob.shoppingListTitle;
     }
 }
