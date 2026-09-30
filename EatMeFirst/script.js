@@ -16,7 +16,22 @@ const dizionarioGlobale = {
         pop_testo: "Ci sono promemoria o note inserite in \"Ricordarsi di...\" in attesa di lettura.",
         pop_chiudi: "Ho capito",
         pop_apri: "Vai a Ricordarsi di...",
-        footer: "EatMeFirst &bull; Gestione locale sicura"
+        footer: "EatMeFirst &bull; Gestione locale sicura",
+        // Traduzioni aggiunte per la pagina Liste / Spesa
+        ubicazione: "Ubicazione",
+        scadenza: "Scadenza",
+        inEsaurimento: "In esaurimento",
+        preso: "Preso",
+        vuotoPrendere: "Nessun prodotto da acquistare.",
+        vuotoCarrello: "Nessun prodotto nel carrello. Spunta gli articoli mentre fai la spesa.",
+        tabPrendere: "Da Prendere",
+        tabPresi: "Già Presi (Carrello)",
+        titoloSezionePrendere: "Articoli da Acquistare",
+        descSezionePrendere: "Metti la spunta sui prodotti presi. Quelli non spuntati rimarranno qui per la prossima spesa.",
+        titoloSezionePresi: "Prodotti nel Carrello (Già Presi)",
+        descSezionePresi: "Riepilogo dei prodotti acquistati. Cliccando il pulsante sotto verranno pulite le visualizzazioni sbarrate, lasciando intatti quelli non presi.",
+        btnPulisci: "Pulisci testi sbarrati",
+        navBack: "&larr; Torna al Menu Principale"
     },
     en: {
         titolo_app: "EatMeFirst",
@@ -35,7 +50,21 @@ const dizionarioGlobale = {
         pop_testo: "There are reminders or notes in \"Remember to...\" waiting to be read.",
         pop_chiudi: "Got it",
         pop_apri: "Go to Remember to...",
-        footer: "EatMeFirst &bull; Secure local management"
+        footer: "EatMeFirst &bull; Secure local management",
+        ubicazione: "Location",
+        scadenza: "Expires",
+        inEsaurimento: "Low stock",
+        preso: "Taken",
+        vuotoPrendere: "No items to buy.",
+        vuotoCarrello: "No items in the cart. Check off items while shopping.",
+        tabPrendere: "To Buy",
+        tabPresi: "Already Taken (Cart)",
+        titoloSezionePrendere: "Items to Purchase",
+        descSezionePrendere: "Check off the items you've taken. Unchecked items will remain here for your next trip.",
+        titoloSezionePresi: "Products in Cart (Already Taken)",
+        descSezionePresi: "Summary of purchased products. Clicking the button below will clear crossed-out items, leaving unpicked ones intact.",
+        btnPulisci: "Clear crossed-out items",
+        navBack: "&larr; Back to Main Menu"
     },
     es: {
         titolo_app: "EatMeFirst",
@@ -54,7 +83,21 @@ const dizionarioGlobale = {
         pop_testo: "Hay recordatorios o notas en \"Recordar que...\" esperando ser leídos.",
         pop_chiudi: "Entendido",
         pop_apri: "Ir a Recordar que...",
-        footer: "EatMeFirst &bull; Gestión local segura"
+        footer: "EatMeFirst &bull; Gestión local segura",
+        ubicazione: "Ubicación",
+        scadenza: "Caducidad",
+        inEsaurimento: "Poco stock",
+        preso: "Cogido",
+        vuotoPrendere: "No hay productos para comprar.",
+        vuotoCarrello: "No hay productos en el carro.",
+        tabPrendere: "Por Comprar",
+        tabPresi: "Ya Cogidos (Carro)",
+        titoloSezionePrendere: "Artículos para Comprar",
+        descSezionePrendere: "Marca los productos que hayas cogido. Los no marcados se quedarán aquí para la próxima compra.",
+        titoloSezionePresi: "Productos en el Carro (Ya Cogidos)",
+        descSezionePresi: "Resumen de los productos comprados. Al hacer clic en el botón de abajo se limpiarán los tachados.",
+        btnPulisci: "Limpiar textos tachados",
+        navBack: "&larr; Volver al Menú Principal"
     },
     fr: {
         titolo_app: "EatMeFirst",
@@ -73,7 +116,21 @@ const dizionarioGlobale = {
         pop_testo: "Il y a des rappels ou des notes dans \"Se rappeler de...\" en attente de lecture.",
         pop_chiudi: "Compris",
         pop_apri: "Aller à Se rappeler de...",
-        footer: "EatMeFirst &bull; Gestion locale sécurisée"
+        footer: "EatMeFirst &bull; Gestion locale sécurisée",
+        ubicazione: "Emplacement",
+        scadenza: "Expiration",
+        inEsaurimento: "Stock faible",
+        preso: "Pris",
+        vuotoPrendere: "Aucun article à acheter.",
+        vuotoCarrello: "Aucun article dans le panier.",
+        tabPrendere: "À Acheter",
+        tabPresi: "Déjà Pris (Panier)",
+        titoloSezionePrendere: "Articles à Acheter",
+        descSezionePrendere: "Cochez les produits pris. Ceux non cochés resteront ici pour la prochaine course.",
+        titoloSezionePresi: "Produits dans le Panier (Déjà Pris)",
+        descSezionePresi: "Résumé des produits achetés. En cliquant sur le bouton ci-dessous, les éléments barrés seront effacés.",
+        btnPulisci: "Effacer les éléments barrés",
+        navBack: "&larr; Retour au Menu Principal"
     },
     de: {
         titolo_app: "EatMeFirst",
@@ -92,7 +149,21 @@ const dizionarioGlobale = {
         pop_testo: "Es gibt Erinnerungen oder Notizen in \"Erinnern an...\", die darauf warten, gelesen zu werden.",
         pop_chiudi: "Verstanden",
         pop_apri: "Zu Erinnern an... gehen",
-        footer: "EatMeFirst &bull; Sichere lokale Verwaltung"
+        footer: "EatMeFirst &bull; Sichere lokale Verwaltung",
+        ubicazione: "Standort",
+        scadenza: "Verfallsdatum",
+        inEsaurimento: "Fast leer",
+        preso: "Mitgenommen",
+        vuotoPrendere: "Keine Artikel zu kaufen.",
+        vuotoCarrello: "Keine Artikel im Warenkorb.",
+        tabPrendere: "Zu Kaufen",
+        tabPresi: "Bereits Mitgenommen (Warenkorb)",
+        titoloSezionePrendere: "Zu kaufende Artikel",
+        descSezionePrendere: "Haken Sie gekaufte Produkte ab. Nicht abgehakte bleiben für den nächsten Einkauf hier.",
+        titoloSezionePresi: "Produkte im Warenkorb (Bereits mitgenommen)",
+        descSezionePresi: "Zusammenfassung der gekauften Produkte. Durch Klick auf den Button unten werden durchgestrichene Einträge bereinigt.",
+        btnPulisci: "Durchgestrichene Texte bereinigen",
+        navBack: "&larr; Zurück zum Hauptmenü"
     }
 };
 
