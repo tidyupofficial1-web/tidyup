@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scarico e Consumo Prodotti - EatMeFirst</title>
+    <link rel="stylesheet" href="scarico.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Controllo globale per attivare/disattivare gli aiuti -->
+        <div class="help-toggle-bar">
+            <label style="font-size: 13px; font-weight: normal; cursor: pointer;">
+                <input type="checkbox" id="chk-mostra-aiuti" checked onchange="toggleGlobalHelp(this.checked)"> Mostra suggerimenti e guide passo-passo
+            </label>
+        </div>
+
+        <h1>Scarico e Consumo Prodotti</h1>
+
+        <!-- Barra di Ricerca -->
+        <div class="form-group" data-help="Digita il nome del prodotto o l'ubicazione (es. Frigorifero, Dispensa) per trovarlo rapidamente in elenco.">
+            <label>🔍 Cerca in Dispensa</label>
+            <input type="text" id="filtroProdotti" placeholder="Cerca prodotto..." oninput="caricaListaDispensa()">
+        </div>
+
+        <div id="listaContainer">
+            <!-- I prodotti verranno inseriti qui dinamicamente -->
+        </div>
+
+        <div class="menu-link">
+            <a href="menu.html">← Torna al Menu Principale</a>
+        </div>
+
+        <div class="footer">
+            <div class="footer-logo">🍏 EatMeFirst</div>
+            <div>Gestione locale sicura &bull; Risparmia cibo, vivi meglio</div>
+        </div>
+    </div>
+
+    <!-- Popup / Modale Guida Contestuale -->
+    <div id="tooltip-modal" class="tooltip-modal">
+        <div class="tooltip-content">
+            <h3>💡 Suggerimento Utile</h3>
+            <p id="tooltip-text"></p>
+            <button type="button" onclick="chiudiTooltip()">Ho capito</button>
+        </div>
+    </div>
+
+    <script src="scarico.js"></script>
+</body>
+</html>
