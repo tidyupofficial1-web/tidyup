@@ -1,97 +1,3 @@
-let html5QrCode = null;
-let cameraAttiva = false;
-let tipoScadenzaCorrente = "consigliata"; 
-let mostraAiutiAttivo = true;
-
-document.addEventListener('DOMContentLoaded', () => {
-    const savedHelpPref = localStorage.getItem('eat_me_first_help');
-    if (savedHelpPref === 'false') {
-        mostraAiutiAttivo = false;
-        document.getElementById('chk-mostra-aiuti').checked = false;
-    }
-
-    document.getElementById('barcode-input').focus();
-    inizializzaListenerCampi();
-});
-
-function toggleGlobalHelp(stato) {
-    mostraAiutiAttivo = stato;
-    localStorage.setItem('eat_me_first_help', stato);
-}
-
-function inizializzaListenerCampi() {
-    const gruppi = document.querySelectorAll('.form-group');
-    gruppi.forEach(gruppo => {
-        const input = gruppo.querySelector('input, select');
-        if (input) {
-            input.addEventListener('focus', () => {
-                if (mostraAiutiAttivo && gruppo.dataset.help) {
-                    mostraTooltip(gruppo.dataset.help);
-                }
-            });
-        }
-    });
-}
-
-function mostraTooltip(testo) {
-    document.getElementById('tooltip-text').textContent = testo;
-    document.getElementById('tooltip-modal').style.display = 'flex';
-}
-
-function chiudiTooltip() {
-    document.getElementById('tooltip-modal').style.display = 'none';
-}
-
-function handleBarcodeKey(event) {
-    // Gestisce Invio o Barra Spaziatrice per confermare il barcode
-    if (event.key === 'Enter' || event.code === 'Space') {
-        event.preventDefault();
-        cercaOpenFoodFacts();
-    }
-}
-
-async function toggleFotocamera() {
-    const readerDiv = document.getElementById('reader');
-    const btnCam = document.getElementById('btn-toggle-cam');
-
-    if (!cameraAttiva) {
-        readerDiv.style.display = 'block';
-        btnCam.textContent = "🛑 Chiudi Fotocamera";
-        cameraAttiva = true;
-
-        try {
-            html5QrCode = new Html5Qrcode("reader");
-            await html5QrCode.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 150 } },
-                (decodedText) => {
-                    document.getElementById('barcode-input').value = decodedText;
-                    chiudiFotocamera();
-                    cercaOpenFoodFacts();
-                },
-                (errorMessage) => {}
-            );
-        } catch (err) {
-            alert("Impossibile accedere alla fotocamera. Verifica i permessi del browser.");
-            chiudiFotocamera();
-        }
-    } else {
-        chiudiFotocamera();
-    }
-}
-
-async function chiudiFotocamera() {
-    if (html5QrCode) {
-        try {
-            await html5QrCode.stop();
-            html5QrCode.clear();
-        } catch (e) {}
-    }
-    document.getElementById('reader').style.display = 'none';
-    document.getElementById('btn-toggle-cam').textContent = "📷 Attiva Fotocamera / Scanner";
-    cameraAttiva = false;
-}
-
 async function cercaOpenFoodFacts() {
     if (cameraAttiva) await chiudiFotocamera();
 
@@ -99,13 +5,19 @@ async function cercaOpenFoodFacts() {
     if (!barcode) return;
 
     try {
-        const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
-        const data = await response.json();
+        // 1. Primo tentativo: Open Food Facts (Alimentari)
+        let response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+        let data = await response.json();
+
+        // 2. Secondo tentativo: Open Products Facts (Non alimentari / Casa / Igienici) se il primo fallisce
+        if (!data || data.status !== 1) {
+            response = await fetch(`https://world.openproductsfacts.org/api/v0/product/${barcode}.json`);
+            data = await response.json();
+        }
 
         if (data && data.status === 1) {
             const prodotto = data.product;
             let nome = prodotto.product_name || prodotto.product_name_it || "";
-            // Tronca a massimo 45 caratteri per evitare schede troppo lunghe
             if (nome.length > 45) nome = nome.substring(0, 42) + '...';
 
             const marca = (prodotto.brands || "").substring(0, 30);
@@ -117,9 +29,7 @@ async function cercaOpenFoodFacts() {
             document.getElementById('inf-nome').textContent = nome || "Sconosciuto";
             document.getElementById('inf-marca').textContent = marca || "Non specificata";
 
-            // Tentativo intelligente di rilevare quantitativo (es. 18 uova, 6 bottiglie)
             estraiQuantitaIntelligente(prodotto.quantity || "");
-
             impostaScadenzaConsigliata(30);
 
             const imgEl = document.getElementById('img-anteprima');
@@ -138,132 +48,4 @@ async function cercaOpenFoodFacts() {
     } catch (error) {
         gestisciProdottoNonTrovato(barcode);
     }
-}
-
-function estraiQuantitaIntelligente(quantStr) {
-    const qInput = document.getElementById('quantita');
-    const uMisura = document.getElementById('unita-misura');
-    const infConv = document.getElementById('inf-conversione');
-
-    qInput.value = 1;
-    uMisura.value = "pezzi";
-    infConv.textContent = `💡 Riconosciuto da confezione: "${quantStr || 'Standard'}"`;
-}
-
-function gestisciProdottoNonTrovato(barcode) {
-    confirm(`Il codice a barre (${barcode}) non è presente su Open Food Facts.\n\nProcediamo con l'inserimento manuale?`);
-    abilitaCompilazioneManuale();
-    document.getElementById('nome-prodotto').value = `Prodotto [${barcode}]`;
-}
-
-function abilitaCompilazioneManuale() {
-    if (cameraAttiva) chiudiFotocamera();
-
-    const haScadenza = confirm("Il prodotto ha una scadenza?\n\n- Premi 'OK' se è un prodotto fresco con scadenza tassativa.\n- Premi 'Annulla' se NON ha scadenza o se inserisci un prodotto fatto in casa/mercato.");
-
-    const groupScadenza = document.getElementById('group-scadenza');
-
-    if (haScadenza) {
-        groupScadenza.style.display = 'block';
-        const eTassativa = confirm("Trattasi di prodotto fresco a scadenza TASSATIVA?\n\n- OK = Tassativa (Sfondo Rosso)\n- Annulla = Consigliata");
-        
-        if(eTassativa) {
-            impostaScadenzaTassativa();
-        } else {
-            impostaScadenzaConsigliata(15);
-        }
-    } else {
-        groupScadenza.style.display = 'none';
-        document.getElementById('scad-gg').value = '';
-        document.getElementById('scad-mm').value = '';
-        document.getElementById('scad-aa').value = '';
-    }
-
-    document.getElementById('preview-prodotto').style.display = 'block';
-    document.getElementById('nome-prodotto').focus();
-}
-
-function impostaScadenzaTassativa() {
-    tipoScadenzaCorrente = "tassativa";
-    document.getElementById('group-scadenza').style.display = 'block';
-    document.getElementById('inf-tipo-scadenza-badge').innerHTML = '<span class="scadenza-badge badge-tassativa">🔒 Scadenza Tassativa</span>';
-}
-
-function impostaScadenzaConsigliata(giorniInPiu) {
-    tipoScadenzaCorrente = "consigliata";
-    document.getElementById('group-scadenza').style.display = 'block';
-    
-    const dataProposta = new Date();
-    dataProposta.setDate(dataProposta.getDate() + giorniInPiu);
-    
-    document.getElementById('scad-gg').value = String(dataProposta.getDate()).padStart(2, '0');
-    document.getElementById('scad-mm').value = String(dataProposta.getMonth() + 1).padStart(2, '0');
-    document.getElementById('scad-aa').value = dataProposta.getFullYear();
-
-    document.getElementById('inf-tipo-scadenza-badge').innerHTML = '<span class="scadenza-badge badge-consigliata">💡 Scadenza Consigliata</span>';
-}
-
-function stimaScadenzaDallaDescrizione(testo) {
-    if (tipoScadenzaCorrente !== "consigliata") return;
-    const t = testo.toLowerCase();
-    let giorni = 30;
-
-    if (t.includes('latte') || t.includes('fresco') || t.includes('mozzarella') || t.includes('ricotta')) {
-        giorni = 7;
-    } else if (t.includes('torta') || t.includes('dolce') || t.includes('marmellata') || t.includes('fatto in casa')) {
-        giorni = 10;
-    } else if (t.includes('carne') || t.includes('pesce')) {
-        giorni = 3;
-    } else if (t.includes('pane')) {
-        giorni = 4;
-    }
-
-    const d = new Date();
-    d.setDate(d.getDate() + giorni);
-    document.getElementById('scad-gg').value = String(d.getDate()).padStart(2, '0');
-    document.getElementById('scad-mm').value = String(d.getMonth() + 1).padStart(2, '0');
-    document.getElementById('scad-aa').value = d.getFullYear();
-}
-
-function registraCarico(event) {
-    event.preventDefault();
-
-    const groupVisible = document.getElementById('group-scadenza').style.display !== 'none';
-    let dataScadenzaVal = "Nessuna scadenza";
-
-    if (groupVisible) {
-        const gg = document.getElementById('scad-gg').value.trim();
-        const mm = document.getElementById('scad-mm').value.trim();
-        const aa = document.getElementById('scad-aa').value.trim();
-
-        if (gg && mm && aa) {
-            dataScadenzaVal = `${aa}-${mm.padStart(2,'0')}-${gg.padStart(2,'0')}`;
-        } else {
-            alert("Compila correttamente la data di scadenza (Giorno, Mese e Anno) oppure rimuovila.");
-            return;
-        }
-    }
-
-    const nuovoArticolo = {
-        id: Date.now(),
-        categoria: document.getElementById('categoria-prodotto').value,
-        nome: document.getElementById('nome-prodotto').value.trim(),
-        marca: document.getElementById('marca-prodotto').value.trim(),
-        ubicazione: document.getElementById('ubicazione').value,
-        scadenza: dataScadenzaVal,
-        tipoScadenza: groupVisible ? tipoScadenzaCorrente : "nessuna",
-        quantita: parseInt(document.getElementById('quantita').value) || 1,
-        unitaMisura: document.getElementById('unita-misura').value,
-        immagine: document.getElementById('img-anteprima').src || "",
-        dataCarico: new Date().toISOString()
-    };
-
-    let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [] };
-    if (!db.dispensa) db.dispensa = [];
-    
-    db.dispensa.push(nuovoArticolo);
-    localStorage.setItem('eat_me_first_db', JSON.stringify(db));
-
-    alert("Articolo caricato con successo nella dispensa!");
-    window.location.href = "dispensa.html";
 }
