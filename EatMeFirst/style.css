@@ -405,3 +405,131 @@ footer {
     text-align: center;
     padding: 1rem;
 }
+
+/* --- AGGIUNTE PER LA PAGINA LISTE --- */
+.top-bar-absolute {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 1000;
+}
+
+.main-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    margin-top: 10px;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+#video-container {
+    text-align: center;
+    margin-bottom: 20px;
+    transition: opacity 0.5s ease;
+}
+
+#video-container video {
+    width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}
+
+.sub-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+}
+
+.sub-tab {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    background: var(--card-bg);
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--text-muted);
+    transition: background 0.2s, color 0.2s;
+}
+
+.sub-tab.active {
+    background: #21262d;
+    color: var(--accent-blue);
+    border-bottom: 2px solid var(--accent-blue);
+}
+
+.item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.item-row:last-child {
+    border-bottom: none;
+}
+
+.item-row.low-stock {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-left: 4px solid var(--accent-danger);
+}
+
+.item-info {
+    flex-grow: 1;
+    margin-left: 12px;
+}
+
+.item-title {
+    font-weight: bold;
+    color: var(--text-main);
+}
+
+.item-details {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.btn-clean {
+    background-color: var(--accent-blue);
+    color: #0d1117;
+    border: none;
+    padding: 12px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 15px;
+    text-align: center;
+    transition: opacity 0.2s;
+}
+
+.btn-clean:hover { opacity: 0.85; }
+
+.nav-back {
+    display: block;
+    text-align: center;
+    margin-top: 2rem;
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-back:hover { text-decoration: underline; }

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Lista della Spesa</title>
+    <!-- Collegamento al file centrale delle 5 lingue e al foglio di stile globale -->
+    <script src="i18n.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- BARRA SUPERIORE: MENU A TENDINA E SELETTORE LINGUA -->
+    <div class="top-bar-absolute">
+        <div class="dropdown">
+            <button class="dropbtn">
+                <span>≡ Moduli Suite</span>
+            </button>
+            <div class="dropdown-content">
+                <a href="../index.html">
+                    <img src="../IMG/logo_tidyup.png" alt="TidyUp Logo" class="dropdown-logo">
+                    Home TidyUp Suite
+                </a>
+                <a href="index.html">
+                    <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="dropdown-logo">
+                    EatMeFirst
+                </a>
+                <a href="../NO_FOOD/index.html">
+                    <img src="../NO_FOOD/IMG/logo_sortout.png" alt="SortOut Logo" class="dropdown-logo">
+                    SortOut
+                </a>
+            </div>
+        </div>
+        <!-- Selettore delle 5 lingue -->
+        <div id="header-lang"></div>
+    </div>
+
+    <!-- HEADER CON LOGO E TITOLO -->
+    <div class="main-header">
+        <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="header-logo">
+        <h1 id="txt-liste-title">Lista della Spesa</h1>
+    </div>
+
+    <div class="container">
+        
+        <!-- Clip Video Carrello Spesa -->
+        <div id="video-container">
+            <video id="clip-carrello" autoplay muted playsinline>
+                <source src="IMG/carrello_spesa.mp4" type="video/mp4">
+                Il tuo browser non supporta il formato video.
+            </video>
+        </div>
+
+        <!-- Sotto-tab: Da Prendere / Già Presi -->
+        <div class="sub-tabs">
+            <div id="tab-btn-prendere" class="sub-tab active" onclick="cambiaVistaSpesa('prendere')">Da Prendere</div>
+            <div id="tab-btn-presi" class="sub-tab" onclick="cambiaVistaSpesa('presi')">Già Presi (Carrello)</div>
+        </div>
+
+        <!-- Sezione Da Prendere -->
+        <div id="sezione-prendere" class="card">
+            <h3 style="color: var(--text-main); margin-bottom: 5px;">Articoli da Acquistare</h3>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:12px;">
+                Metti la spunta sui prodotti presi. Quelli non spuntati rimarranno qui per la prossima spesa.
+            </p>
+            <div id="lista-da-prendere"></div>
+        </div>
+
+        <!-- Sezione Già Presi -->
+        <div id="sezione-presi" class="card" style="display: none;">
+            <h3 style="color: var(--text-main); margin-bottom: 5px;">Prodotti nel Carrello (Già Presi)</h3>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:12px;">
+                Riepilogo dei prodotti acquistati. Cliccando il pulsante sotto verranno pulite le visualizzazioni sbarrate, lasciando intatti quelli non presi.
+            </p>
+            <div id="lista-gia-presi"></div>
+            <button class="btn-clean" onclick="pulisciProdottiPresi()">Pulisci testi sbarrati</button>
+        </div>
+
+        <a href="index.html" class="nav-back">&larr; Torna al Menu Principale</a>
+    </div>
+
+    <footer id="txt-footer" style="margin-top: 40px;">
+        EatMeFirst &bull; Gestione locale sicura
+    </footer>
+
+    <!-- Collegamento alla logica JavaScript corretta -->
+    <script src="liste.js"></script>
+</body>
+</html>
