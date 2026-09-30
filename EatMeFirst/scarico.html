@@ -3,92 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scarico e Consumo Prodotti - EatMeFirst</title>
-    <link rel="stylesheet" href="scarico.css">
+    <title>EatMeFirst - Scarico Prodotti</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #161b22;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        /* Header con Logo a sinistra e Lingue a destra */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        /* Logo unico con scritta 1024 */
+        .app-logo-img {
+            height: 35px;
+            width: auto;
+            display: block;
+            cursor: pointer;
+        }
+
+        .language-selector select {
+            background-color: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .language-selector select:focus {
+            border-color: #58a6ff;
+            outline: none;
+        }
+
+        h1, h2 {
+            color: #58a6ff;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #e6edf3;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: #ffffff;
+            border: 1px solid #30363d;
+            color: #24292e;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        input:focus {
+            border-color: #58a6ff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(88, 166, 255, 0.5);
+        }
+        .item-card {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .item-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+            color: #58a6ff;
+        }
+        .item-info p {
+            margin: 2px 0;
+            font-size: 0.85rem;
+            color: #8b949e;
+        }
+        .consumo-controllo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #21262d;
+        }
+        .btn-qty {
+            background-color: #30363d;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-qty:hover {
+            background-color: #484f58;
+        }
+        .btn-termina {
+            background-color: #da3633;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        .btn-termina:hover {
+            background-color: #f85149;
+        }
+        .empty-msg {
+            text-align: center;
+            color: #8b949e;
+            padding: 20px;
+        }
+        .help-toggle-bar {
+            text-align: right;
+            margin-bottom: 15px;
+            color: #8b949e;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 10px;
+        }
+        .tooltip-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .tooltip-content {
+            background-color: #21262d;
+            border: 1px solid #30363d;
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+        }
+        .tooltip-content h3 {
+            margin-top: 0;
+            color: #58a6ff;
+        }
+        .tooltip-content p {
+            color: #c9d1d9;
+            font-size: 15px;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+        .menu-link {
+            text-align: center;
+            margin-top: 25px;
+        }
+        .menu-link a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #30363d;
+            color: #8b949e;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Header con Logo a sinistra e Selettore Lingua a destra -->
-        <div class="app-header">
-            <div class="footer-logo" style="margin-bottom: 0;">🍏 EatMeFirst</div>
-            <div class="language-selector">
-                <select id="select-lingua" onchange="cambiaLingua(this.value)">
-                    <option value="it">🇮🇹 Italiano</option>
-                    <option value="en">🇬🇧 English</option>
-                    <option value="es">🇪🇸 Español</option>
-                    <option value="fr">🇫🇷 Français</option>
-                </select>
+<div class="container">
+    <!-- Header pulito con un unico Logo e selettore lingua -->
+    <div class="app-header">
+        <div class="logo-container">
+            <img src="IMG/logo_1024.png" alt="EatMeFirst Logo" class="app-logo-img">
+        </div>
+        <div class="language-selector">
+            <select id="languageSelect">
+                <option value="it">Italiano</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+    </div>
+
+    <h1>Scarico Prodotti</h1>
+    
+    <div class="form-group">
+        <label for="searchItem">Cerca prodotto in dispensa:</label>
+        <input type="text" id="searchItem" placeholder="Digita per filtrare...">
+    </div>
+
+    <div class="item-card">
+        <div class="item-header">
+            <div class="item-info">
+                <h3>Nome Prodotto</h3>
+                <p>Scadenza: 15/10/2026</p>
+                <p>Quantità disponibile: 2</p>
             </div>
+            <button class="btn-termina">Elimina</button>
         </div>
-
-        <!-- Controllo globale per attivare/disattivare gli aiuti -->
-        <div class="help-toggle-bar">
-            <label style="font-size: 13px; font-weight: normal; cursor: pointer;">
-                <input type="checkbox" id="chk-mostra-aiuti" checked onchange="toggleGlobalHelp(this.checked)"> 
-                <span data-i18n="mostraAiuti">Mostra suggerimenti e guide passo-passo</span>
-            </label>
-        </div>
-
-        <h1 data-i18n="titoloPagina">Scarico e Consumo Prodotti</h1>
-
-        <!-- Barra di Ricerca -->
-        <div class="form-group" data-help-it="Digita il nome del prodotto o l'ubicazione (es. Dispensa, Scaffale) per trovarlo rapidamente in elenco." data-help-en="Type the product name or location (e.g. Pantry, Shelf) to find it quickly." data-help-es="Escribe el nombre del producto o ubicación (ej. Despensa, Estante) para encontrarlo rápidamente." data-help-fr="Tapez le nom du produit ou l'emplacement pour le trouver rapidement.">
-            <label data-i18n="etichettaCerca">🔍 Cerca in Dispensa</label>
-            <input type="text" id="filtroProdotti" placeholder="Cerca prodotto..." oninput="caricaListaDispensa()" onkeydown="handleSearchKey(event)">
-        </div>
-
-        <div id="listaContainer">
-            <!-- I prodotti verranno inseriti qui dinamicamente -->
-        </div>
-
-        <div class="menu-link">
-            <a href="menu.html" data-i18n="tornaMenu">← Torna al Menu Principale</a>
-        </div>
-
-        <div class="footer">
-            <div class="footer-logo">🍏 EatMeFirst</div>
-            <div data-i18n="footerTesto">Gestione locale sicura &bull; Risparmia cibo, vivi meglio</div>
+        <div class="consumo-controllo">
+            <button class="btn-qty">-</button>
+            <span>Consuma 1</span>
+            <button class="btn-qty">+</button>
         </div>
     </div>
 
-    <!-- Popup / Modale Guida Contestuale -->
-    <div id="tooltip-modal" class="tooltip-modal">
-        <div class="tooltip-content">
-            <h3 data-i18n="suggerimentoTitolo">💡 Suggerimento Utile</h3>
-            <p id="tooltip-text"></p>
-            <button type="button" onclick="chiudiTooltip()" data-i18n="btnCapito">Ho capito</button>
-        </div>
+    <div class="menu-link">
+        <a href="index.html">← Torna al Menu Principale</a>
     </div>
 
-    <script src="scarico.js"></script>
-</body>
-</html>input="caricaListaDispensa()" onkeydown="handleSearchKey(event)">
-        </div>
-
-        <div id="listaContainer">
-            <!-- I prodotti verranno inseriti qui dinamicamente -->
-        </div>
-
-        <div class="menu-link">
-            <a href="menu.html" data-i18n="tornaMenu">← Torna al Menu Principale</a>
-        </div>
-
-        <div class="footer">
-            <div class="footer-logo">🍏 EatMeFirst</div>
-            <div data-i18n="footerTesto">Gestione locale sicura &bull; Risparmia cibo, vivi meglio</div>
-        </div>
+    <div class="footer">
+        <p>EatMeFirst - Gestione Dispensa Intelligente</p>
     </div>
+</div>
 
-    <!-- Popup / Modale Guida Contestuale -->
-    <div id="tooltip-modal" class="tooltip-modal">
-        <div class="tooltip-content">
-            <h3 data-i18n="suggerimentoTitolo">💡 Suggerimento Utile</h3>
-            <p id="tooltip-text"></p>
-            <button type="button" onclick="chiudiTooltip()" data-i18n="btnCapito">Ho capito</button>
-        </div>
-    </div>
-
-    <script src="scarico.js"></script>
 </body>
 </html>
