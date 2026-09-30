@@ -18,10 +18,10 @@
 
         <h1>Scarico e Consumo Prodotti</h1>
 
-        <!-- Barra di Ricerca -->
-        <div class="form-group" data-help="Digita il nome del prodotto o l'ubicazione (es. Frigorifero, Dispensa) per trovarlo rapidamente in elenco.">
+        <!-- Barra di Ricerca con sfondo bianco e supporto tastiera -->
+        <div class="form-group" data-help="Digita il nome del prodotto o l'ubicazione (es. Dispensa, Scaffale) per trovarlo rapidamente in elenco. Premi Invio o Spazio per confermare la ricerca.">
             <label>🔍 Cerca in Dispensa</label>
-            <input type="text" id="filtroProdotti" placeholder="Cerca prodotto..." oninput="caricaListaDispensa()">
+            <input type="text" id="filtroProdotti" placeholder="Cerca prodotto..." oninput="caricaListaDispensa()" onkeydown="handleSearchKey(event)">
         </div>
 
         <div id="listaContainer">

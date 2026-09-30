@@ -9,6 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     inizializzaListenerCampi();
     caricaListaDispensa();
+    
+    // Focus iniziale sulla barra di ricerca
+    const inputRicerca = document.getElementById('filtroProdotti');
+    if(inputRicerca) inputRicerca.focus();
 });
 
 function toggleGlobalHelp(stato) {
@@ -39,6 +43,13 @@ function chiudiTooltip() {
     document.getElementById('tooltip-modal').style.display = 'none';
 }
 
+function handleSearchKey(event) {
+    if (event.key === 'Enter' || event.code === 'Space') {
+        // Consente l'interazione rapida da tastiera
+        event.preventDefault();
+    }
+}
+
 function caricaListaDispensa() {
     let container = document.getElementById('listaContainer');
     let filtro = document.getElementById('filtroProdotti').value.toLowerCase();
@@ -46,14 +57,14 @@ function caricaListaDispensa() {
     let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [], spesa: [] };
     container.innerHTML = "";
 
-    // Filtra prodotti attivi (non esauriti)
+    // Filtra prodotti attivi[cite: 5] (non esauriti)
     let prodottiFiltrati = (db.dispensa || []).filter(item => 
         !item.lowStock && 
         (item.nome.toLowerCase().includes(filtro) || (item.ubicazione && item.ubicazione.toLowerCase().includes(filtro)))
     );
 
     if (prodottiFiltrati.length === 0) {
-        container.innerHTML = `<div class="empty-msg">Nessun prodotto disponibile in dispensa da scaricare.</div>`;
+        container.innerHTML = `<div class="empty-msg">Nessun prodotto disponibile in dispensa da scaricare[cite: 5].</div>`;
         return;
     }
 
@@ -61,26 +72,25 @@ function caricaListaDispensa() {
         let card = document.createElement('div');
         card.className = 'item-card';
 
-        // Gestione unità (pezzi/grammi) per consumo parziale o totale
         let quantitaAttuale = item.quantita || 1;
         let unitaMisura = item.unitaMisura || 'pezzi';
 
         card.innerHTML = `
             <div class="item-header">
                 <div class="item-info">
-                    <h3>${item.nome} (${item.marca || 'Generico'})</h3>
-                    <p>📍 Ubicazione: <b>${item.ubicazione || 'Dispensa'}</b> | ⏳ Scadenza: <b>${item.scadenza || 'Nessuna'}</b></p>
-                    <p>📦 Disponibili: <b style="color: #58a6ff; font-size: 1rem;">${quantitaAttuale} ${unitaMisura}</b></p>
+                    <h3>${item.nome} (${item.marca || 'Generico'})[cite: 5]</h3>
+                    <p>📍 Ubicazione: <b>${item.ubicazione || 'Dispensa'}</b> | ⏳ Scadenza: <b>${item.scadenza || 'Nessuna'}</b>[cite: 5]</p>
+                    <p>📦 Disponibili: <b style="color: #58a6ff; font-size: 1rem;">${quantitaAttuale} ${unitaMisura}</b>[cite: 5]</p>
                 </div>
-                <button class="btn-termina" onclick="terminaProdotto(${item.id})">🗑️ Termina & Spesa</button>
+                <button class="btn-termina" onclick="terminaProdotto(${item.id})">🗑️ Termina & Spesa[cite: 5]</button>
             </div>
             
             <div class="consumo-controllo">
-                <span style="font-size: 0.85rem; color: #8b949e;">Consumo rapido:</span>
+                <span style="font-size: 0.85rem; color: #8b949e;">Consumo rapido:[cite: 5]</span>
                 <button class="btn-qty" onclick="aggiornaQuantita(${item.id}, -1)">-1</button>
                 <span style="font-size: 0.9rem; font-weight: bold; min-width: 30px; text-align: center;">${quantitaAttuale}</span>
                 <button class="btn-qty" onclick="aggiornaQuantita(${item.id}, 1)">+1</button>
-                <span style="font-size: 0.80rem; color: #8b949e; margin-left: auto;">Scala i singoli pezzi (es. uova)</span>
+                <span style="font-size: 0.80rem; color: #8b949e; margin-left: auto;">Scala i singoli pezzi[cite: 5]</span>
             </div>
         `;
         container.appendChild(card);
@@ -94,7 +104,6 @@ function aggiornaQuantita(id, delta) {
     if (item) {
         item.quantita = (item.quantita || 1) + delta;
         
-        // Se la quantità scende a 0 o meno, consideriamo il prodotto esaurito
         if (item.quantita <= 0) {
             item.quantita = 0;
             spostaInListaSpesa(item, db);
@@ -116,9 +125,8 @@ function terminaProdotto(id) {
 }
 
 function spostaInListaSpesa(item, db) {
-    item.lowStock = true; // Segnato come esaurito in dispensa
+    item.lowStock = true; 
 
-    // Aggiunge alla lista della spesa se non è già presente
     if (!db.spesa) db.spesa = [];
     const esisteGia = db.spesa.some(s => s.nome.toLowerCase() === item.nome.toLowerCase() && !s.comprato);
     

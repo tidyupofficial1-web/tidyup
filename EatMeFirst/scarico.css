@@ -25,19 +25,24 @@ label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
+    color: #e6edf3;
 }
+/* Sfondo bianco per i campi d'input, perfettamente coerente con il carico */
 input {
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
-    background-color: #0d1117;
+    background-color: #ffffff;
     border: 1px solid #30363d;
-    color: #c9d1d9;
+    color: #24292e;
     border-radius: 4px;
+    font-size: 15px;
+    font-weight: 500;
 }
 input:focus {
     border-color: #58a6ff;
     outline: none;
+    box-shadow: 0 0 5px rgba(88, 166, 255, 0.5);
 }
 .item-card {
     background: #0d1117;
