@@ -8,7 +8,7 @@
 </head>
 <body>
 
-    <!-- HEADER UNIFICATO CON PERCORSO CORRETTO DEL LOGO -->
+    <!-- HEADER UNIFICATO CON LOGO E LINGUA -->
     <header>
         <div class="header-left">
             <img src="IMG/logo_1024_white.png" alt="Logo EatMeFirst" class="header-logo">
@@ -65,13 +65,13 @@
 
     </div>
 
-    <!-- MODALE GUIDA PRATICO CON "NON MOSTRARE PIÙ" -->
+    <!-- MODALE GUIDA CORRETTO (ROSSO = ESAURITI, GIALLO = PREVISIONE SCADENZA/ESAURIMENTO) -->
     <div id="modal-guida" class="modal-overlay" style="display: none;">
         <div class="modal-card" style="max-width: 450px; text-align: left;">
             <h3 data-i18n="guidaTitolo" style="margin-top: 0; color: var(--accent-blue);">💡 Come funziona la Lista</h3>
-            <p data-i18n="guidaTesto1" style="font-size: 0.9rem; margin-bottom: 10px;"><b>🔴 Rosso (Gratuito):</b> Prodotti esauriti o che finiranno prima del tuo prossimo giro al supermercato.</p>
-            <p data-i18n="guidaTesto2" style="font-size: 0.9rem; margin-bottom: 15px;"><b>🟡 Giallo (Smart/Premium):</b> Suggerimenti predittivi basati sul consumo stimato e sulle scadenze vicine.</p>
-            <p data-i18n="guidaTesto3" style="font-size: 0.9rem; margin-bottom: 20px;">Spunta i prodotti mentre fai la spesa e usa "Pulisci testi sbarrati" per pulire il carrello una volta tornato a casa.</p>
+            <p data-i18n="guidaTesto1" style="font-size: 0.9rem; margin-bottom: 10px;"><b>🔴 Rosso (Gratuito):</b> Prodotti già effettivamente esauriti.</p>
+            <p data-i18n="guidaTesto2" style="font-size: 0.9rem; margin-bottom: 15px;"><b>🟡 Giallo (Smart/Premium):</b> Prodotti che l'algoritmo prevede si esauriranno prima del tuo prossimo ritorno al supermercato.</p>
+            <p data-i18n="guidaTesto3" style="font-size: 0.9rem; margin-bottom: 20px;">Spunta i prodotti mentre fai la spesa e usa "Pulisci testi sbarrati" per svuotare il carrello una volta tornato a casa.</p>
             
             <!-- Checkbox Non mostrare più -->
             <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">

@@ -95,8 +95,8 @@ const dizionarioListe = {
         vuotoCarrello: "Nessun prodotto nel carrello. Spunta gli articoli mentre fai la spesa.",
         premiumLockedMsg: "🔒 Funzione Premium scaduta: Attiva l'abbonamento per vedere i suggerimenti intelligenti basati sul consumo.",
         guidaTitolo: "💡 Come funziona la Lista",
-        guidaTesto1: "<b>🔴 Rosso (Gratuito):</b> Prodotti esauriti o che finiranno prima del tuo prossimo giro al supermercato.",
-        guidaTesto2: "<b>🟡 Giallo (Smart/Premium):</b> Suggerimenti predittivi basati sul consumo stimato e sulle scadenze vicine.",
+        guidaTesto1: "<b>🔴 Rosso (Gratuito):</b> Prodotti già effettivamente esauriti.",
+        guidaTesto2: "<b>🟡 Giallo (Smart/Premium):</b> Prodotti che l'algoritmo prevede si esauriranno prima del tuo prossimo ritorno al supermercato.",
         guidaTesto3: "Spunta i prodotti mentre fai la spesa e usa 'Pulisci testi sbarrati' per ripulire il carrello.",
         nonMostrarePiu: "Non mostrare più questo messaggio all'avvio",
         guidaChiudi: "Ho capito, procedi"
@@ -122,8 +122,8 @@ const dizionarioListe = {
         vuotoCarrello: "No items in the cart.",
         premiumLockedMsg: "🔒 Premium feature locked: Renew subscription to unlock consumption predictions.",
         guidaTitolo: "💡 How the List Works",
-        guidaTesto1: "<b>🔴 Red (Free):</b> Out-of-stock items or items running out before your next trip.",
-        guidaTesto2: "<b>🟡 Yellow (Smart/Premium):</b> Predictive suggestions based on estimated consumption.",
+        guidaTesto1: "<b>🔴 Red (Free):</b> Out-of-stock items.",
+        guidaTesto2: "<b>🟡 Yellow (Smart/Premium):</b> Items predicted to run out before your next grocery trip.",
         guidaTesto3: "Check items while shopping and use 'Clear crossed items' when back home.",
         nonMostrarePiu: "Don't show this message again at startup",
         guidaChiudi: "Got it, let's go"
@@ -135,17 +135,17 @@ const dizionarioListe = {
         navBack: "← Volver al Menú", footer: "EatMeFirst • Gestión segura", esaurito: "Agotado", inScadenza: "Smart",
         ubicazione: "Ubicación", scadenza: "Caducidad", preso: "Cogido", vuotoPrendere: "No hay productos.",
         vuotoCarrello: "Carrito vacío.", premiumLockedMsg: "🔒 Función Premium bloqueada.",
-        guidaTitolo: "💡 Ayuda", guidaTesto1: "🔴 Productos agotados.", guidaTesto2: "🟡 Sugerencias Smart.", guidaTesto3: "Usa la lista con facilidad.",
+        guidaTitolo: "💡 Ayuda", guidaTesto1: "🔴 Productos agotados.", guidaTesto2: "🟡 Sugerencias Smart por previsión.", guidaTesto3: "Usa la lista con facilidad.",
         nonMostrarePiu: "No volver a mostrar", guidaChiudi: "Entendido"
     },
     fr: {
-        spesa_lista: "Liste de Courses", btnGuidaTesto: "ℹ️️ Guide", tabPrendere: "À Acheter", tabPresi: "Panier",
+        spesa_lista: "Liste de Courses", btnGuidaTesto: "ℹ Guide", tabPrendere: "À Acheter", tabPresi: "Panier",
         titoloSezionePrendere: "Articles à Acheter", descSezionePrendere: "Cochez les produits pris.",
         titoloSezionePresi: "Articles dans le Panier", descSezionePresi: "Résumé des achats.", btnPulisci: "Effacer barrés",
         navBack: "← Retour au Menu", footer: "EatMeFirst • Gestion locale", esaurito: "Épuisé", inScadenza: "Smart",
         ubicazione: "Emplacement", scadenza: "Expiration", preso: "Pris", vuotoPrendere: "Aucun article.",
         vuotoCarrello: "Panier vide.", premiumLockedMsg: "🔒 Fonction Premium verrouillée.",
-        guidaTitolo: "💡 Aide", guidaTesto1: "🔴 Articles épuisés.", guidaTesto2: "🟡 Suggestions Smart.", guidaTesto3: "Cochez vos articles.",
+        guidaTitolo: "💡 Aide", guidaTesto1: "🔴 Articles épuisés.", guidaTesto2: "🟡 Suggestions Smart par prévision.", guidaTesto3: "Cochez vos articles.",
         nonMostrarePiu: "Ne plus afficher", guidaChiudi: "Compris"
     },
     de: {
@@ -155,7 +155,7 @@ const dizionarioListe = {
         navBack: "← Zum Menü", footer: "EatMeFirst • Sichere lokale Verwaltung", esaurito: "Ausverkauft", inScadenza: "Smart",
         ubicazione: "Standort", scadenza: "Verfallsdatum", preso: "Mitgenommen", vuotoPrendere: "Keine Artikel.",
         vuotoCarrello: "Wagen leer.", premiumLockedMsg: "🔒 Premium-Funktion gesperrt.",
-        guidaTitolo: "💡 Hilfe", guidaTesto1: "🔴 Ausverkaufte Artikel.", guidaTesto2: "🟡 Smart-Vorschläge.", guidaTesto3: "Viel Spaß beim Einkaufen.",
+        guidaTitolo: "💡 Hilfe", guidaTesto1: "🔴 Ausverkaufte Artikel.", guidaTesto2: "🟡 Vorhergesagte Artikel.", guidaTesto3: "Viel Spaß beim Einkaufen.",
         nonMostrarePiu: "Nicht mehr anzeigen", guidaChiudi: "Verstanden"
     }
 };
@@ -213,17 +213,17 @@ function renderizzaListe() {
             giorniScadenza = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         }
 
-        // Rosso: Esaurito o finisce prima della prossima spesa
-        if (giacenza === 0 || giorniAutonomia < giorniMancantiAlSupermercato || item.lowStock) {
+        // Rosso: Solo prodotti effettivamente esauriti
+        if (giacenza === 0 || item.lowStock) {
             prodottiRossi.push(item);
         } 
-        // Giallo: In esaurimento imminente o scadenza vicina
-        else if (giorniScadenza <= 10 || giorniAutonomia <= (giorniMancantiAlSupermercato + 2)) {
+        // Giallo: Previsione esaurimento prima della prossima spesa o scadenza vicina
+        else if (giorniAutonomia < giorniMancantiAlSupermercato || giorniScadenza <= 10) {
             prodottiGialli.push(item);
         }
     });
 
-    // Render Prodotti Rossi (Sempre attivi e gratuiti)
+    // Render Prodotti Rossi (Effettivamente esauriti)
     prodottiRossi.forEach(item => {
         let dataFormatted = formattaDataItaliana(item.scadenza);
         if (!item.preso) {
@@ -255,7 +255,7 @@ function renderizzaListe() {
         }
     });
 
-    // Render Prodotti Gialli (Funzione Smart / Premium)
+    // Render Prodotti Gialli (Previsione esaurimento / Smart / Premium)
     if (prodottiGialli.length > 0) {
         if (isPremiumActive) {
             prodottiGialli.forEach(item => {
