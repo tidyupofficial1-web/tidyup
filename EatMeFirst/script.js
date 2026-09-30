@@ -17,7 +17,6 @@ const dizionarioGlobale = {
         pop_chiudi: "Ho capito",
         pop_apri: "Vai a Ricordarsi di...",
         footer: "EatMeFirst &bull; Gestione locale sicura",
-        // Traduzioni aggiunte per la pagina Liste / Spesa
         ubicazione: "Ubicazione",
         scadenza: "Scadenza",
         inEsaurimento: "In esaurimento",
