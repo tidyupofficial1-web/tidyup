@@ -66,7 +66,7 @@ function cambiaVistaSpesa(vista) {
 
 function renderizzaListe() {
     const lang = getLinguaCorrente();
-    // Dizionario di supporto locale per le etichette della pagina liste
+    // Dizionario completo per la pagina liste
     const etichette = {
         it: {
             ubicazione: "Ubicazione",
@@ -74,7 +74,15 @@ function renderizzaListe() {
             inEsaurimento: "In esaurimento",
             preso: "Preso",
             vuotoPrendere: "Nessun prodotto da acquistare.",
-            vuotoCarrello: "Nessun prodotto nel carrello. Spunta gli articoli mentre fai la spesa."
+            vuotoCarrello: "Nessun prodotto nel carrello. Spunta gli articoli mentre fai la spesa.",
+            tabPrendere: "Da Prendere",
+            tabPresi: "Già Presi (Carrello)",
+            titoloSezionePrendere: "Articoli da Acquistare",
+            descSezionePrendere: "Metti la spunta sui prodotti presi. Quelli non spuntati rimarranno qui per la prossima spesa.",
+            titoloSezionePresi: "Prodotti nel Carrello (Già Presi)",
+            descSezionePresi: "Riepilogo dei prodotti acquistati. Cliccando il pulsante sotto verranno pulite le visualizzazioni sbarrate, lasciando intatti quelli non presi.",
+            btnPulisci: "Pulisci testi sbarrati",
+            navBack: "&larr; Torna al Menu Principale"
         },
         en: {
             ubicazione: "Location",
@@ -82,7 +90,15 @@ function renderizzaListe() {
             inEsaurimento: "Low stock",
             preso: "Taken",
             vuotoPrendere: "No items to buy.",
-            vuotoCarrello: "No items in the cart. Check off items while shopping."
+            vuotoCarrello: "No items in the cart. Check off items while shopping.",
+            tabPrendere: "To Buy",
+            tabPresi: "Already Taken (Cart)",
+            titoloSezionePrendere: "Items to Purchase",
+            descSezionePrendere: "Check off the items you've taken. Unchecked items will remain here for your next trip.",
+            titoloSezionePresi: "Products in Cart (Already Taken)",
+            descSezionePresi: "Summary of purchased products. Clicking the button below will clear crossed-out items, leaving unpicked ones intact.",
+            btnPulisci: "Clear crossed-out items",
+            navBack: "&larr; Back to Main Menu"
         },
         es: {
             ubicazione: "Ubicación",
@@ -90,7 +106,15 @@ function renderizzaListe() {
             inEsaurimento: "Poco stock",
             preso: "Cogido",
             vuotoPrendere: "No hay productos para comprar.",
-            vuotoCarrello: "No hay productos en el carro."
+            vuotoCarrello: "No hay productos en el carro.",
+            tabPrendere: "Por Comprar",
+            tabPresi: "Ya Cogidos (Carro)",
+            titoloSezionePrendere: "Artículos para Comprar",
+            descSezionePrendere: "Marca los productos que hayas cogido. Los no marcados se quedarán aquí para la próxima compra.",
+            titoloSezionePresi: "Productos en el Carro (Ya Cogidos)",
+            descSezionePresi: "Resumen de los productos comprados. Al hacer clic en el botón de abajo se limpiarán los tachados.",
+            btnPulisci: "Limpiar textos tachados",
+            navBack: "&larr; Volver al Menú Principal"
         },
         fr: {
             ubicazione: "Emplacement",
@@ -98,7 +122,15 @@ function renderizzaListe() {
             inEsaurimento: "Stock faible",
             preso: "Pris",
             vuotoPrendere: "Aucun article à acheter.",
-            vuotoCarrello: "Aucun article dans le panier."
+            vuotoCarrello: "Aucun article dans le panier.",
+            tabPrendere: "À Acheter",
+            tabPresi: "Déjà Pris (Panier)",
+            titoloSezionePrendere: "Articles à Acheter",
+            descSezionePrendere: "Cochez les produits pris. Ceux non cochés resteront ici pour la prochaine course.",
+            titoloSezionePresi: "Produits dans le Panier (Déjà Pris)",
+            descSezionePresi: "Résumé des produits achetés. En cliquant sur le bouton ci-dessous, les éléments barrés seront effacés.",
+            btnPulisci: "Effacer les éléments barrés",
+            navBack: "&larr; Retour au Menu Principal"
         },
         de: {
             ubicazione: "Standort",
@@ -106,11 +138,29 @@ function renderizzaListe() {
             inEsaurimento: "Fast leer",
             preso: "Mitgenommen",
             vuotoPrendere: "Keine Artikel zu kaufen.",
-            vuotoCarrello: "Keine Artikel im Warenkorb."
+            vuotoCarrello: "Keine Artikel im Warenkorb.",
+            tabPrendere: "Zu Kaufen",
+            tabPresi: "Bereits Mitgenommen (Warenkorb)",
+            titoloSezionePrendere: "Zu kaufende Artikel",
+            descSezionePrendere: "Haken Sie gekaufte Produkte ab. Nicht abgehakte bleiben für den nächsten Einkauf hier.",
+            titoloSezionePresi: "Produkte im Warenkorb (Bereits mitgenommen)",
+            descSezionePresi: "Zusammenfassung der gekauften Produkte. Durch Klick auf den Button unten werden durchgestrichene Einträge bereinigt.",
+            btnPulisci: "Durchgestrichene Texte bereinigen",
+            navBack: "&larr; Zurück zum Hauptmenü"
         }
     };
 
     const t = etichette[lang] || etichette['it'];
+
+    // Aggiorna i testi fissi dell'interfaccia tramite gli ID dedicati
+    document.getElementById('tab-btn-prendere').innerText = t.tabPrendere;
+    document.getElementById('tab-btn-presi').innerText = t.tabPresi;
+    document.getElementById('txt-sezione-prendere-titolo').innerText = t.titoloSezionePrendere;
+    document.getElementById('txt-sezione-prendere-disc').innerText = t.descSezionePrendere;
+    document.getElementById('txt-sezione-presi-titolo').innerText = t.titoloSezionePresi;
+    document.getElementById('txt-sezione-presi-disc').innerText = t.descSezionePresi;
+    document.getElementById('btn-pulisci-testi').innerText = t.btnPulisci;
+    document.getElementById('nav-back-link').innerHTML = t.navBack;
 
     let htmlDaPrendere = '';
     let htmlGiaPresi = '';
@@ -181,5 +231,9 @@ function applicaTraduzioniInterfaccia() {
     const glob = dizionarioGlobale[lang] || dizionarioGlobale['it'];
     if(glob && glob.footer) {
         document.getElementById('txt-footer').innerHTML = glob.footer;
+    }
+    // Rende dinamico anche il titolo principale della spesa se gestito nel dizionario globale o locale
+    if(glob && glob.shoppingListTitle) {
+        document.getElementById('txt-liste-title').innerText = glob.shoppingListTitle;
     }
 }

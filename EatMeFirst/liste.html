@@ -59,8 +59,8 @@
 
         <!-- Sezione Da Prendere -->
         <div id="sezione-prendere" class="card">
-            <h3 style="color: var(--text-main); margin-bottom: 5px;">Articoli da Acquistare</h3>
-            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:12px;">
+            <h3 id="txt-sezione-prendere-titolo" style="color: var(--text-main); margin-bottom: 5px;">Articoli da Acquistare</h3>
+            <p id="txt-sezione-prendere-disc" style="font-size:0.82rem; color:var(--text-muted); margin-bottom:12px;">
                 Metti la spunta sui prodotti presi. Quelli non spuntati rimarranno qui per la prossima spesa.
             </p>
             <div id="lista-da-prendere"></div>
@@ -68,15 +68,15 @@
 
         <!-- Sezione Già Presi -->
         <div id="sezione-presi" class="card" style="display: none;">
-            <h3 style="color: var(--text-main); margin-bottom: 5px;">Prodotti nel Carrello (Già Presi)</h3>
-            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:12px;">
+            <h3 id="txt-sezione-presi-titolo" style="color: var(--text-main); margin-bottom: 5px;">Prodotti nel Carrello (Già Presi)</h3>
+            <p id="txt-sezione-presi-disc" style="font-size:0.82rem; color:var(--text-muted); margin-bottom:12px;">
                 Riepilogo dei prodotti acquistati. Cliccando il pulsante sotto verranno pulite le visualizzazioni sbarrate, lasciando intatti quelli non presi.
             </p>
             <div id="lista-gia-presi"></div>
-            <button class="btn-clean" onclick="pulisciProdottiPresi()">Pulisci testi sbarrati</button>
+            <button id="btn-pulisci-testi" class="btn-clean" onclick="pulisciProdottiPresi()">Pulisci testi sbarrati</button>
         </div>
 
-        <a href="index.html" class="nav-back">&larr; Torna al Menu Principale</a>
+        <a id="nav-back-link" href="index.html" class="nav-back">&larr; Torna al Menu Principale</a>
     </div>
 
     <footer id="txt-footer" style="margin-top: 40px;">
