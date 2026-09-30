@@ -4,12 +4,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (selectLang) {
         selectLang.value = langSalvata;
     }
+    applicaTraduzioniInterfaccia(langSalvata);
     renderizzaListe();
 });
 
 let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || {
     dispensa: []
 };
+
+// Simulatore stato Premium per la funzione predittiva (Gialla)
+let isPremiumActive = true; 
 
 let loopCount = 0;
 const maxLoops = 3;
@@ -62,55 +66,226 @@ function cambiaVistaSpesa(vista) {
     }
 }
 
+// --- GESTIONE TRADUZIONI MULTILINGUA ---
+const dizionarioListe = {
+    it: {
+        spesa_lista: "Lista della Spesa",
+        btnGuidaTitle: "Guida alla Lista",
+        tabPrendere: "Da Prendere",
+        tabPresi: "Già Presi (Carrello)",
+        titoloSezionePrendere: "Articoli da Acquistare",
+        descSezionePrendere: "Metti la spunta sui prodotti presi. Quelli non spuntati rimarranno qui per la prossima spesa.",
+        titoloSezionePresi: "Prodotti nel Carrello (Già Presi)",
+        descSezionePresi: "Riepilogo dei prodotti acquistati. Cliccando il pulsante sotto verranno pulite le visualizzazioni sbarrate.",
+        btnPulisci: "Pulisci testi sbarrati",
+        navBack: "← Torna al Menu Principale",
+        footer: "EatMeFirst • Gestione locale sicura",
+        esaurito: "Esaurito",
+        inScadenza: "In esaurimento / Smart",
+        ubicazione: "Ubicazione",
+        scadenza: "Scadenza",
+        preso: "Preso",
+        vuotoPrendere: "Nessun prodotto da acquistare.",
+        vuotoCarrello: "Nessun prodotto nel carrello. Spunta gli articoli mentre fai la spesa.",
+        premiumLockedMsg: "🔒 Funzione Premium scaduta: Attiva l'abbonamento per vedere i suggerimenti intelligenti basati sul consumo.",
+        guidaTitolo: "💡 Come funziona la Lista",
+        guidaTesto1: "<b>🔴 Rosso (Gratuito):</b> Prodotti esauriti o che finiranno prima del tuo prossimo giro al supermercato.",
+        guidaTesto2: "<b>🟡 Giallo (Smart/Premium):</b> Suggerimenti predittivi basati sul consumo stimato e sulle scadenze vicine.",
+        guidaTesto3: "Spunta i prodotti mentre fai la spesa e usa 'Pulisci testi sbarrati' per ripulire il carrello.",
+        guidaChiudi: "Ho capito"
+    },
+    en: {
+        spesa_lista: "Shopping List",
+        btnGuidaTitle: "Shopping Guide",
+        tabPrendere: "To Buy",
+        tabPresi: "Already Taken (Cart)",
+        titoloSezionePrendere: "Items to Buy",
+        descSezionePrendere: "Check items as you take them. Unchecked items remain for your next trip.",
+        titoloSezionePresi: "Cart Items (Already Taken)",
+        descSezionePresi: "Summary of purchased items. Click below to clear crossed-out items.",
+        btnPulisci: "Clear crossed items",
+        navBack: "← Back to Main Menu",
+        footer: "EatMeFirst • Secure local management",
+        esaurito: "Out of stock",
+        inScadenza: "Low stock / Smart",
+        ubicazione: "Location",
+        scadenza: "Expires",
+        preso: "Taken",
+        vuotoPrendere: "No items to buy.",
+        vuotoCarrello: "No items in the cart.",
+        premiumLockedMsg: "🔒 Premium feature locked: Renew subscription to unlock consumption predictions.",
+        guidaTitolo: "💡 How the List Works",
+        guidaTesto1: "<b>🔴 Red (Free):</b> Out-of-stock items or items running out before your next trip.",
+        guidaTesto2: "<b>🟡 Yellow (Smart/Premium):</b> Predictive suggestions based on estimated consumption.",
+        guidaTesto3: "Check items while shopping and use 'Clear crossed items' when back home.",
+        guidaChiudi: "Got it"
+    },
+    es: {
+        spesa_lista: "Lista de la Compra", btnGuidaTitle: "Guía", tabPrendere: "Comprar", tabPresi: "En Carrito",
+        titoloSezionePrendere: "Artículos a Comprar", descSezionePrendere: "Marca los productos cogidos.",
+        titoloSezionePresi: "Productos en el Carrito", descSezionePresi: "Resumen de compras.", btnPulisci: "Limpiar tachados",
+        navBack: "← Volver al Menú", footer: "EatMeFirst • Gestión segura", esaurito: "Agotado", inScadenza: "Smart",
+        ubicazione: "Ubicación", scadenza: "Caducidad", preso: "Cogido", vuotoPrendere: "No hay productos.",
+        vuotoCarrello: "Carrito vacío.", premiumLockedMsg: "🔒 Función Premium bloqueada.",
+        guidaTitolo: "💡 Ayuda", guidaTesto1: "🔴 Productos agotados.", guidaTesto2: "🟡 Sugerencias Smart.", guidaTesto3: "Usa la lista con facilidad.", guidaChiudi: "Entendido"
+    },
+    fr: {
+        spesa_lista: "Liste de Courses", btnGuidaTitle: "Guide", tabPrendere: "À Acheter", tabPresi: "Panier",
+        titoloSezionePrendere: "Articles à Acheter", descSezionePrendere: "Cochez les produits pris.",
+        titoloSezionePresi: "Articles dans le Panier", descSezionePresi: "Résumé des achats.", btnPulisci: "Effacer barrés",
+        navBack: "← Retour au Menu", footer: "EatMeFirst • Gestion locale", esaurito: "Épuisé", inScadenza: "Smart",
+        ubicazione: "Emplacement", scadenza: "Expiration", preso: "Pris", vuotoPrendere: "Aucun article.",
+        vuotoCarrello: "Panier vide.", premiumLockedMsg: "🔒 Fonction Premium verrouillée.",
+        guidaTitolo: "💡 Aide", guidaTesto1: "🔴 Articles épuisés.", guidaTesto2: "🟡 Suggestions Smart.", guidaTesto3: "Cochez vos articles.", guidaChiudi: "Compris"
+    },
+    de: {
+        spesa_lista: "Einkaufsliste", btnGuidaTitle: "Hilfe", tabPrendere: "Zu kaufen", tabPresi: "Wagen",
+        titoloSezionePrendere: "Einkaufsartikel", descSezionePrendere: "Haken Sie gekaufte Artikel ab.",
+        titoloSezionePresi: "Artikel im Wagen", descSezionePresi: "Zusammenfassung.", btnPulisci: "Durchgestrichene löschen",
+        navBack: "← Zum Menü", footer: "EatMeFirst • Sichere lokale Verwaltung", esaurito: "Ausverkauft", inScadenza: "Smart",
+        ubicazione: "Standort", scadenza: "Verfallsdatum", preso: "Mitgenommen", vuotoPrendere: "Keine Artikel.",
+        vuotoCarrello: "Wagen leer.", premiumLockedMsg: "🔒 Premium-Funktion gesperrt.",
+        guidaTitolo: "💡 Hilfe", guidaTesto1: "🔴 Ausverkaufte Artikel.", guidaTesto2: "🟡 Smart-Vorschläge.", guidaTesto3: "Viel Spaß beim Einkaufen.", guidaChiudi: "Verstanden"
+    }
+};
+
+function cambiaLingua(lang) {
+    localStorage.setItem('eat_me_first_lang', lang);
+    applicaTraduzioniInterfaccia(lang);
+    renderizzaListe();
+}
+
+function applicaTraduzioniInterfaccia(lang) {
+    const t = dizionarioListe[lang] || dizionarioListe['it'];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const chiave = el.getAttribute('data-i18n');
+        if (t[chiave]) {
+            el.innerHTML = t[chiave];
+        }
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const chiave = el.getAttribute('data-i18n-title');
+        if (t[chiave]) {
+            el.title = t[chiave];
+        }
+    });
+}
+
+function apriGuidaListe() {
+    document.getElementById('modal-guida').style.display = 'flex';
+}
+
+function chiudiGuidaListe() {
+    document.getElementById('modal-guida').style.display = 'none';
+}
+
+// --- RENDERIZZAZIONE INTELLIGENTE DELLE LISTE ---
 function renderizzaListe() {
     const lang = localStorage.getItem('eat_me_first_lang') || 'it';
-    
-    const etichetteDinamiche = {
-        it: { inEsaurimento: "In esaurimento", ubicazione: "Ubicazione", scadenza: "Scadenza", preso: "Preso", vuotoPrendere: "Nessun prodotto da acquistare.", vuotoCarrello: "Nessun prodotto nel carrello. Spunta gli articoli mentre fai la spesa." },
-        en: { inEsaurimento: "Low stock", ubicazione: "Location", scadenza: "Expires", preso: "Taken", vuotoPrendere: "No items to buy.", vuotoCarrello: "No items in the cart. Check off items while shopping." },
-        es: { inEsaurimento: "Poco stock", ubicazione: "Ubicación", scadenza: "Caducidad", preso: "Cogido", vuotoPrendere: "No hay productos para comprar.", vuotoCarrello: "No hay productos en el carro." },
-        fr: { inEsaurimento: "Stock faible", ubicazione: "Emplacement", scadenza: "Expiration", preso: "Pris", vuotoPrendere: "Aucun article à acheter.", vuotoCarrello: "Aucun article dans le panier." },
-        de: { inEsaurimento: "Fast leer", ubicazione: "Standort", scadenza: "Verfallsdatum", preso: "Mitgenommen", vuotoPrendere: "Keine Artikel zu kaufen.", vuotoCarrello: "Keine Artikel im Warenkorb." }
-    };
-
-    const t = etichetteDinamiche[lang] || etichetteDinamiche['it'];
+    const t = dizionarioListe[lang] || dizionarioListe['it'];
 
     let htmlDaPrendere = '';
     let htmlGiaPresi = '';
+    const giorniMancantiAlSupermercato = 7; 
+
+    let prodottiRossi = []; 
+    let prodottiGialli = []; 
 
     (db.dispensa || []).forEach(item => {
-        let dataFormatted = formattaDataItaliana(item.scadenza);
+        let consumo = item.consumoGiornaliero || 1;
+        let giacenza = item.giacenza !== undefined ? item.giacenza : (item.lowStock ? 0 : 5); 
+        let giorniAutonomia = giacenza / consumo;
 
-        if (item.lowStock) {
-            if (!item.preso) {
-                htmlDaPrendere += `
-                    <div class="item-row low-stock">
-                        <input type="checkbox" style="transform: scale(1.3); cursor: pointer;" onchange="spuntatoProdotto(${item.id})">
-                        <div class="item-info">
-                            <div class="item-title">${item.nome} ⚠️ (${t.inEsaurimento})</div>
-                            <div class="item-details">${t.ubicazione}: ${item.ubicazione || 'N/D'} | ${t.scadenza}: ${dataFormatted}</div>
-                        </div>
-                    </div>`;
-            } else {
-                htmlDaPrendere += `
-                    <div class="item-row" style="background-color: #21262d;">
-                        <input type="checkbox" checked disabled style="transform: scale(1.3);">
-                        <div class="item-info" style="color: var(--text-muted);">
-                            <div class="item-title" style="text-decoration: line-through; color: var(--text-muted);">${item.nome}</div>
-                            <div class="item-details">${t.ubicazione}: ${item.ubicazione || 'N/D'} | ${t.scadenza}: ${dataFormatted}</div>
-                        </div>
-                    </div>`;
+        let giorniScadenza = 999;
+        if (item.scadenza) {
+            let oggi = new Date();
+            let dataScad = new Date(item.scadenza);
+            let diffTime = dataScad - oggi;
+            giorniScadenza = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
 
-                htmlGiaPresi += `
-                    <div class="item-row">
-                        <div class="item-info">
-                            <div class="item-title" style="color: var(--accent-green);">&#10004; ${item.nome}</div>
-                            <div class="item-details">${t.ubicazione}: ${item.ubicazione || 'N/D'} | ${t.preso}</div>
-                        </div>
-                    </div>`;
-            }
+        // Rosso: Esaurito o finisce prima della prossima spesa
+        if (giacenza === 0 || giorniAutonomia < giorniMancantiAlSupermercato || item.lowStock) {
+            prodottiRossi.push(item);
+        } 
+        // Giallo: In esaurimento imminente o scadenza vicina
+        else if (giorniScadenza <= 10 || giorniAutonomia <= (giorniMancantiAlSupermercato + 2)) {
+            prodottiGialli.push(item);
         }
     });
+
+    // Render Prodotti Rossi (Sempre attivi e gratuiti)
+    prodottiRossi.forEach(item => {
+        let dataFormatted = formattaDataItaliana(item.scadenza);
+        if (!item.preso) {
+            htmlDaPrendere += `
+                <div class="item-row low-stock" style="border-left: 4px solid var(--accent-danger); background-color: rgba(239, 68, 68, 0.05);">
+                    <input type="checkbox" style="transform: scale(1.3); cursor: pointer;" onchange="spuntatoProdotto(${item.id})">
+                    <div class="item-info">
+                        <div class="item-title" style="color: var(--accent-danger);">${item.nome} 🔴 (${t.esaurito})</div>
+                        <div class="item-details">${t.ubicazione}: ${item.ubicazione || 'N/D'} | ${t.scadenza}: ${dataFormatted}</div>
+                    </div>
+                </div>`;
+        } else {
+            htmlDaPrendere += `
+                <div class="item-row" style="background-color: #21262d;">
+                    <input type="checkbox" checked disabled style="transform: scale(1.3);">
+                    <div class="item-info" style="color: var(--text-muted);">
+                        <div class="item-title" style="text-decoration: line-through; color: var(--text-muted);">${item.nome}</div>
+                        <div class="item-details">${t.ubicazione}: ${item.ubicazione || 'N/D'} | ${t.scadenza}: ${dataFormatted}</div>
+                    </div>
+                </div>`;
+
+            htmlGiaPresi += `
+                <div class="item-row">
+                    <div class="item-info">
+                        <div class="item-title" style="color: var(--accent-green);">&#10004; ${item.nome}</div>
+                        <div class="item-details">${t.ubicazione}: ${item.ubicazione || 'N/D'} | ${t.preso}</div>
+                    </div>
+                </div>`;
+        }
+    });
+
+    // Render Prodotti Gialli (Funzione Smart / Premium)
+    if (prodottiGialli.length > 0) {
+        if (isPremiumActive) {
+            prodottiGialli.forEach(item => {
+                let dataFormatted = formattaDataItaliana(item.scadenza);
+                if (!item.preso) {
+                    htmlDaPrendere += `
+                        <div class="item-row" style="border-left: 4px solid var(--accent-warning); background-color: rgba(245, 158, 11, 0.05);">
+                            <input type="checkbox" style="transform: scale(1.3); cursor: pointer;" onchange="spuntatoProdotto(${item.id})">
+                            <div class="item-info">
+                                <div class="item-title" style="color: var(--accent-warning);">${item.nome} 🟡 (${t.inScadenza})</div>
+                                <div class="item-details">${t.ubicazione}: ${item.ubicazione || 'N/D'} | ${t.scadenza}: ${dataFormatted}</div>
+                            </div>
+                        </div>`;
+                } else {
+                    htmlDaPrendere += `
+                        <div class="item-row" style="background-color: #21262d;">
+                            <input type="checkbox" checked disabled style="transform: scale(1.3);">
+                            <div class="item-info" style="color: var(--text-muted);">
+                                <div class="item-title" style="text-decoration: line-through; color: var(--text-muted);">${item.nome}</div>
+                                <div class="item-details">${t.ubicazione}: ${item.ubicazione || 'N/D'} | ${t.scadenza}: ${dataFormatted}</div>
+                            </div>
+                        </div>`;
+
+                    htmlGiaPresi += `
+                        <div class="item-row">
+                            <div class="item-info">
+                                <div class="item-title" style="color: var(--accent-green);">&#10004; ${item.nome}</div>
+                                <div class="item-details">${t.ubicazione}: ${item.ubicazione || 'N/D'} | ${t.preso}</div>
+                            </div>
+                        </div>`;
+                }
+            });
+        } else {
+            htmlDaPrendere += `
+                <div style="padding: 15px; margin-top: 10px; background: rgba(239, 68, 68, 0.1); border: 1px dashed var(--accent-warning); border-radius: 8px; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+                    ${t.premiumLockedMsg}
+                </div>`;
+        }
+    }
 
     document.getElementById('lista-da-prendere').innerHTML = htmlDaPrendere || `<p style="padding:10px; color:var(--text-muted); font-style: italic;">${t.vuotoPrendere}</p>`;
     document.getElementById('lista-gia-presi').innerHTML = htmlGiaPresi || `<p style="padding:10px; color:var(--text-muted); font-style: italic;">${t.vuotoCarrello}</p>`;
@@ -125,7 +300,7 @@ function spuntatoProdotto(id) {
 }
 
 function pulisciProdottiPresi() {
-    let acquistatiCount = db.dispensa.filter(i => i.lowStock && i.preso).length;
+    let acquistatiCount = db.dispensa.filter(i => i.preso).length;
     
     if (acquistatiCount === 0) {
         alert("Non ci sono prodotti spuntati come 'presi' da pulire.");
@@ -133,7 +308,7 @@ function pulisciProdottiPresi() {
     }
 
     if (confirm("Vuoi ripulire i testi sbarrati dei prodotti acquistati? Quelli non presi rimarranno in lista.")) {
-        db.dispensa = db.dispensa.filter(item => !(item.lowStock && item.preso));
+        db.dispensa = db.dispensa.filter(item => !item.preso);
         salvaDb();
         cambiaVistaSpesa('prendere');
     }

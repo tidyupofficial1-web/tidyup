@@ -8,12 +8,16 @@
 </head>
 <body>
 
+    <!-- HEADER UNIFICATO CON LOGO E LINGUA -->
     <header>
         <div class="header-left">
-            <img src="logo.png" alt="Logo" class="header-logo">
+            <img src="logo.png" alt="Logo EatMeFirst" class="header-logo">
             <h1 data-i18n="spesa_lista">Lista della Spesa</h1>
         </div>
         <div class="top-bar-controls">
+            <!-- Pulsante Guida Rapida / Info -->
+            <button class="btn-icon-help" onclick="apriGuidaListe()" title="Guida" data-i18n-title="btnGuidaTitle">❓</button>
+            
             <select id="select-lingua" class="lang-select" onchange="cambiaLingua(this.value)">
                 <option value="it">🇮🇹 IT</option>
                 <option value="en">🇬🇧 EN</option>
@@ -55,8 +59,21 @@
         </div>
 
         <!-- Link di ritorno al Menu -->
-        <a href="index.html" class="nav-back" data-i18n="navBack">&larr; Torna al Menu Principale</a>
+        <div style="grid-column: 1 / -1; text-align: center;">
+            <a href="index.html" class="nav-back" data-i18n="navBack">&larr; Torna al Menu Principale</a>
+        </div>
 
+    </div>
+
+    <!-- MODALE GUIDA RAPIDA -->
+    <div id="modal-guida" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <h3 data-i18n="guidaTitolo">💡 Come funziona la Lista</h3>
+            <p data-i18n="guidaTesto1"><b>🔴 Rosso (Gratuito):</b> Prodotti esauriti o che finiranno prima del tuo prossimo giro al supermercato.</p>
+            <p data-i18n="guidaTesto2"><b>🟡 Giallo (Smart/Premium):</b> Suggerimenti predittivi basati sul consumo stimato e sulle scadenze vicine.</p>
+            <p data-i18n="guidaTesto3">Spunta i prodotti mentre fai la spesa e usa "Pulisci testi sbarrati" per svuotare il carrello una volta tornato a casa.</p>
+            <button class="btn-primary" onclick="chiudiGuidaListe()" data-i18n="guidaChiudi">Ho capito</button>
+        </div>
     </div>
 
     <footer>
