@@ -19,6 +19,7 @@ h1, h2 {
 }
 .form-group {
     margin-bottom: 15px;
+    position: relative;
 }
 label {
     display: block;
@@ -34,7 +35,6 @@ input, select {
     color: #c9d1d9;
     border-radius: 4px;
 }
-/* Stile per i campi data separati (gg, mm, aa) */
 .date-inputs-container {
     display: flex;
     gap: 10px;
@@ -70,7 +70,6 @@ button:hover {
 .btn-camera:hover {
     filter: brightness(1.2);
 }
-/* Badge con i codici colore richiesti */
 .scadenza-badge {
     display: inline-block;
     padding: 6px 12px;
@@ -81,11 +80,11 @@ button:hover {
 }
 .badge-tassativa {
     background-color: #da3633;
-    color: #ffff00; /* Sfondo rosso, scritta gialla/bianca */
+    color: #ffff00;
 }
 .badge-consigliata {
     background-color: #f1e05a;
-    color: #000000; /* Sfondo giallo, scritta nera */
+    color: #000000;
 }
 #preview-prodotto {
     display: none;
@@ -105,6 +104,45 @@ button:hover {
     margin: 0 auto 15px auto;
     display: none;
 }
+.help-toggle-bar {
+    text-align: right;
+    margin-bottom: 15px;
+    color: #8b949e;
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 10px;
+}
+
+/* Stile Modale / Popup Aiuto Contestuale */
+.tooltip-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+.tooltip-content {
+    background-color: #21262d;
+    border: 1px solid #30363d;
+    padding: 25px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+}
+.tooltip-content h3 {
+    margin-top: 0;
+    color: #58a6ff;
+}
+.tooltip-content p {
+    color: #c9d1d9;
+    font-size: 15px;
+    line-height: 1.4;
+    margin-bottom: 20px;
+}
+
 .menu-link {
     text-align: center;
     margin-top: 25px;

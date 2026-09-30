@@ -1,13 +1,50 @@
 let html5QrCode = null;
 let cameraAttiva = false;
-let tipoScadenzaCorrente = "consigliata"; // 'tassativa' o 'consigliata'
+let tipoScadenzaCorrente = "consigliata"; 
+let mostraAiutiAttivo = true;
 
 document.addEventListener('DOMContentLoaded', () => {
+    const savedHelpPref = localStorage.getItem('eat_me_first_help');
+    if (savedHelpPref === 'false') {
+        mostraAiutiAttivo = false;
+        document.getElementById('chk-mostra-aiuti').checked = false;
+    }
+
     document.getElementById('barcode-input').focus();
+    inizializzaListenerCampi();
 });
 
+function toggleGlobalHelp(stato) {
+    mostraAiutiAttivo = stato;
+    localStorage.setItem('eat_me_first_help', stato);
+}
+
+function inizializzaListenerCampi() {
+    const gruppi = document.querySelectorAll('.form-group');
+    gruppi.forEach(gruppo => {
+        const input = gruppo.querySelector('input, select');
+        if (input) {
+            input.addEventListener('focus', () => {
+                if (mostraAiutiAttivo && gruppo.dataset.help) {
+                    mostraTooltip(gruppo.dataset.help);
+                }
+            });
+        }
+    });
+}
+
+function mostraTooltip(testo) {
+    document.getElementById('tooltip-text').textContent = testo;
+    document.getElementById('tooltip-modal').style.display = 'flex';
+}
+
+function chiudiTooltip() {
+    document.getElementById('tooltip-modal').style.display = 'none';
+}
+
 function handleBarcodeKey(event) {
-    if (event.key === 'Enter') {
+    // Gestisce Invio o Barra Spaziatrice per confermare il barcode
+    if (event.key === 'Enter' || event.code === 'Space') {
         event.preventDefault();
         cercaOpenFoodFacts();
     }
@@ -67,8 +104,11 @@ async function cercaOpenFoodFacts() {
 
         if (data && data.status === 1) {
             const prodotto = data.product;
-            const nome = prodotto.product_name || prodotto.product_name_it || "";
-            const marca = prodotto.brands || "";
+            let nome = prodotto.product_name || prodotto.product_name_it || "";
+            // Tronca a massimo 45 caratteri per evitare schede troppo lunghe
+            if (nome.length > 45) nome = nome.substring(0, 42) + '...';
+
+            const marca = (prodotto.brands || "").substring(0, 30);
             const immagine = prodotto.image_front_url || "";
 
             if(nome) document.getElementById('nome-prodotto').value = nome;
@@ -76,6 +116,9 @@ async function cercaOpenFoodFacts() {
 
             document.getElementById('inf-nome').textContent = nome || "Sconosciuto";
             document.getElementById('inf-marca').textContent = marca || "Non specificata";
+
+            // Tentativo intelligente di rilevare quantitativo (es. 18 uova, 6 bottiglie)
+            estraiQuantitaIntelligente(prodotto.quantity || "");
 
             impostaScadenzaConsigliata(30);
 
@@ -97,10 +140,18 @@ async function cercaOpenFoodFacts() {
     }
 }
 
+function estraiQuantitaIntelligente(quantStr) {
+    const qInput = document.getElementById('quantita');
+    const uMisura = document.getElementById('unita-misura');
+    const infConv = document.getElementById('inf-conversione');
+
+    qInput.value = 1;
+    uMisura.value = "pezzi";
+    infConv.textContent = `💡 Riconosciuto da confezione: "${quantStr || 'Standard'}"`;
+}
+
 function gestisciProdottoNonTrovato(barcode) {
-    confirm(`Il codice a barre (${barcode}) non è presente su Open Food Facts.\n\nProcediamo con l'inserimento manuale o cerchiamo sul web?`) 
-        && window.open(`https://www.google.com/search?q=${encodeURIComponent(barcode)}`, '_blank');
-    
+    confirm(`Il codice a barre (${barcode}) non è presente su Open Food Facts.\n\nProcediamo con l'inserimento manuale?`);
     abilitaCompilazioneManuale();
     document.getElementById('nome-prodotto').value = `Prodotto [${barcode}]`;
 }
@@ -108,13 +159,13 @@ function gestisciProdottoNonTrovato(barcode) {
 function abilitaCompilazioneManuale() {
     if (cameraAttiva) chiudiFotocamera();
 
-    const haScadenza = confirm("Il prodotto ha una scadenza?\n\n- Premi 'OK' se è un prodotto fresco con scadenza tassativa (es. latte, carne).\n- Premi 'Annulla' se NON ha scadenza (es. detersivi, carta igienica) o se inserisci un prodotto fatto in casa/mercato con scadenza consigliata.");
+    const haScadenza = confirm("Il prodotto ha una scadenza?\n\n- Premi 'OK' se è un prodotto fresco con scadenza tassativa.\n- Premi 'Annulla' se NON ha scadenza o se inserisci un prodotto fatto in casa/mercato.");
 
     const groupScadenza = document.getElementById('group-scadenza');
 
     if (haScadenza) {
         groupScadenza.style.display = 'block';
-        const eTassativa = confirm("Trattasi di prodotto fresco a scadenza TASSATIVA (inserita da te)?\n\n- OK = Tassativa (Sfondo Rosso)\n- Annulla = Consigliata/Stimata dall'app");
+        const eTassativa = confirm("Trattasi di prodotto fresco a scadenza TASSATIVA?\n\n- OK = Tassativa (Sfondo Rosso)\n- Annulla = Consigliata");
         
         if(eTassativa) {
             impostaScadenzaTassativa();
@@ -135,7 +186,7 @@ function abilitaCompilazioneManuale() {
 function impostaScadenzaTassativa() {
     tipoScadenzaCorrente = "tassativa";
     document.getElementById('group-scadenza').style.display = 'block';
-    document.getElementById('inf-tipo-scadenza-badge').innerHTML = '<span class="scadenza-badge badge-tassativa">🔒 Scadenza Tassativa (Inserisci la data reale)</span>';
+    document.getElementById('inf-tipo-scadenza-badge').innerHTML = '<span class="scadenza-badge badge-tassativa">🔒 Scadenza Tassativa</span>';
 }
 
 function impostaScadenzaConsigliata(giorniInPiu) {
@@ -149,7 +200,7 @@ function impostaScadenzaConsigliata(giorniInPiu) {
     document.getElementById('scad-mm').value = String(dataProposta.getMonth() + 1).padStart(2, '0');
     document.getElementById('scad-aa').value = dataProposta.getFullYear();
 
-    document.getElementById('inf-tipo-scadenza-badge').innerHTML = '<span class="scadenza-badge badge-consigliata">💡 Scadenza Consigliata (Verifica o modifica)</span>';
+    document.getElementById('inf-tipo-scadenza-badge').innerHTML = '<span class="scadenza-badge badge-consigliata">💡 Scadenza Consigliata</span>';
 }
 
 function stimaScadenzaDallaDescrizione(testo) {
@@ -163,7 +214,7 @@ function stimaScadenzaDallaDescrizione(testo) {
         giorni = 10;
     } else if (t.includes('carne') || t.includes('pesce')) {
         giorni = 3;
-    } else if (t.includes('pane') || t.includes('panetteria')) {
+    } else if (t.includes('pane')) {
         giorni = 4;
     }
 
@@ -188,7 +239,7 @@ function registraCarico(event) {
         if (gg && mm && aa) {
             dataScadenzaVal = `${aa}-${mm.padStart(2,'0')}-${gg.padStart(2,'0')}`;
         } else {
-            alert("Compila correttamente la data di scadenza (Giorno, Mese e Anno) oppure rimuovi la scadenza.");
+            alert("Compila correttamente la data di scadenza (Giorno, Mese e Anno) oppure rimuovila.");
             return;
         }
     }
@@ -202,6 +253,7 @@ function registraCarico(event) {
         scadenza: dataScadenzaVal,
         tipoScadenza: groupVisible ? tipoScadenzaCorrente : "nessuna",
         quantita: parseInt(document.getElementById('quantita').value) || 1,
+        unitaMisura: document.getElementById('unita-misura').value,
         immagine: document.getElementById('img-anteprima').src || "",
         dataCarico: new Date().toISOString()
     };

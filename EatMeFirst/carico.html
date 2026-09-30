@@ -11,12 +11,18 @@
 <body>
 
     <div class="container">
+        <!-- Controllo globale per attivare/disattivare gli aiuti -->
+        <div class="help-toggle-bar">
+            <label style="font-size: 13px; font-weight: normal; cursor: pointer;">
+                <input type="checkbox" id="chk-mostra-aiuti" checked onchange="toggleGlobalHelp(this.checked)"> Mostra suggerimenti e guide passo-passo
+            </label>
+        </div>
+
         <h1>Carico Merci</h1>
         
-        <div class="form-group">
+        <div class="form-group" data-help="Inquadra il codice a barre del prodotto con la fotocamera o digitinalo manualmente premendo Invio o la Barra Spaziatrice per avviare il riconoscimento automatico da Open Food Facts.">
             <label>🔍 Scanner Barcode & Open Food Facts</label>
-            <p style="font-size: 13px; color: #8b949e;">Inquadra il codice a barre o inseriscilo manualmente premendo Invio.</p>
-            <input type="text" id="barcode-input" placeholder="Scansiona o digita il codice a barre..." onkeypress="handleBarcodeKey(event)">
+            <input type="text" id="barcode-input" placeholder="Scansiona o digita il codice a barre..." onkeydown="handleBarcodeKey(event)">
         </div>
 
         <button type="button" class="btn-camera" onclick="toggleFotocamera()" id="btn-toggle-cam">📷 Attiva Fotocamera / Scanner</button>
@@ -28,7 +34,7 @@
             <h2>Dettagli Prodotto</h2>
             <form onsubmit="registraCarico(event)">
                 
-                <div class="form-group">
+                <div class="form-group" data-help="Seleziona la categoria merceologica corretta. Aiuterà il sistema a gestire le scadenze e le ubicazioni ideali.">
                     <label>Categoria</label>
                     <select id="categoria-prodotto" required>
                         <option value="Latticini">🥛 Latticini</option>
@@ -44,19 +50,19 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label>Descrizione / Nome Prodotto</label>
-                    <input type="text" id="nome-prodotto" placeholder="Es. Torta di mele fatta in casa, Mozzarella..." required oninput="stimaScadenzaDallaDescrizione(this.value)">
+                <div class="form-group" data-help="Nome del prodotto compilato automaticamente dal codice a barre. Puoi integrarlo o modificarlo a piacimento (massimo 45 caratteri per mantenere le schermate pulite).">
+                    <label>Descrizione / Nome Prodotto (Max 45 caratteri)</label>
+                    <input type="text" id="nome-prodotto" maxlength="45" placeholder="Es. Uova Bio, Mozzarella..." required oninput="stimaScadenzaDallaDescrizione(this.value)">
                     <small style="color: #8b949e;">OFF: <span id="inf-nome">-</span></small>
                 </div>
 
-                <div class="form-group">
-                    <label>Marca (Opzionale)</label>
-                    <input type="text" id="marca-prodotto" placeholder="Es. Casalingo, Mercato rionale...">
+                <div class="form-group" data-help="Inserisci il marchio del produttore o la provenienza (es. 'Mercato rionale', 'Fatto in casa'). Opzionale.">
+                    <label>Marca / Origine (Opzionale, Max 30 caratteri)</label>
+                    <input type="text" id="marca-prodotto" maxlength="30" placeholder="Es. Casalingo, Barilla...">
                     <small style="color: #8b949e;">OFF: <span id="inf-marca">-</span></small>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" data-help="Scegli dove conserverai fisicamente il prodotto. La scelta influisce sui promemoria di conservazione.">
                     <label>Ubicazione</label>
                     <select id="ubicazione">
                         <option value="Dispensa">Dispensa</option>
@@ -66,8 +72,22 @@
                     </select>
                 </div>
 
-                <!-- Sezione Data di Scadenza (gestita senza tacquini, solo gg / mm / aa) -->
-                <div class="form-group" id="group-scadenza">
+                <!-- Gestione Quantità e Unità di Misura (Conversione Confezione -> Pezzi/Grammi) -->
+                <div class="form-group" data-help="Qui avviene la magia: se compri una confezione multipla (es. 18 uova o 6 bottiglie), indica qui il totale dei singoli pezzi o grammi contenuti, così quando scaricherai consumerai solo quelli parzialmente.">
+                    <label>Quantità Interna Totale (Pezzi o Grammi)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" id="quantita" value="1" min="1" required style="flex: 2;">
+                        <select id="unita-misura" style="flex: 1;">
+                            <option value="pezzi">Pezzi</option>
+                            <option value="grammi">Grammi (g)</option>
+                            <option value="ml">Millilitri (ml)</option>
+                        </select>
+                    </div>
+                    <small style="color: #58a6ff;" id="inf-conversione">💡 1 Confezione intera</small>
+                </div>
+
+                <!-- Sezione Data di Scadenza -->
+                <div class="form-group" id="group-scadenza" data-help="Inserisci la data di scadenza reale (tassativa) o verifica quella stimata automaticamente dall'applicazione.">
                     <label>Data di Scadenza</label>
                     <div class="date-inputs-container">
                         <input type="number" id="scad-gg" placeholder="GG" min="1" max="31">
@@ -77,14 +97,9 @@
                     <div id="inf-tipo-scadenza-badge"></div>
                 </div>
 
-                <div class="form-group">
-                    <label>Quantità</label>
-                    <input type="number" id="quantita" value="1" min="1" required>
-                </div>
-
                 <img id="img-anteprima" src="" alt="Anteprima prodotto">
 
-                <button type="submit">Registra Carico</button>
+                <button type="submit">Registra Carico in Dispensa</button>
             </form>
         </div>
 
@@ -95,6 +110,15 @@
         <div class="footer">
             <div class="footer-logo">🍏 EatMeFirst</div>
             <div>Gestione locale sicura &bull; Risparmia cibo, vivi meglio</div>
+        </div>
+    </div>
+
+    <!-- Popup / Modale Guida Contestuale -->
+    <div id="tooltip-modal" class="tooltip-modal">
+        <div class="tooltip-content">
+            <h3>💡 Suggerimento Utile</h3>
+            <p id="tooltip-text"></p>
+            <button type="button" onclick="chiudiTooltip()">Ho capito</button>
         </div>
     </div>
 
