@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carico Merci - EatMeFirst</title>
+    <!-- Libreria per lo scanner di codici a barre tramite fotocamera -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link rel="stylesheet" href="carico.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Carico Merci</h1>
+        
+        <div class="form-group">
+            <label>🔍 Scanner Barcode & Open Food Facts</label>
+            <p style="font-size: 13px; color: #8b949e;">Inquadra il codice a barre o inseriscilo manualmente premendo Invio.</p>
+            <input type="text" id="barcode-input" placeholder="Scansiona o digita il codice a barre..." onkeypress="handleBarcodeKey(event)">
+        </div>
+
+        <button type="button" class="btn-camera" onclick="toggleFotocamera()" id="btn-toggle-cam">📷 Attiva Fotocamera / Scanner</button>
+        <div id="reader"></div>
+
+        <button type="button" class="btn-manuale" onclick="abilitaCompilazioneManuale()">✏️ Inserimento Manuale (Mercato, Fatto in casa, No Barcode)</button>
+
+        <div id="preview-prodotto">
+            <h2>Dettagli Prodotto</h2>
+            <form onsubmit="registraCarico(event)">
+                
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select id="categoria-prodotto" required>
+                        <option value="Latticini">🥛 Latticini</option>
+                        <option value="Ortofrutta">🍎 Ortofrutta</option>
+                        <option value="Salumeria">🥓 Salumeria</option>
+                        <option value="Panetteria">🍞 Panetteria</option>
+                        <option value="Dispensa / Generi alimentari">🥫 Dispensa / Generi alimentari</option>
+                        <option value="Surgelati">❄️ Surgelati</option>
+                        <option value="Bevande">🧃 Bevande</option>
+                        <option value="Igiene">🧴 Igiene</option>
+                        <option value="Pulizia">🧹 Pulizia</option>
+                        <option value="Altro">📦 Altro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Descrizione / Nome Prodotto</label>
+                    <input type="text" id="nome-prodotto" placeholder="Es. Torta di mele fatta in casa, Mozzarella..." required oninput="stimaScadenzaDallaDescrizione(this.value)">
+                    <small style="color: #8b949e;">OFF: <span id="inf-nome">-</span></small>
+                </div>
+
+                <div class="form-group">
+                    <label>Marca (Opzionale)</label>
+                    <input type="text" id="marca-prodotto" placeholder="Es. Casalingo, Mercato rionale...">
+                    <small style="color: #8b949e;">OFF: <span id="inf-marca">-</span></small>
+                </div>
+
+                <div class="form-group">
+                    <label>Ubicazione</label>
+                    <select id="ubicazione">
+                        <option value="Dispensa">Dispensa</option>
+                        <option value="Frigorifero">Frigorifero</option>
+                        <option value="Freezer">Freezer</option>
+                        <option value="Cantina / Altro">Cantina / Altro</option>
+                    </select>
+                </div>
+
+                <!-- Sezione Data di Scadenza (gestita senza tacquini, solo gg / mm / aa) -->
+                <div class="form-group" id="group-scadenza">
+                    <label>Data di Scadenza</label>
+                    <div class="date-inputs-container">
+                        <input type="number" id="scad-gg" placeholder="GG" min="1" max="31">
+                        <input type="number" id="scad-mm" placeholder="MM" min="1" max="12">
+                        <input type="number" id="scad-aa" placeholder="AAAA" min="2026" max="2040">
+                    </div>
+                    <div id="inf-tipo-scadenza-badge"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Quantità</label>
+                    <input type="number" id="quantita" value="1" min="1" required>
+                </div>
+
+                <img id="img-anteprima" src="" alt="Anteprima prodotto">
+
+                <button type="submit">Registra Carico</button>
+            </form>
+        </div>
+
+        <div class="menu-link">
+            <a href="menu.html">← Torna al Menu Principale</a>
+        </div>
+
+        <div class="footer">
+            <div class="footer-logo">🍏 EatMeFirst</div>
+            <div>Gestione locale sicura &bull; Risparmia cibo, vivi meglio</div>
+        </div>
+    </div>
+
+    <script src="carico.js"></script>
+</body>
+</html>
