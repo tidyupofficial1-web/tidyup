@@ -9,18 +9,32 @@
 <body>
 
     <div class="container">
+        <!-- Header con Logo e Selettore Lingua -->
+        <div class="app-header">
+            <div class="brand-logo">🍏 EatMeFirst</div>
+            <div class="language-selector">
+                <select id="select-lingua" onchange="cambiaLingua(this.value)">
+                    <option value="it">🇮🇹 Italiano</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="fr">🇫🇷 Français</option>
+                </select>
+            </div>
+        </div>
+
         <!-- Controllo globale per attivare/disattivare gli aiuti -->
         <div class="help-toggle-bar">
             <label style="font-size: 13px; font-weight: normal; cursor: pointer;">
-                <input type="checkbox" id="chk-mostra-aiuti" checked onchange="toggleGlobalHelp(this.checked)"> Mostra suggerimenti e guide passo-passo
+                <input type="checkbox" id="chk-mostra-aiuti" checked onchange="toggleGlobalHelp(this.checked)"> 
+                <span data-i18n="mostraAiuti">Mostra suggerimenti e guide passo-passo</span>
             </label>
         </div>
 
-        <h1>Scarico e Consumo Prodotti</h1>
+        <h1 data-i18n="titoloPagina">Scarico e Consumo Prodotti</h1>
 
-        <!-- Barra di Ricerca con sfondo bianco e supporto tastiera -->
-        <div class="form-group" data-help="Digita il nome del prodotto o l'ubicazione (es. Dispensa, Scaffale) per trovarlo rapidamente in elenco. Premi Invio o Spazio per confermare la ricerca.">
-            <label>🔍 Cerca in Dispensa</label>
+        <!-- Barra di Ricerca -->
+        <div class="form-group" data-help-it="Digita il nome del prodotto o l'ubicazione (es. Dispensa, Scaffale) per trovarlo rapidamente in elenco." data-help-en="Type the product name or location (e.g. Pantry, Shelf) to find it quickly." data-help-es="Escribe el nombre del producto o ubicación (ej. Despensa, Estante) para encontrarlo rápidamente." data-help-fr="Tapez le nom du produit ou l'emplacement pour le trouver rapidement.">
+            <label data-i18n="etichettaCerca">🔍 Cerca in Dispensa</label>
             <input type="text" id="filtroProdotti" placeholder="Cerca prodotto..." oninput="caricaListaDispensa()" onkeydown="handleSearchKey(event)">
         </div>
 
@@ -29,21 +43,21 @@
         </div>
 
         <div class="menu-link">
-            <a href="menu.html">← Torna al Menu Principale</a>
+            <a href="menu.html" data-i18n="tornaMenu">← Torna al Menu Principale</a>
         </div>
 
         <div class="footer">
             <div class="footer-logo">🍏 EatMeFirst</div>
-            <div>Gestione locale sicura &bull; Risparmia cibo, vivi meglio</div>
+            <div data-i18n="footerTesto">Gestione locale sicura &bull; Risparmia cibo, vivi meglio</div>
         </div>
     </div>
 
     <!-- Popup / Modale Guida Contestuale -->
     <div id="tooltip-modal" class="tooltip-modal">
         <div class="tooltip-content">
-            <h3>💡 Suggerimento Utile</h3>
+            <h3 data-i18n="suggerimentoTitolo">💡 Suggerimento Utile</h3>
             <p id="tooltip-text"></p>
-            <button type="button" onclick="chiudiTooltip()">Ho capito</button>
+            <button type="button" onclick="chiudiTooltip()" data-i18n="btnCapito">Ho capito</button>
         </div>
     </div>
 
