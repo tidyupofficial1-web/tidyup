@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
         containerLang.innerHTML = creaSelettoreLinguaHTML();
     }
 
-    applicaTraduzioniFooter();
+    applicaTraduzioniInterfaccia();
     renderizzaListe();
 });
 
@@ -34,6 +34,7 @@ function salvaDb() {
     renderizzaListe();
 }
 
+// Converte la data da AAAA-MM-GG a GG/MM/AA (formato italiano)
 function formattaDataItaliana(dataStr) {
     if (!dataStr) return '';
     let parti = dataStr.split('-');
@@ -64,6 +65,53 @@ function cambiaVistaSpesa(vista) {
 }
 
 function renderizzaListe() {
+    const lang = getLinguaCorrente();
+    // Dizionario di supporto locale per le etichette della pagina liste
+    const etichette = {
+        it: {
+            ubicazione: "Ubicazione",
+            scadenza: "Scadenza",
+            inEsaurimento: "In esaurimento",
+            preso: "Preso",
+            vuotoPrendere: "Nessun prodotto da acquistare.",
+            vuotoCarrello: "Nessun prodotto nel carrello. Spunta gli articoli mentre fai la spesa."
+        },
+        en: {
+            ubicazione: "Location",
+            scadenza: "Expires",
+            inEsaurimento: "Low stock",
+            preso: "Taken",
+            vuotoPrendere: "No items to buy.",
+            vuotoCarrello: "No items in the cart. Check off items while shopping."
+        },
+        es: {
+            ubicazione: "Ubicación",
+            scadenza: "Caducidad",
+            inEsaurimento: "Poco stock",
+            preso: "Cogido",
+            vuotoPrendere: "No hay productos para comprar.",
+            vuotoCarrello: "No hay productos en el carro."
+        },
+        fr: {
+            ubicazione: "Emplacement",
+            scadenza: "Expiration",
+            inEsaurimento: "Stock faible",
+            preso: "Pris",
+            vuotoPrendere: "Aucun article à acheter.",
+            vuotoCarrello: "Aucun article dans le panier."
+        },
+        de: {
+            ubicazione: "Standort",
+            scadenza: "Verfallsdatum",
+            inEsaurimento: "Fast leer",
+            preso: "Mitgenommen",
+            vuotoPrendere: "Keine Artikel zu kaufen.",
+            vuotoCarrello: "Keine Artikel im Warenkorb."
+        }
+    };
+
+    const t = etichette[lang] || etichette['it'];
+
     let htmlDaPrendere = '';
     let htmlGiaPresi = '';
 
@@ -76,8 +124,8 @@ function renderizzaListe() {
                     <div class="item-row low-stock">
                         <input type="checkbox" style="transform: scale(1.3); cursor: pointer;" onchange="spuntatoProdotto(${item.id})">
                         <div class="item-info">
-                            <div class="item-title">${item.nome} ⚠️ (In esaurimento)</div>
-                            <div class="item-details">Ubicazione: ${item.ubicazione || 'N/D'} | Scadenza: ${dataFormatted}</div>
+                            <div class="item-title">${item.nome} ⚠️ (${t.inEsaurimento})</div>
+                            <div class="item-details">${t.ubicazione}: ${item.ubicazione || 'N/D'} | ${t.scadenza}: ${dataFormatted}</div>
                         </div>
                     </div>`;
             } else {
@@ -86,7 +134,7 @@ function renderizzaListe() {
                         <input type="checkbox" checked disabled style="transform: scale(1.3);">
                         <div class="item-info" style="color: var(--text-muted);">
                             <div class="item-title" style="text-decoration: line-through; color: var(--text-muted);">${item.nome}</div>
-                            <div class="item-details">Ubicazione: ${item.ubicazione || 'N/D'} | Scadenza: ${dataFormatted}</div>
+                            <div class="item-details">${t.ubicazione}: ${item.ubicazione || 'N/D'} | ${t.scadenza}: ${dataFormatted}</div>
                         </div>
                     </div>`;
 
@@ -94,15 +142,15 @@ function renderizzaListe() {
                     <div class="item-row">
                         <div class="item-info">
                             <div class="item-title" style="color: var(--accent-green);">&#10004; ${item.nome}</div>
-                            <div class="item-details">Ubicazione: ${item.ubicazione || 'N/D'} | Preso</div>
+                            <div class="item-details">${t.ubicazione}: ${item.ubicazione || 'N/D'} | ${t.preso}</div>
                         </div>
                     </div>`;
             }
         }
     });
 
-    document.getElementById('lista-da-prendere').innerHTML = htmlDaPrendere || '<p style="padding:10px; color:var(--text-muted); font-style: italic;">Nessun prodotto da acquistare.</p>';
-    document.getElementById('lista-gia-presi').innerHTML = htmlGiaPresi || '<p style="padding:10px; color:var(--text-muted); font-style: italic;">Nessun prodotto nel carrello. Spunta gli articoli mentre fai la spesa.</p>';
+    document.getElementById('lista-da-prendere').innerHTML = htmlDaPrendere || `<p style="padding:10px; color:var(--text-muted); font-style: italic;">${t.vuotoPrendere}</p>`;
+    document.getElementById('lista-gia-presi').innerHTML = htmlGiaPresi || `<p style="padding:10px; color:var(--text-muted); font-style: italic;">${t.vuotoCarrello}</p>`;
 }
 
 function spuntatoProdotto(id) {
@@ -128,7 +176,7 @@ function pulisciProdottiPresi() {
     }
 }
 
-function applicaTraduzioniFooter() {
+function applicaTraduzioniInterfaccia() {
     const lang = getLinguaCorrente();
     const glob = dizionarioGlobale[lang] || dizionarioGlobale['it'];
     if(glob && glob.footer) {
