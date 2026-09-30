@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="dispensa_title">EatMeFirst - La Mia Dispensa</title>
+    <!-- Collegamento al file centrale delle lingue e agli stili -->
+    <script src="i18n.js"></script>
+    <link rel="stylesheet" href="dispensa.css">
+</head>
+<body>
+
+    <!-- BARRA SUPERIORE: MENU PAGINE + SELETTORE LINGUA -->
+    <div class="top-bar-absolute">
+        <select class="suite-select" onchange="if(this.value) window.location.href=this.value">
+            <option value="" disabled selected>📂 ☰ Menu</option>
+            <option value="menu.html">🏠 Menu Principale</option>
+            <option value="dispensa.html">📦 Dispensa</option>
+            <option value="carico.html">➕ Carico Merci</option>
+            <option value="scarico.html">📤 Scarico Prodotti</option>
+            <option value="spesa.html">🛒 Lista Spesa</option>
+            <option value="ricette.html">🍳 Ricette & Idee</option>
+            <option value="statistiche.html">📊 Statistiche</option>
+        </select>
+
+        <select id="lingua-select" class="lang-select" onchange="cambiaLingua(this.value)">
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="de">🇩🇪 Deutsch</option>
+        </select>
+    </div>
+
+    <!-- HEADER CON LOGO E TITOLO -->
+    <div class="main-header">
+        <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="header-logo">
+        <h2 data-i18n="dispensa_title">La Mia Dispensa</h2>
+    </div>
+
+    <div class="container">
+        <div class="top-bar">
+            <button class="btn btn-warning" onclick="mostraPopupScadenzeManualita()" id="btn-scadenze" data-i18n="btn_scadenze">⚠️ Scadenze</button>
+            <a href="carico.html" class="btn btn-primary" id="btn-carica" data-i18n="btn_carica">➕ Carica</a>
+            <button class="btn btn-danger" onclick="azzeraTuttoDatabase()" id="btn-svuota" data-i18n="btn_svuota">🗑️ Svuota e Azzera</button>
+        </div>
+
+        <div id="contenitore-luoghi">
+            <div class="empty-msg" id="txt-empty" data-i18n="dispensa_empty">Nessun prodotto presente nella dispensa. Inizia a caricarne qualcuno!</div>
+        </div>
+    </div>
+
+    <!-- FOOTER CON LOGO -->
+    <footer>
+        <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="footer-logo">
+        <span id="txt-footer" data-i18n="footer_text">EatMeFirst &bull; Dati locali su dispositivo</span>
+    </footer>
+
+    <!-- POPUP SCADENZE -->
+    <div id="popupScadenze" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-i18n="modal_scadenze_title">⚠️ Attenzione: Scadenze Imminenti</h3>
+                <button onclick="chiudiPopupScadenze()" style="background:none; border:none; color:var(--text-main); font-size:18px; cursor:pointer;">✕</button>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted);" data-i18n="modal_scadenze_sub">I seguenti prodotti richiedono la tua attenzione:</p>
+            <div id="lista-scadenze-urgenti"></div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="chiudiPopupScadenze()" data-i18n="btn_ho_capito">Ho capito</button>
+        </div>
+    </div>
+
+    <!-- SCHEDA PRODOTTO -->
+    <div id="modalPremium" class="modal-premium">
+        <div class="premium-box">
+            <div class="badge-premium" data-i18n="badge_dettaglio">🌟 Dettaglio Prodotto</div>
+            <button onclick="chiudiSchedaProdotto()" style="position: absolute; top: 15px; right: 15px; background:none; border:none; color:var(--text-main); font-size:18px; cursor:pointer;">✕</button>
+            <div id="dettaglio-prodotto-contenuto"></div>
+        </div>
+    </div>
+
+    <!-- Collegamento al file JavaScript esterno -->
+    <script src="dispensa.js"></script>
+</body>
+</html>
