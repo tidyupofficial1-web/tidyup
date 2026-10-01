@@ -45,6 +45,16 @@
             <button class="btn btn-danger" onclick="azzeraTuttoDatabase()" id="btn-svuota" data-i18n="btn_svuota">🗑️ Svuota e Azzera</button>
         </div>
 
+        <!-- FILTRI DINAMICI PER CATEGORIA E UBICAZIONE -->
+        <div class="filter-bar">
+            <select id="filtro-categoria" class="filter-select" onchange="organizzatoreLuoghi()">
+                <option value="" data-i18n="tutte_categorie">📂 Tutte le Categorie</option>
+            </select>
+            <select id="filtro-ubicazione" class="filter-select" onchange="organizzatoreLuoghi()">
+                <option value="" data-i18n="tutte_ubicazioni">📍 Tutte le Ubicazioni</option>
+            </select>
+        </div>
+
         <div id="contenitore-luoghi">
             <div class="empty-msg" id="txt-empty" data-i18n="dispensa_empty">Nessun prodotto presente nella dispensa. Inizia a caricarne qualcuno!</div>
         </div>
@@ -55,6 +65,18 @@
         <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="footer-logo">
         <span id="txt-footer" data-i18n="footer_text">EatMeFirst &bull; Dati locali su dispositivo</span>
     </footer>
+
+    <!-- POPUP SPIEGAZIONE PREMIUM PROVVISORIO -->
+    <div id="popupInfoPremium" class="modal-overlay">
+        <div class="modal-content" style="text-align: center;">
+            <div class="badge-premium">🌟 Versione Premium Attiva</div>
+            <h3 style="color: var(--accent-warning); margin-top: 10px;">Benvenuto in EatMeFirst!</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: var(--text-main); margin: 15px 0;" data-i18n="premium_popup_desc">
+                La versione Premium è offerta subito in uso gratuito per testare tutte le funzioni avanzate (come il controllo intelligente delle scadenze e gli avvisi). Potrai goderti tutte le funzionalità senza pensieri!
+            </p>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="chiudiPopupInfoPremium()" data-i18n="btn_inizia">Inizia subito</button>
+        </div>
+    </div>
 
     <!-- POPUP SCADENZE -->
     <div id="popupScadenze" class="modal-overlay">
