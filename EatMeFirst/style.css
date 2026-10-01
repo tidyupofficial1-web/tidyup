@@ -495,7 +495,6 @@ h1 {
     border-left: 4px solid var(--accent-danger);
 }
 
-/* Stile distintivo per i prodotti extra (provenienti da spesa.html) */
 .item-row.extra-item {
     background-color: rgba(168, 85, 247, 0.08);
     border-left: 4px solid var(--accent-purple);
@@ -563,4 +562,23 @@ footer {
     margin-top: auto;
     text-align: center;
     padding: 1rem;
+}
+
+/* ==========================================
+   9. CORREZIONE SELETTORE LINGUA HEADER
+   ========================================== */
+#header-lang select {
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    outline: none;
+    display: inline-block;
+}
+
+#header-lang select:hover {
+    border-color: var(--text-muted);
 }

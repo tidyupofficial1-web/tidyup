@@ -30,13 +30,6 @@
 
     <div class="container">
         
-        <!-- Video Container con percorso corretto -->
-        <div id="video-container" class="card" style="padding: 10px;">
-            <video id="clip-carrello" autoplay muted>
-                <source src="IMG/carrello_spesa.mp4" type="video/mp4">
-            </video>
-        </div>
-
         <!-- Selettore dei Tab (Da Prendere / Già Presi) -->
         <div class="sub-tabs">
             <div id="tab-btn-prendere" class="sub-tab active" onclick="cambiaVistaSpesa('prendere')" data-i18n="tabPrendere">Da Prendere</div>
@@ -65,13 +58,17 @@
 
     </div>
 
-    <!-- MODALE GUIDA CORRETTO (ROSSO = ESAURITI, GIALLO = PREVISIONE SCADENZA/ESAURIMENTO) -->
+    <!-- MODALE GUIDA / POPUP SPIEGAZIONE FUNZIONI (Funzione Premium) -->
     <div id="modal-guida" class="modal-overlay" style="display: none;">
         <div class="modal-card" style="max-width: 450px; text-align: left;">
-            <h3 data-i18n="guidaTitolo" style="margin-top: 0; color: var(--accent-blue);">💡 Come funziona la Lista</h3>
-            <p data-i18n="guidaTesto1" style="font-size: 0.9rem; margin-bottom: 10px;"><b>🔴 Rosso (Gratuito):</b> Prodotti già effettivamente esauriti.</p>
-            <p data-i18n="guidaTesto2" style="font-size: 0.9rem; margin-bottom: 15px;"><b>🟡 Giallo (Smart/Premium):</b> Prodotti che l'algoritmo prevede si esauriranno prima del tuo prossimo ritorno al supermercato.</p>
-            <p data-i18n="guidaTesto3" style="font-size: 0.9rem; margin-bottom: 20px;">Spunta i prodotti mentre fai la spesa e usa "Pulisci testi sbarrati" per svuotare il carrello una volta tornato a casa.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 data-i18n="guidaTitolo" style="margin: 0; color: var(--accent-blue);">💡 Come funziona la Lista</h3>
+                <span style="background: var(--accent-warning); color: #0d1117; font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 4px;">PREMIUM</span>
+            </div>
+            
+            <p data-i18n="guidaTesto1" style="font-size: 0.9rem; margin-bottom: 10px;"><b>🔴 Rosso:</b> Prodotti già effettivamente esauriti nella dispensa.</p>
+            <p data-i18n="guidaTesto2" style="font-size: 0.9rem; margin-bottom: 15px;"><b>🟡 Giallo (Smart/Premium):</b> Prodotti che l'algoritmo predittivo calcola si esauriranno prima del tuo prossimo ritorno al supermercato.</p>
+            <p data-i18n="guidaTesto3" style="font-size: 0.9rem; margin-bottom: 20px;">Spunta i prodotti mentre fai la spesa e usa "Pulisci testi sbarrati" per gestire in autonomia il carrello una volta tornato a casa.</p>
             
             <!-- Checkbox Non mostrare più -->
             <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
@@ -79,7 +76,7 @@
                 <label for="chk-non-mostrare" data-i18n="nonMostrarePiu" style="font-size: 0.85rem; cursor: pointer; color: var(--text-muted);">Non mostrare più questo messaggio all'avvio</label>
             </div>
 
-            <button class="btn-primary" style="width: 100%; padding: 10px;" onclick="chiudiGuidaListe()" data-i18n="guidaChiudi">Ho capito, procedi</button>
+            <button class="btn-primary" style="width: 100%; padding: 10px; background: var(--accent-blue); color: #0d1117; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="chiudiGuidaListe()" data-i18n="guidaChiudi">Ho capito, procedi</button>
         </div>
     </div>
 

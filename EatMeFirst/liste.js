@@ -18,25 +18,8 @@ let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || {
     dispensa: []
 };
 
-// Simulatore stato Premium per la funzione predittiva (Gialla)
+// Imposta a 'false' se vuoi testare il blocco della funzione Premium predittiva
 let isPremiumActive = true; 
-
-let loopCount = 0;
-const maxLoops = 3;
-const videoElement = document.getElementById('clip-carrello');
-const videoContainer = document.getElementById('video-container');
-
-if(videoElement) {
-    videoElement.addEventListener('ended', function() {
-        loopCount++;
-        if (loopCount >= maxLoops) {
-            videoContainer.style.opacity = '0';
-            setTimeout(() => { videoContainer.style.display = 'none'; }, 500);
-        } else {
-            videoElement.play();
-        }
-    });
-}
 
 function salvaDb() {
     localStorage.setItem('eat_me_first_db', JSON.stringify(db));
@@ -93,8 +76,8 @@ const dizionarioListe = {
         preso: "Preso",
         vuotoPrendere: "Nessun prodotto da acquistare.",
         vuotoCarrello: "Nessun prodotto nel carrello. Spunta gli articoli mentre fai la spesa.",
-        premiumLockedMsg: "🔒 Funzione Premium scaduta: Attiva l'abbonamento per vedere i suggerimenti intelligenti basati sul consumo.",
-        guidaTitolo: "💡 Come funziona la Lista",
+        premiumLockedMsg: "🔒 Funzione Smart/Predittiva Premium bloccata: Attiva l'abbonamento per visualizzare i suggerimenti intelligenti basati sul consumo.",
+        guidaTitolo: "💡 Come funziona la Lista (Smart)",
         guidaTesto1: "<b>🔴 Rosso:</b> Prodotti già effettivamente esauriti.",
         guidaTesto2: "<b>🟡 Giallo (Smart/Premium):</b> Prodotti che l'algoritmo prevede si esauriranno prima del tuo prossimo ritorno al supermercato.",
         guidaTesto3: "Spunta i prodotti mentre fai la spesa e usa 'Pulisci testi sbarrati' per ripulire il carrello.",
@@ -120,8 +103,8 @@ const dizionarioListe = {
         preso: "Taken",
         vuotoPrendere: "No items to buy.",
         vuotoCarrello: "No items in the cart.",
-        premiumLockedMsg: "🔒 Premium feature locked: Renew subscription to unlock consumption predictions.",
-        guidaTitolo: "💡 How the List Works",
+        premiumLockedMsg: "🔒 Premium Smart/Predictive feature locked: Upgrade to unlock consumption predictions.",
+        guidaTitolo: "💡 How the List Works (Smart)",
         guidaTesto1: "<b>🔴 Red:</b> Out-of-stock items.",
         guidaTesto2: "<b>🟡 Yellow (Smart/Premium):</b> Items predicted to run out before your next grocery trip.",
         guidaTesto3: "Check items while shopping and use 'Clear crossed items' when back home.",
@@ -134,7 +117,7 @@ const dizionarioListe = {
         titoloSezionePresi: "Productos en el Carrito", descSezionePresi: "Resumen de compras.", btnPulisci: "Limpiar tachados",
         navBack: "← Volver al Menú", footer: "EatMeFirst • Gestión segura", esaurito: "Agotado", inScadenza: "Smart",
         ubicazione: "Ubicación", scadenza: "Caducidad", preso: "Cogido", vuotoPrendere: "No hay productos.",
-        vuotoCarrello: "Carrito vacío.", premiumLockedMsg: "🔒 Función Premium bloqueada.",
+        vuotoCarrello: "Carrito vacío.", premiumLockedMsg: "🔒 Función Smart Premium bloqueada.",
         guidaTitolo: "💡 Ayuda", guidaTesto1: "🔴 Productos ya agotados.", guidaTesto2: "🟡 Sugerencias Smart por previsión.", guidaTesto3: "Usa la lista con facilidad.",
         nonMostrarePiu: "No volver a mostrar", guidaChiudi: "Entendido"
     },
@@ -144,7 +127,7 @@ const dizionarioListe = {
         titoloSezionePresi: "Articles dans le Panier", descSezionePresi: "Résumé des achats.", btnPulisci: "Effacer barrés",
         navBack: "← Retour au Menu", footer: "EatMeFirst • Gestion locale", esaurito: "Épuisé", inScadenza: "Smart",
         ubicazione: "Emplacement", scadenza: "Expiration", preso: "Pris", vuotoPrendere: "Aucun article.",
-        vuotoCarrello: "Panier vide.", premiumLockedMsg: "🔒 Fonction Premium verrouillée.",
+        vuotoCarrello: "Panier vide.", premiumLockedMsg: "🔒 Fonction Smart Premium verrouillée.",
         guidaTitolo: "💡 Aide", guidaTesto1: "🔴 Articles déjà épuisés.", guidaTesto2: "🟡 Suggestions Smart par prévision.", guidaTesto3: "Cochez vos articles.",
         nonMostrarePiu: "Ne plus afficher", guidaChiudi: "Compris"
     },
@@ -154,7 +137,7 @@ const dizionarioListe = {
         titoloSezionePresi: "Artikel im Wagen", descSezionePresi: "Zusammenfassung.", btnPulisci: "Durchgestrichene löschen",
         navBack: "← Zum Menü", footer: "EatMeFirst • Sichere lokale Verwaltung", esaurito: "Ausverkauft", inScadenza: "Smart",
         ubicazione: "Standort", scadenza: "Verfallsdatum", preso: "Mitgenommen", vuotoPrendere: "Keine Artikel.",
-        vuotoCarrello: "Wagen leer.", premiumLockedMsg: "🔒 Premium-Funktion gesperrt.",
+        vuotoCarrello: "Wagen leer.", premiumLockedMsg: "🔒 Smart Premium-Funktion gesperrt.",
         guidaTitolo: "💡 Hilfe", guidaTesto1: "🔴 Bereits ausverkaufte Artikel.", guidaTesto2: "🟡 Vorhergesagte Artikel.", guidaTesto3: "Viel Spaß beim Einkaufen.",
         nonMostrarePiu: "Nicht mehr anzeigen", guidaChiudi: "Verstanden"
     }
@@ -217,13 +200,13 @@ function renderizzaListe() {
         if (giacenza === 0 || item.lowStock) {
             prodottiRossi.push(item);
         } 
-        // Giallo: Previsione esaurimento prima della prossima spesa o scadenza vicina
+        // Giallo: Previsione esaurimento o scadenza vicina
         else if (giorniAutonomia < giorniMancantiAlSupermercato || giorniScadenza <= 10) {
             prodottiGialli.push(item);
         }
     });
 
-    // Render Prodotti Rossi (Effettivamente esauriti)
+    // Render Prodotti Rossi (Effettivamente esauriti - sempre attivi)
     prodottiRossi.forEach(item => {
         let dataFormatted = formattaDataItaliana(item.scadenza);
         if (!item.preso) {
@@ -255,7 +238,7 @@ function renderizzaListe() {
         }
     });
 
-    // Render Prodotti Gialli (Previsione esaurimento / Smart / Premium)
+    // Render Prodotti Gialli (Funzione Smart protetta da controllo Premium)
     if (prodottiGialli.length > 0) {
         if (isPremiumActive) {
             prodottiGialli.forEach(item => {
@@ -289,6 +272,7 @@ function renderizzaListe() {
                 }
             });
         } else {
+            // Messaggio blocco Premium visibile se l'utente non ha l'abbonamento attivo
             htmlDaPrendere += `
                 <div style="padding: 15px; margin-top: 10px; background: rgba(239, 68, 68, 0.1); border: 1px dashed var(--accent-warning); border-radius: 8px; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
                     ${t.premiumLockedMsg}
