@@ -1,261 +1,239 @@
-let mostraAiutiAttivo = true;
-let linguaCorrente = 'it';
+let prodottiDispensa = [
+    { id: 1, nome: "Burro Parmalat 250g", categoria: "Latticini", ubicazione: "Frigo", quantita: 2 },
+    { id: 2, nome: "Latte Intero 1L", categoria: "Latticini", ubicazione: "Frigo", quantita: 1 },
+    { id: 3, nome: "Passata di Pomodoro", categoria: "Scatolame", ubicazione: "Dispensa", quantita: 3 }
+];
 
-// Dizionario delle traduzioni
-const dizionario = {
+let operazioneInSospeso = null;
+let linguaCorrente = localStorage.getItem('eat_me_first_lang') || 'it';
+
+// Dizionario completo per le 5 lingue (it, en, es, fr, de)
+const dizionarioScarico = {
     it: {
-        mostraAiuti: "Mostra suggerimenti e guide passo-passo",
-        titoloPagina: "Scarico e Consumo Prodotti",
-        etichettaCerca: "🔍 Cerca in Dispensa",
-        placeholderCerca: "Cerca prodotto...",
-        tornaMenu: "← Torna al Menu Principale",
-        footerTesto: "Gestione locale sicura &bull; Risparmia cibo, vivi meglio",
-        suggerimentoTitolo: "💡 Suggerimento Utile",
-        btnCapito: "Ho capito",
-        nessunProdotto: "Nessun prodotto disponibile in dispensa da scaricare.",
-        ubicazione: "📍 Ubicazione:",
-        scadenza: "⏳ Scadenza:",
-        disponibili: "📦 Disponibili:",
-        terminaSpesa: "🗑️ Termina & Spesa",
-        consumoRapido: "Consumo rapido:",
-        scalaPezzi: "Scala i singoli pezzi",
-        prodottoTerminato: (nome) => `Il prodotto "${nome}" è terminato! Spostato automaticamente nella Lista della Spesa.`
+        titoloPagina: "Scarico e Consumo",
+        labelCerca: "🔍 Cerca Prodotto",
+        placeholderCerca: "Es. burro, pasta, pomodori...",
+        lblNome: "Nome", lblCat: "Categoria", lblUbi: "Ubicazione",
+        titoloRisultati: "Risultati Dispensa",
+        msgIniziale: "Digita qualcosa nella casella sopra per iniziare la ricerca.",
+        msgZero: "Nessun prodotto trovato. Prova ad attivare più filtri o cambia termine.",
+        msgTroppi: (n) => `Troppi risultati trovati (${n}). Usa le spunte per restringere il campo.`,
+        btnEsaurito: "Esaurito",
+        btnIndietro: "← Torna al Menu Principale",
+        titoloGuida: "📖 Come funziona lo Scarico",
+        testoGuida: "Scrivi liberamente il nome del prodotto che desideri scaricare (es. 'burro'). Se ottieni troppi risultati o zero, usa le spunte di Categoria o Ubicazione. Ogni modifica viene confermata subito!",
+        btnInizia: "Inizia a Usare",
+        titoloConferma: "⚠️ Conferma Variazione",
+        btnAnnulla: "Annulla",
+        btnConfermaOk: "Conferma e Aggiorna",
+        msgTerminato: (nome) => `Il prodotto "${nome}" è terminato ed è stato aggiunto automaticamente alla Lista della Spesa!`,
+        msgAggiornato: (qta) => `Quantità aggiornata con successo! Rimanenti: ${qta}`,
+        messaggioConferma: (qta, nome) => `Stai per registrare il consumo di ${qta} pz di "${nome}". L'operazione aggiornerà subito la dispensa e sposterà l'articolo nella lista spesa se esaurito. Procedere?`
     },
     en: {
-        mostraAiuti: "Show tips and step-by-step guides",
-        titoloPagina: "Product Checkout & Consumption",
-        etichettaCerca: "🔍 Search Pantry",
-        placeholderCerca: "Search product...",
-        tornaMenu: "← Back to Main Menu",
-        footerTesto: "Secure local management &bull; Save food, live better",
-        suggerimentoTitolo: "💡 Useful Tip",
-        btnCapito: "Got it",
-        nessunProdotto: "No products available in the pantry to check out.",
-        ubicazione: "📍 Location:",
-        scadenza: "⏳ Expiry:",
-        disponibili: "📦 Available:",
-        terminaSpesa: "🗑️ Finish & Shop",
-        consumoRapido: "Quick consumption:",
-        scalaPezzi: "Scale individual items",
-        prodottoTerminato: (nome) => `The product "${nome}" is finished! Automatically moved to the Shopping List.`
+        titoloPagina: "Checkout & Consumption",
+        labelCerca: "🔍 Search Product",
+        placeholderCerca: "E.g., butter, pasta, tomatoes...",
+        lblNome: "Name", lblCat: "Category", lblUbi: "Location",
+        titoloRisultati: "Pantry Results",
+        msgIniziale: "Type something in the box above to start searching.",
+        msgZero: "No products found. Try enabling more filters or change search term.",
+        msgTroppi: (n) => `Too many results found (${n}). Use filters to narrow down.`,
+        btnEsaurito: "Out of stock",
+        btnIndietro: "← Back to Main Menu",
+        titoloGuida: "📖 How Checkout Works",
+        testoGuida: "Freely type the product name (e.g., 'butter'). If you get too many or zero results, use Category or Location filters. Every change is confirmed instantly!",
+        btnInizia: "Start Using",
+        titoloConferma: "⚠️ Confirm Change",
+        btnAnnulla: "Cancel",
+        btnConfermaOk: "Confirm & Update",
+        msgTerminato: (nome) => `The product "${nome}" is finished and has been automatically added to the Shopping List!`,
+        msgAggiornato: (qta) => `Quantity updated successfully! Remaining: ${qta}`,
+        messaggioConferma: (qta, nome) => `You are about to record the consumption of ${qta} pcs of "${nome}". Proceed?`
     },
     es: {
-        mostraAiuti: "Mostrar sugerencias y guías paso a paso",
-        titoloPagina: "Descarga y Consumo de Productos",
-        etichettaCerca: "🔍 Buscar en Despensa",
-        placeholderCerca: "Buscar producto...",
-        tornaMenu: "← Volver al Menú Principal",
-        footerTesto: "Gestión local segura &bull; Ahorra comida, vive mejor",
-        suggerimentoTitolo: "💡 Consejo Útil",
-        btnCapito: "Entendido",
-        nessunProdotto: "No hay productos disponibles en la despensa para descargar.",
-        ubicazione: "📍 Ubicación:",
-        scadenza: "⏳ Caducidad:",
-        disponibili: "📦 Disponibles:",
-        terminaSpesa: "🗑️ Terminar y Comprar",
-        consumoRapido: "Consumo rápido:",
-        scalaPezzi: "Restar piezas individuales",
-        prodottoTerminato: (nome) => `¡El producto "${nome}" se ha terminado! Movido automáticamente a la Lista de Compras.`
+        titoloPagina: "Descarga y Consumo",
+        labelCerca: "🔍 Buscar Producto",
+        placeholderCerca: "Ej. mantequilla, pasta, tomates...",
+        lblNome: "Nombre", lblCat: "Categoría", lblUbi: "Ubicación",
+        titoloRisultati: "Resultados Despensa",
+        msgIniziale: "Escribe algo en la casilla superior para comenzar la búsqueda.",
+        msgZero: "No se encontraron productos. Intenta activar más filtros.",
+        msgTroppi: (n) => `Demasiados resultados (${n}). Usa los filtros para acotar.`,
+        btnEsaurito: "Agotado",
+        btnIndietro: "← Volver al Menú Principal",
+        titoloGuida: "📖 Cómo funciona la Descarga",
+        testoGuida: "Escribe libremente el nombre del producto. Si hay muchos o ningún resultado, usa los filtros. ¡Cada cambio se confirma al instante!",
+        btnInizia: "Empezar",
+        titoloConferma: "⚠️ Confirmar Cambio",
+        btnAnnulla: "Cancelar",
+        btnConfermaOk: "Confirmar y Actualizar",
+        msgTerminato: (nome) => `¡El producto "${nome}" se ha terminado y se añadió a la Lista de Compras!`,
+        msgAggiornato: (qta) => `¡Cantidad actualizada con éxito! Restantes: ${qta}`,
+        messaggioConferma: (qta, nome) => `Estás a punto de registrar el consumo de ${qta} pzas de "${nome}". ¿Continuar?`
     },
     fr: {
-        mostraAiuti: "Afficher les conseils et guides étape par étape",
-        titoloPagina: "Consommation et Sortie des Produits",
-        etichettaCerca: "🔍 Rechercher dans le Garde-manger",
-        placeholderCerca: "Rechercher un produit...",
-        tornaMenu: "← Retour au Menu Principal",
-        footerTesto: "Gestion locale sécurisée &bull; Sauvez de la nourriture, vivez mieux",
-        suggerimentoTitolo: "💡 Conseil Utile",
-        btnCapito: "J'ai compris",
-        nessunProdotto: "Aucun produit disponible dans le garde-manger à consommer.",
-        ubicazione: "📍 Emplacement:",
-        scadenza: "⏳ Expiration:",
-        disponibili: "📦 Disponibles:",
-        terminaSpesa: "🗑️ Terminer & Courses",
-        consumoRapido: "Consommation rapide:",
-        scalaPezzi: "Déduire les pièces individuelles",
-        prodottoTerminato: (nome) => `Le produit "${nome}" est épuisé ! Déplacé automatiquement vers la liste de courses.`
+        titoloPagina: "Sortie et Consommation",
+        labelCerca: "🔍 Rechercher un produit",
+        placeholderCerca: "Ex. beurre, pâtes, tomates...",
+        lblNome: "Nom", lblCat: "Catégorie", lblUbi: "Emplacement",
+        titoloRisultati: "Résultats du Garde-manger",
+        msgIniziale: "Tapez quelque chose dans la case ci-dessus pour lancer la recherche.",
+        msgZero: "Aucun produit trouvé. Essayez d'activer plus de filtres.",
+        msgTroppi: (n) => `Trop de résultats (${n}). Utilisez les filtres.`,
+        btnEsaurito: "Épuisé",
+        btnIndietro: "← Retour au Menu Principal",
+        titoloGuida: "📖 Comment fonctionne la Sortie",
+        testoGuida: "Tapez le nom du produit. Utilisez les filtres si nécessaire. Chaque modification est confirmée instantanément !",
+        btnInizia: "Commencer",
+        titoloConferma: "⚠️️ Confirmer",
+        btnAnnulla: "Annuler",
+        btnConfermaOk: "Confirmer et Mettre à jour",
+        msgTerminato: (nome) => `Le produit "${nome}" est épuisé et a été ajouté à la liste de courses !`,
+        msgAggiornato: (qta) => `Quantité mise à jour ! Restants : ${qta}`,
+        messaggioConferma: (qta, nome) => `Vous êtes sur le point d'enregistrer la consommation de ${qta} pcs de "${nome}". Procéder ?`
+    },
+    de: {
+        titoloPagina: "Ausbuchung & Verbrauch",
+        labelCerca: "🔍 Produkt suchen",
+        placeholderCerca: "Z.B. Butter, Nudeln, Tomaten...",
+        lblNome: "Name", lblCat: "Kategorie", lblUbi: "Standort",
+        titoloRisultati: "Vorratskammer Ergebnisse",
+        msgIniziale: "Geben Sie oben etwas ein, um die Suche zu starten.",
+        msgZero: "Keine Produkte gefunden. Aktivieren Sie ggf. Filter.",
+        msgTroppi: (n) => `Zu viele Ergebnisse (${n}). Nutzen Sie die Filter.`,
+        btnEsaurito: "Aufgebraucht",
+        btnIndietro: "← Zurück zum Hauptmenü",
+        titoloGuida: "📖 So funktioniert die Ausbuchung",
+        testoGuida: "Geben Sie den Produktnamen ein. Nutzen Sie bei Bedarf Filter. Jede Änderung wird sofort bestätigt!",
+        btnInizia: "Loslegen",
+        titoloConferma: "⚠️ Änderung bestätigen",
+        btnAnnulla: "Abbrechen",
+        btnConfermaOk: "Bestätigen & Aktualisieren",
+        msgTerminato: (nome) => `Das Produkt "${nome}" ist aufgebraucht und wurde zur Einkaufsliste hinzugefügt!`,
+        msgAggiornato: (qta) => `Menge erfolgreich aktualisiert! Verbleibend: ${qta}`,
+        messaggioConferma: (qta, nome) => `Möchten Sie den Verbrauch von ${qta} Stk. von "${nome}" erfassen?`
     }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Gestione preferenza aiuti
-    const savedHelpPref = localStorage.getItem('eat_me_first_help');
-    if (savedHelpPref === 'false') {
-        mostraAiutiAttivo = false;
-        document.getElementById('chk-mostra-aiuti').checked = false;
-    }
-
-    // Gestione preferenza lingua
     linguaCorrente = localStorage.getItem('eat_me_first_lang') || 'it';
-    const selectLingua = document.getElementById('select-lingua');
-    if (selectLingua) {
-        selectLingua.value = linguaCorrente;
-    }
-
-    traduciInterfaccia();
-    inizializzaListenerCampi();
-    caricaListaDispensa();
-    
-    // Focus iniziale sulla barra di ricerca
-    const inputRicerca = document.getElementById('filtroProdotti');
-    if(inputRicerca) inputRicerca.focus();
+    const select = document.getElementById('selettore-lingua');
+    if (select) select.value = linguaCorrente;
+    applicaTraduzioniTesti();
 });
 
-function cambiaLingua(lang) {
-    linguaCorrente = lang;
-    localStorage.setItem('eat_me_first_lang', lang);
-    traduciInterfaccia();
-    caricaListaDispensa(); // Ricarica la lista per applicare la lingua ai prodotti generati dinamicamente
+function cambiaLingua(nuovaLingua) {
+    linguaCorrente = nuovaLingua;
+    localStorage.setItem('eat_me_first_lang', nuovaLingua);
+    applicaTraduzioniTesti();
+    gestisciRicerca();
 }
 
-function traduciInterfaccia() {
-    const t = dizionario[linguaCorrente] || dizionario.it;
-
-    // Traduce gli elementi fissi con attributo data-i18n
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const chiave = el.getAttribute('data-i18n');
-        if (t[chiave]) {
-            el.innerHTML = t[chiave];
-        }
-    });
-
-    // Traduce il placeholder della ricerca
-    const inputFiltro = document.getElementById('filtroProdotti');
-    if (inputFiltro) {
-        inputFiltro.placeholder = t.placeholderCerca;
-    }
-}
-
-function toggleGlobalHelp(stato) {
-    mostraAiutiAttivo = stato;
-    localStorage.setItem('eat_me_first_help', stato);
-}
-
-function inizializzaListenerCampi() {
-    const gruppi = document.querySelectorAll('.form-group');
-    gruppi.forEach(gruppo => {
-        const input = gruppo.querySelector('input, select');
-        if (input) {
-            input.addEventListener('focus', () => {
-                if (mostraAiutiAttivo) {
-                    // Prende l'aiuto nella lingua corrente (es. data-help-en, data-help-es, ecc.)
-                    const testoAiuto = gruppo.getAttribute(`data-help-${linguaCorrente}`) || gruppo.getAttribute('data-help-it');
-                    if (testoAiuto) {
-                        mostraTooltip(testoAiuto);
-                    }
-                }
-            });
-        }
-    });
-}
-
-function mostraTooltip(testo) {
-    document.getElementById('tooltip-text').textContent = testo;
-    document.getElementById('tooltip-modal').style.display = 'flex';
-}
-
-function chiudiTooltip() {
-    document.getElementById('tooltip-modal').style.display = 'none';
-}
-
-function handleSearchKey(event) {
-    if (event.key === 'Enter' || event.code === 'Space') {
-        event.preventDefault();
-    }
-}
-
-function caricaListaDispensa() {
-    const t = dizionario[linguaCorrente] || dizionario.it;
-    let container = document.getElementById('listaContainer');
-    let filtro = document.getElementById('filtroProdotti').value.toLowerCase();
+function applicaTraduzioniTesti() {
+    const t = dizionarioScarico[linguaCorrente] || dizionarioScarico.it;
     
-    let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [], spesa: [] };
-    container.innerHTML = "";
+    document.getElementById('titolo-pagina').textContent = t.titoloPagina;
+    document.getElementById('label-cerca').textContent = t.labelCerca;
+    document.getElementById('input-ricerca').placeholder = t.placeholderCerca;
+    document.getElementById('lbl-nome').textContent = t.lblNome;
+    document.getElementById('lbl-cat').textContent = t.lblCat;
+    document.getElementById('lbl-ubi').textContent = t.lblUbi;
+    document.getElementById('titolo-risultati').textContent = t.titoloRisultati;
+    document.getElementById('btn-indietro').textContent = t.btnIndietro;
+    
+    document.getElementById('guida-titolo').textContent = t.titoloGuida;
+    document.getElementById('guida-testo').textContent = t.testoGuida;
+    document.getElementById('guida-btn').textContent = t.btnInizia;
+    
+    document.getElementById('conferma-titolo').textContent = t.titoloConferma;
+    document.getElementById('btn-annulla').textContent = t.btnAnnulla;
+    document.getElementById('btn-conferma-ok').textContent = t.btnConfermaOk;
 
-    let prodottiFiltrati = (db.dispensa || []).filter(item => 
-        !item.lowStock && 
-        (item.nome.toLowerCase().includes(filtro) || (item.ubicazione && item.ubicazione.toLowerCase().includes(filtro)))
-    );
+    const msgIniziale = document.getElementById('msg-iniziale');
+    if (msgIniziale && msgIniziale.classList.contains('empty-message') && !document.getElementById('input-ricerca').value) {
+        msgIniziale.textContent = t.msgIniziale;
+    }
+}
 
-    if (prodottiFiltrati.length === 0) {
-        container.innerHTML = `<div class="empty-msg">${t.nessunProdotto}</div>`;
+function chiudiGuidaIniziale() {
+    document.getElementById('modal-guida-iniziale').style.display = 'none';
+}
+
+function gestisciRicerca() {
+    const t = dizionarioScarico[linguaCorrente] || dizionarioScarico.it;
+    const query = document.getElementById('input-ricerca').value.toLowerCase().trim();
+    const usaNome = document.getElementById('chk-nome').checked;
+    const usaCategoria = document.getElementById('chk-categoria').checked;
+    const usaUbicazione = document.getElementById('chk-ubicazione').checked;
+    
+    const container = document.getElementById('lista-risultati');
+
+    if (!query) {
+        container.innerHTML = `<p class="empty-message" id="msg-iniziale">${t.msgIniziale}</p>`;
         return;
     }
 
-    prodottiFiltrati.forEach(item => {
-        let card = document.createElement('div');
-        card.className = 'item-card';
-
-        let quantitaAttuale = item.quantita || 1;
-        let unitaMisura = item.unitaMisura || 'pezzi';
-
-        card.innerHTML = `
-            <div class="item-header">
-                <div class="item-info">
-                    <h3>${item.nome} (${item.marca || 'Generico'})</h3>
-                    <p>${t.ubicazione} <b>${item.ubicazione || 'Dispensa'}</b> | ${t.scadenza} <b>${item.scadenza || 'Nessuna'}</b></p>
-                    <p>${t.disponibili} <b style="color: #58a6ff; font-size: 1rem;">${quantitaAttuale} ${unitaMisura}</b></p>
-                </div>
-                <button class="btn-termina" onclick="terminaProdotto(${item.id})">${t.terminaSpesa}</button>
-            </div>
-            
-            <div class="consumo-controllo">
-                <span style="font-size: 0.85rem; color: #8b949e;">${t.consumoRapido}</span>
-                <button class="btn-qty" onclick="aggiornaQuantita(${item.id}, -1)">-1</button>
-                <span style="font-size: 0.9rem; font-weight: bold; min-width: 30px; text-align: center;">${quantitaAttuale}</span>
-                <button class="btn-qty" onclick="aggiornaQuantita(${item.id}, 1)">+1</button>
-                <span style="font-size: 0.80rem; color: #8b949e; margin-left: auto;">${t.scalaPezzi}</span>
-            </div>
-        `;
-        container.appendChild(card);
+    const risultati = prodottiDispensa.filter(p => {
+        let match = false;
+        if (usaNome && p.nome.toLowerCase().includes(query)) match = true;
+        if (usaCategoria && p.categoria.toLowerCase().includes(query)) match = true;
+        if (usaUbicazione && p.ubicazione.toLowerCase().includes(query)) match = true;
+        return match;
     });
+
+    if (risultati.length === 0) {
+        container.innerHTML = `<p class="empty-message" style="color: #da3633;">${t.msgZero}</p>`;
+    } else if (risultati.length > 10) {
+        container.innerHTML = `<p class="empty-message" style="color: #d29922;">${t.msgTroppi(risultati.length)}</p>`;
+    } else {
+        container.innerHTML = risultati.map(p => `
+            <div class="product-item">
+                <div class="product-info">
+                    <h4>${p.nome}</h4>
+                    <span>📍 ${p.ubicazione} | 🏷️ ${p.categoria} | Disp: <strong>${p.quantita}</strong></span>
+                </div>
+                <div class="product-actions">
+                    <button class="btn-primary" onclick="chiediScarico(${p.id}, 1)">-1</button>
+                    <button class="btn-primary" style="background-color: #da3633;" onclick="chiediScarico(${p.id}, ${p.quantita})">${t.btnEsaurito}</button>
+                </div>
+            </div>
+        `).join('');
+    }
 }
 
-function aggiornaQuantita(id, delta) {
-    let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [], spesa: [] };
-    let item = db.dispensa.find(i => i.id === id);
+function chiediScarico(idProdotto, qtaDaScaricare) {
+    const t = dizionarioScarico[linguaCorrente] || dizionarioScarico.it;
+    const prodotto = prodottiDispensa.find(p => p.id === idProdotto);
+    if (!prodotto) return;
 
-    if (item) {
-        item.quantita = (item.quantita || 1) + delta;
-        
-        if (item.quantita <= 0) {
-            item.quantita = 0;
-            spostaInListaSpesa(item, db);
-        } else {
-            localStorage.setItem('eat_me_first_db', JSON.stringify(db));
-            caricaListaDispensa();
+    operazioneInSospeso = { id: idProdotto, qta: qtaDaScaricare };
+    
+    document.getElementById('testo-conferma').textContent = t.messaggioConferma(qtaDaScaricare, prodotto.nome);
+    document.getElementById('modal-conferma').style.display = 'flex';
+}
+
+function chiudiConferma(confermato) {
+    const t = dizionarioScarico[linguaCorrente] || dizionarioScarico.it;
+    document.getElementById('modal-conferma').style.display = 'none';
+    
+    if (confermato && operazioneInSospeso) {
+        const prodotto = prodottiDispensa.find(p => p.id === operazioneInSospeso.id);
+        if (prodotto) {
+            prodotto.quantita = Math.max(0, prodotto.quantita - operazioneInSospeso.qta);
+            
+            if (prodotto.quantita === 0) {
+                alert(t.msgTerminato(prodotto.nome));
+            } else {
+                alert(t.msgAggiornato(prodotto.quantita));
+            }
+            
+            gestisciRicerca();
         }
     }
+    operazioneInSospeso = null;
 }
 
-function terminaProdotto(id) {
-    let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [], spesa: [] };
-    let item = db.dispensa.find(i => i.id === id);
-
-    if (item) {
-        item.quantita = 0;
-        spostaInListaSpesa(item, db);
-    }
-}
-
-function spostaInListaSpesa(item, db) {
-    const t = dizionario[linguaCorrente] || dizionario.it;
-    item.lowStock = true; 
-
-    if (!db.spesa) db.spesa = [];
-    const esisteGia = db.spesa.some(s => s.nome.toLowerCase() === item.nome.toLowerCase() && !s.comprato);
-    
-    if (!esisteGia) {
-        db.spesa.push({
-            id: Date.now(),
-            nome: item.nome,
-            marca: item.marca || "",
-            quantita: 1,
-            comprato: false
-        });
-    }
-
-    localStorage.setItem('eat_me_first_db', JSON.stringify(db));
-    alert(t.prodottoTerminato(item.nome));
-    caricaListaDispensa();
+function tornaAlMenu() {
+    window.location.href = 'index.html';
 }
