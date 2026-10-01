@@ -1,3 +1,6 @@
+/* ==========================================
+   1. VARIABILI E CONFIGURAZIONE GLOBALE
+   ========================================== */
 :root {
     --bg-color: #0d1117;
     --card-bg: #161b22;
@@ -28,6 +31,9 @@ body {
     align-items: center;
 }
 
+/* ==========================================
+   2. HEADER E LOGO
+   ========================================== */
 header { 
     background: var(--card-bg); 
     color: var(--text-main); 
@@ -64,10 +70,37 @@ h1 {
     color: var(--accent-blue); 
 }
 
+.fixed-logo {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    z-index: 99;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    object-fit: cover;
+}
+
+/* ==========================================
+   3. CONTROLLI SUPERIORI, LINGUA E MENU
+   ========================================== */
 .top-bar-controls {
     display: flex;
     align-items: center;
     gap: 12px;
+}
+
+.top-bar-absolute {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 1000;
 }
 
 .dropdown {
@@ -234,6 +267,9 @@ h1 {
     font-weight: bold;
 }
 
+/* ==========================================
+   4. LAYOUT CONTENITORI E CARD
+   ========================================== */
 .container { 
     max-width: 900px; 
     width: 100%; 
@@ -244,7 +280,7 @@ h1 {
     gap: 1.2rem; 
 }
 
-.menu-section-card {
+.menu-section-card, .card {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 12px;
@@ -269,6 +305,18 @@ h1 {
     gap: 8px;
 }
 
+.main-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    margin-top: 10px;
+}
+
+/* ==========================================
+   5. BOTTONI E ANIMAZIONI DI NOTIFICA
+   ========================================== */
 .menu-card-btn { 
     background: #21262d; 
     color: var(--text-main); 
@@ -310,6 +358,9 @@ h1 {
     animation: pulse-blink 1.2s infinite; 
 }
 
+/* ==========================================
+   6. POPUP DI SISTEMA
+   ========================================== */
 #popup-notifica { 
     position: fixed; 
     top: 0; 
@@ -384,57 +435,9 @@ h1 {
     opacity: 0.85; 
 }
 
-.fixed-logo {
-    position: fixed;
-    bottom: 15px;
-    right: 15px;
-    width: 45px;
-    height: 45px;
-    border-radius: 55%;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
-    z-index: 99;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    object-fit: cover;
-}
-
-footer {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    margin-top: auto;
-    text-align: center;
-    padding: 1rem;
-}
-
-/* --- AGGIUNTE PER LA PAGINA LISTE --- */
-.top-bar-absolute {
-    position: absolute;
-    top: 20px;
-    right: 25px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    z-index: 1000;
-}
-
-.main-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 25px;
-    margin-top: 10px;
-}
-
-.card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-}
-
+/* ==========================================
+   7. LISTE, TAB E PRODOTTI EXTRA (REPARTI)
+   ========================================== */
 #video-container {
     text-align: center;
     margin-bottom: 20px;
@@ -492,6 +495,23 @@ footer {
     border-left: 4px solid var(--accent-danger);
 }
 
+/* Stile distintivo per i prodotti extra (provenienti da spesa.html) */
+.item-row.extra-item {
+    background-color: rgba(168, 85, 247, 0.08);
+    border-left: 4px solid var(--accent-purple);
+}
+
+.reparto-group-title {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--accent-blue);
+    margin: 15px 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 4px;
+}
+
 .item-info {
     flex-grow: 1;
     margin-left: 12px;
@@ -533,3 +553,14 @@ footer {
 }
 
 .nav-back:hover { text-decoration: underline; }
+
+/* ==========================================
+   8. FOOTER
+   ========================================== */
+footer {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: auto;
+    text-align: center;
+    padding: 1rem;
+}
