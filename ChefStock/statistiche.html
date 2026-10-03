@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="stat_page_title">ChefStock - Statistiche & Agenda Scadenze</title>
+    <link rel="stylesheet" href="inventario.css">
+    <link rel="stylesheet" href="statistiche.css">
+    <script src="i18n.js"></script>
+</head>
+<body>
+
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <h1 data-i18n="stat_header">Agenda Scadenze & Statistiche</h1>
+        <!-- Selettore della lingua in alto a destra -->
+        <div id="header-lang">
+            <select id="lingua-select" onchange="cambiaLingua(this.value)">
+                <option value="it">🇮🇹 Italiano</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="fr">🇫🇷 Français</option>
+                <option value="es">🇪🇸 Español</option>
+                <option value="de">🇩🇪 Deutsch</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- Menu a scomparsa (Hamburger) -->
+    <div id="side-menu">
+        <div class="menu-header">
+            <h2 data-i18n="menu_titolo">Menu ChefStock</h2>
+            <button class="close-menu" onclick="toggleMenu()">✕</button>
+        </div>
+        <a href="menu.html" class="menu-item" data-i18n="menu_home">🏠 Menu Principale</a>
+        <a href="inventario.html" class="menu-item" data-i18n="menu_dispensa">📦 Consultazione Inventario</a>
+        <a href="spesa.html" class="menu-item" data-i18n="menu_liste">🛒 Lista della Spesa</a>
+        <a href="statistiche.html" class="menu-item" id="menu-statistiche" style="background: #2a2a2a; color: #fff;" data-i18n="menu_statistiche">📊 Statistiche & Scadenze</a>
+    </div>
+
+    <!-- Contenuto Principale -->
+    <div class="container">
+        
+        <!-- Calendario Scadenze -->
+        <div class="card">
+            <h3 data-i18n="card_titolo_calendario">📅 Prossimi Giorni in Scadenza</h3>
+            <p class="subtitle" data-i18n="card_subtitle_calendario">Scorri la barra per visualizzare l'andamento. Clicca su una colonna per scoprire i prodotti del giorno.</p>
+            
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot" style="background: var(--warning);"></div> <span data-i18n="legenda_fresco">Fresco (Tassativo)</span></div>
+                <div class="legend-item"><div class="legend-dot" style="background: var(--warning-soft);"></div> <span data-i18n="legenda_consigliato">Consigliato</span></div>
+            </div>
+
+            <!-- Contenitore generato via JS (ora forza la visualizzazione a 30 giorni) -->
+            <div id="calendario-30-giorni"></div>
+        </div>
+
+    </div>
+
+    <!-- Logo fisso in basso a destra -->
+    <img src="IMG/logo_chefstock.png" alt="Logo ChefStock" class="fixed-logo">
+
+    <!-- Pop-up Dettaglio Giorno -->
+    <div id="modal-giorno" style="display: none;">
+        <div class="modal-content">
+            <h3 id="modal-data-titolo" style="margin-bottom: 10px; color: var(--accent-blue, #38bdf8);">Scadenze del giorno</h3>
+            <div id="modal-lista-prodotti" style="max-height: 220px; overflow-y: auto; margin-bottom: 15px; font-size: 0.9rem;"></div>
+            <button onclick="chiudiModalGiorno()" class="btn-primary" style="width: 100%;" data-i18n="modal_chiudi">Chiudi</button>
+        </div>
+    </div>
+
+    <script src="statistiche.js"></script>
+</body>
+</html>

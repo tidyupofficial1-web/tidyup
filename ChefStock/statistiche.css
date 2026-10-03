@@ -1,0 +1,234 @@
+:root {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --border-color: #334155;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent-blue: #38bdf8;
+    --accent-hover: #0ea5e9;
+    --warning: #e74c3c;
+    --warning-soft: #f1c40f;
+}
+
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+}
+
+body { 
+    background-color: var(--bg-color); 
+    color: var(--text-main); 
+    padding-bottom: 90px; 
+}
+
+header { 
+    background-color: var(--card-bg); 
+    color: var(--text-main); 
+    padding: 1rem 20px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    position: sticky; 
+    top: 0; 
+    z-index: 100; 
+    border-bottom: 1px solid var(--border-color); 
+}
+
+h1 { 
+    font-size: 1.15rem; 
+}
+
+/* Selettore Lingua Header */
+#header-lang select {
+    background: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+/* Hamburger Menu */
+.menu-btn { 
+    background: none; 
+    border: none; 
+    color: var(--text-main); 
+    font-size: 1.5rem; 
+    cursor: pointer; 
+    padding: 0 5px; 
+}
+
+#side-menu {
+    display: none;
+    position: fixed;
+    top: 0; 
+    left: 0;
+    width: 260px; 
+    height: 100%;
+    background: var(--card-bg);
+    box-shadow: 4px 0 25px rgba(0,0,0,0.5);
+    z-index: 1000;
+    padding: 20px;
+    overflow-y: auto;
+    border-right: 1px solid var(--border-color);
+}
+
+.menu-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px; 
+    border-bottom: 2px solid var(--border-color); 
+    padding-bottom: 10px; 
+}
+
+.menu-header h2 { 
+    font-size: 1.1rem; 
+    color: var(--text-main); 
+}
+
+.close-menu { 
+    background: none; 
+    border: none; 
+    font-size: 1.2rem; 
+    cursor: pointer; 
+    color: var(--text-muted); 
+}
+
+.menu-item { 
+    display: block; 
+    padding: 12px 14px; 
+    margin-bottom: 8px; 
+    color: var(--text-main); 
+    text-decoration: none; 
+    border-radius: 8px; 
+    font-weight: 500; 
+    background: rgba(255, 255, 255, 0.03); 
+    transition: background 0.2s; 
+}
+
+.menu-item:hover { 
+    background: var(--border-color); 
+}
+
+.container { 
+    max-width: 900px; 
+    margin: 20px auto; 
+    padding: 0 20px; 
+}
+
+/* Card principale */
+.card { 
+    background: var(--card-bg); 
+    border-radius: 12px; 
+    padding: 20px; 
+    margin-bottom: 20px; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+    border: 1px solid var(--border-color); 
+}
+
+.card h3 { 
+    font-size: 1.15rem; 
+    margin-bottom: 6px; 
+    color: var(--accent-blue); 
+}
+
+.subtitle { 
+    font-size: 0.9rem; 
+    color: var(--text-muted); 
+    margin-bottom: 15px; 
+    line-height: 1.4;
+}
+
+/* Legenda */
+.legend { 
+    display: flex; 
+    gap: 20px; 
+    font-size: 0.82rem; 
+    margin-bottom: 15px; 
+    color: var(--text-muted); 
+}
+
+.legend-item { 
+    display: flex; 
+    align-items: center; 
+    gap: 6px; 
+}
+
+.legend-dot { 
+    width: 10px; 
+    height: 10px; 
+    border-radius: 50%; 
+}
+
+/* Calendario a scorrimento (Tabella 30 giorni) */
+#calendario-30-giorni {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    height: 180px;
+    overflow-x: auto;
+    padding: 15px 5px 10px 5px;
+    border-bottom: 2px solid var(--border-color);
+    scrollbar-color: var(--accent-blue) var(--card-bg);
+    scrollbar-width: thin;
+}
+
+/* Modal Pop-up Giorno */
+#modal-giorno {
+    position: fixed;
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    color: var(--text-main);
+    padding: 25px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border: 1px solid var(--border-color);
+}
+
+.btn-primary {
+    background: var(--accent-blue);
+    color: var(--bg-color);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+}
+
+/* Logo Fisso in basso a destra */
+.fixed-logo {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    z-index: 99;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    object-fit: cover;
+}
