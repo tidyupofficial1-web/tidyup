@@ -256,10 +256,13 @@ function gestisciQuantitaPezzoSingolo(rawQuantity) {
 function impostaScadenzaIntelligentePerCategoria(fonte, nomeProdotto) {
     tipoScadenzaCorrente = "consigliata";
     const t = nomeProdotto.toLowerCase();
-    let giorni = 30;
+    let giorni = 30; // Default generico per dispensa
 
+    // Regole intelligenti basate su parole chiave
     if (fonte === "igiene" || fonte === "casa" || t.includes('dentifricio') || t.includes('pile') || t.includes('piatti')) {
         giorni = 365;
+    } else if (t.includes('pasta') || t.includes('riso') || t.includes('farina') || t.includes('biscotti') || t.includes('caffè') || t.includes('zucchero') || t.includes('sale') || t.includes('scatola') || t.includes('tonno') || t.includes('passata')) {
+        giorni = 365; // 1 anno per i secchi e le conserve a lunga conservazione
     } else if (t.includes('latte') || t.includes('fresco')) {
         giorni = 7;
     } else if (t.includes('carne') || t.includes('pesce')) {
@@ -278,6 +281,8 @@ function stimaScadenzaDallaDescrizione(testo) {
     let giorni = 30;
 
     if (t.includes('dentifricio') || t.includes('pile') || t.includes('piatti') || t.includes('fazzoletti')) {
+        giorni = 365;
+    } else if (t.includes('pasta') || t.includes('riso') || t.includes('farina') || t.includes('biscotti') || t.includes('caffè') || t.includes('zucchero') || t.includes('sale') || t.includes('tonno') || t.includes('passata')) {
         giorni = 365;
     } else if (t.includes('latte') || t.includes('fresco')) {
         giorni = 7;
