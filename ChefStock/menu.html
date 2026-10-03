@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChefStock - Pannello di Controllo</title>
+    <link rel="stylesheet" href="menu.css">
+    <script src="i18n.js"></script>
+</head>
+<body>
+
+    <!-- Popup di Benvenuto Iniziale -->
+    <div id="welcome-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <h2 data-i18n="welcomeTitle">👋 Benvenuto nel Pannello di Comando!</h2>
+            <p data-i18n="welcomeDesc">ChefStock è progettato per ottimizzare la tua gestione delle scorte e ridurre gli sprechi. Da qui puoi accedere rapidamente alle funzioni chiave:</p>
+            <ul>
+                <li><strong data-i18n="invTitle">Gestione Inventario:</strong> <span data-i18n="invDescShort">Controlla scorte, lotti e scadenze.</span></li>
+                <li><strong data-i18n="scanTitle">Entrata / Scansione Merci:</strong> <span data-i18n="scanDescShort">Registra prodotti con lettore barcode o fotocamera.</span></li>
+                <li><strong data-i18n="shopTitle">Lista della Spesa:</strong> <span data-i18n="shopDescShort">Monitora gli articoli in esaurimento.</span></li>
+            </ul>
+            <p class="modal-tip">💡 <em data-i18n="tipWelcome">Consiglio: Accanto ad ogni comando trovi un'icona (?) per scoprire i dettagli d'uso.</em></p>
+            
+            <div class="modal-footer">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="chk-dont-show"> <span data-i18n="dontShowAgain">Non mostrare più questo benvenuto</span>
+                </label>
+                <button class="btn-primary" onclick="chiudiBenvenuto()" data-i18n="btnProceed">Ho capito, procedi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Informativo Singolo per i Pulsanti -->
+    <div id="info-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <h3 id="info-modal-title">Informazioni Funzione</h3>
+            <p id="info-modal-desc">Descrizione dettagliata della funzione selezionata.</p>
+            <div class="modal-footer right">
+                <button class="btn-secondary" onclick="chiudiInfoModal()" data-i18n="btnClose">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Barra Superiore -->
+        <div class="top-bar">
+            <div class="nav-links">
+                <a href="index.html" class="btn-back" id="txt-back" data-i18n="back">Indietro</a>
+            </div>
+            <div class="app-header-right">
+                <div class="app-title">ChefStock <span>Control Center</span></div>
+                <div id="header-lang"></div>
+            </div>
+        </div>
+
+        <!-- Banner Consigliato Lettore Barcode -->
+        <div class="barcode-banner">
+            <span class="banner-icon">💡</span>
+            <div class="banner-text">
+                <strong data-i18n="proTipTitle">Consiglio Pro:</strong> <span data-i18n="proTipDesc">Per un'attività intensiva, l'uso di un lettore barcode USB/Wireless (stile supermercato, spesa 20-30€) velocizza l'ingresso merci in un millisecondo. È supportato nativamente!</span>
+            </div>
+        </div>
+
+        <!-- Griglia dei 3 Blocchi Principali -->
+        <div class="menu-grid">
+
+            <!-- Blocco 1: Inventario -->
+            <div class="menu-card">
+                <div class="card-header-flex">
+                    <h2 data-i18n="cardInvTitle">📦 Gestione Inventario</h2>
+                    <button class="btn-help-icon" onclick="apriInfo('inventario')" title="Aiuto">?</button>
+                </div>
+                <p data-i18n="cardInvDesc">Monitora lo stato attuale della dispensa, filtra per categorie e controlla le scadenze imminenti.</p>
+                <a href="inventario.html" class="btn-card-action" data-i18n="btnOpenInv">Apri Inventario</a>
+            </div>
+
+            <!-- Blocco 2: Entrata Merci / Scansione -->
+            <div class="menu-card">
+                <div class="card-header-flex">
+                    <h2 data-i18n="cardScanTitle">📷 Entrata / Scansione Merci</h2>
+                    <button class="btn-help-icon" onclick="apriInfo('scansione')" title="Aiuto">?</button>
+                </div>
+                <p data-i18n="cardScanDesc">Aggiungi nuovi prodotti scansionando il codice a barre tramite lettore hardware o fotocamera del cellulare.</p>
+                <a href="scansione.html" class="btn-card-action" data-i18n="btnOpenScan">Nuovo Ingresso</a>
+            </div>
+
+            <!-- Blocco 3: Lista della Spesa -->
+            <div class="menu-card">
+                <div class="card-header-flex">
+                    <h2 data-i18n="cardShopTitle">🛒 Lista della Spesa</h2>
+                    <button class="btn-help-icon" onclick="apriInfo('spesa')" title="Aiuto">?</button>
+                </div>
+                <p data-i18n="cardShopDesc">Visualizza gli articoli esauriti o sotto scorta minima da riordinare per i prossimi rifornimenti.</p>
+                <a href="spesa.html" class="btn-card-action" data-i18n="btnOpenShop">Vai alla Spesa</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Logo Fisso in Basso a Destra -->
+    <img src="IMG/logo_chefstock.png" alt="ChefStock Logo" class="footer-logo-fixed">
+
+    <script src="menu.js"></script>
+</body>
+</html>

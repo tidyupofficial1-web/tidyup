@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="lista_title">EatMeFirst - Ricordarsi di & Commissioni</title>
+    <!-- Collegamento al file centrale delle lingue e agli stili -->
+    <script src="i18n.js"></script>
+    <link rel="stylesheet" href="mia_lista.css">
+</head>
+<body>
+
+    <!-- BARRA SUPERIORE: MENU PAGINE + SELETTORE LINGUA -->
+    <div class="top-bar-absolute">
+        <select class="suite-select" onchange="if(this.value) window.location.href=this.value">
+            <option value="" disabled selected>📂 ☰ Menu</option>
+            <option value="menu.html">🏠 Menu Principale</option>
+            <option value="dispensa.html">📦 Dispensa</option>
+            <option value="carico.html">➕ Carico Merci</option>
+            <option value="scarico.html">📤 Scarico Prodotti</option>
+            <option value="spesa.html">🛒 Lista Spesa</option>
+            <option value="mia_lista.html">📝 Ricordarsi di</option>
+            <option value="ricette.html">🍳 Ricette & Idee</option>
+            <option value="statistiche.html">📊 Statistiche</option>
+        </select>
+
+        <select id="lingua-select" class="lang-select" onchange="cambiaLingua(this.value)">
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="de">🇩🇪 Deutsch</option>
+        </select>
+    </div>
+
+    <!-- POPUP GUIDA / SPIEGAZIONE DETTAGLIATA -->
+    <div id="popup-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <div class="badge-premium" data-i18n="badge_premium_funzione">🌟 Funzione Premium Protetta</div>
+            <h3 data-i18n="popup_lista_title">Guida Rapida: Ricordarsi di & Commissioni</h3>
+            <p data-i18n="popup_lista_desc1">Questa sezione è il tuo spazio di appoggio rapido fuori casa o per promemoria non legati direttamente alla dispensa fissa.</p>
+            <p><strong data-i18n="popup_lista_es_titolo">Cosa puoi farci (Esempi pratici):</strong></p>
+            <ul>
+                <li data-i18n="popup_lista_es1"><strong>Commissioni al volo:</strong> Annotare <em>"Passare in farmacia a ritirare la prescrizione"</em> oppure <em>"Prendere le pile stilo al centro commerciale"</em>.</li>
+                <li data-i18n="popup_lista_es2"><strong>Foto e Volantini:</strong> Scattare o allegare la foto di un volantino con le offerte del supermercato o l'etichetta di un prodotto particolare.</li>
+                <li data-i18n="popup_lista_es3"><strong>Promemoria familiari:</strong> Registrare indicazioni al volo lasciate da altri membri della famiglia.</li>
+            </ul>
+            <p data-i18n="popup_lista_gestione"><strong>Come si gestisce:</strong> Una volta completata la commissione o l'appuntamento, basta spuntare la casella a sinistra e la nota verrà rimossa automaticamente dall'elenco!</p>
+            <button class="btn btn-primary" onclick="chiudiPopup()" style="margin-top: 15px;" data-i18n="btn_ho_capito">Ho capito, apri il Block Notes</button>
+        </div>
+    </div>
+
+    <!-- HEADER CON LOGO E TITOLO -->
+    <div class="main-header">
+        <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="header-logo">
+        <h2 data-i18n="lista_title">Ricordarsi di</h2>
+    </div>
+
+    <div class="container">
+        
+        <div class="card">
+            <h3 data-i18n="card_nuovo_appunto">Nuovo Appunto o Commissione</h3>
+            <form onsubmit="aggiungiNota(event)">
+                <input type="text" id="nota-testo" placeholder="Es. Passare in farmacia o ritirare scarpe..." required autofocus>
+                <input type="file" id="nota-foto" accept="image/*" multiple>
+                <button type="submit" class="btn btn-primary" data-i18n="btn_salva_appunto">Salva Appunto</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3 data-i18n="card_elenco_attivi">Elenco Appunti Attivi</h3>
+            <div id="lista-note">
+                <!-- Popolato via JavaScript -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER CON LOGO -->
+    <footer>
+        <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="footer-logo">
+        <span id="txt-footer" data-i18n="footer_text">EatMeFirst &bull; Dati locali su dispositivo</span>
+    </footer>
+
+    <!-- Collegamento al file JavaScript esterno -->
+    <script src="mia_lista.js"></script>
+</body>
+</html>

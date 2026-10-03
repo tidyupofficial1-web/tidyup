@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TidyUp - Suite Gestionale</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            /* Sfondo unificato dei box in tonalità nocciolo caldo e raffinato */
+            --card-bg: #2d241e;
+            --card-border: #4d3d33;
+            --text-main: #f0f6fc;
+            --text-muted: #d0c4bc;
+            --accent-green: #238636;
+            --accent-red: #da3633;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.7;
+            padding: 30px 20px;
+            overflow-x: hidden;
+            font-size: 1.1rem;
+        }
+
+        /* --- BARRA SUPERIORE CON SELETTORE LINGUA --- */
+        .top-nav {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+        }
+
+        .lang-select {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .lang-select:hover {
+            background-color: #382d27;
+            border-color: var(--text-muted);
+        }
+
+        /* --- SCHERMATA INTRODUTTIVA SPLASH VIDEO --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeOut 0.8s ease-in-out 4.2s forwards;
+        }
+
+        #splash-screen video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; visibility: visible; }
+            to { opacity: 0; visibility: hidden; pointer-events: none; }
+        }
+
+        /* --- CONTENUTO PRINCIPALE --- */
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 15px;
+            margin-top: 10px;
+        }
+
+        .header-logo {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--card-border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            background-color: #ffffff;
+            padding: 2px;
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 1.35rem;
+            color: var(--text-muted);
+            margin-bottom: 45px;
+        }
+
+        /* Box Informativi */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+            text-align: left;
+        }
+
+        .info-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .info-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.35rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-card p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        .highlight-blue {
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .highlight-green {
+            color: #3fb950;
+            font-weight: bold;
+        }
+
+        /* Sezione Moduli */
+        .modules-section {
+            margin-top: 30px;
+        }
+
+        .modules-section h2 {
+            margin-bottom: 30px;
+            font-size: 2.1rem;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+            gap: 30px;
+        }
+
+        .module-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 35px 25px;
+            text-align: center;
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .module-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--text-muted);
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* Loghi con sfondi mirati per massima leggibilità */
+        .module-logo-white {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            object-fit: contain;
+            border: 2px solid var(--card-border);
+            background-color: #ffffff;
+            padding: 4px;
+        }
+
+        .module-logo-dark {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            object-fit: contain;
+            border: 2px solid var(--card-border);
+            background-color: #161b22;
+            padding: 4px;
+        }
+
+        .module-card h3 {
+            font-size: 1.8rem;
+        }
+
+        .module-card p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: white;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-food {
+            background-color: var(--accent-green);
+        }
+
+        .btn-nofood {
+            background-color: var(--accent-red);
+        }
+
+        footer {
+            margin-top: 60px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--card-border);
+            padding-top: 25px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA SUPERIORE CON SELETTORE LINGUA -->
+    <div class="top-nav">
+        <select id="select-lingua" class="lang-select" onchange="cambiaLinguaIndex(this.value)">
+            <option value="it">🇮🇹 IT</option>
+            <option value="en">🇬🇧 EN</option>
+            <option value="es">🇪🇸 ES</option>
+            <option value="fr">🇫🇷 FR</option>
+            <option value="de">🇩🇪 DE</option>
+        </select>
+    </div>
+
+    <!-- VIDEO SPLASH INTRODUTTIVO -->
+    <div id="splash-screen">
+        <video autoplay muted playsinline>
+            <source src="IMG/clip_tidyup.mp4" type="video/mp4">
+            Il tuo browser non supporta i video HTML5.
+        </video>
+    </div>
+
+    <div class="container">
+        <!-- Header con Logo Fisso e Titolo -->
+        <div class="main-header">
+            <img src="IMG/logo_tidyup.png" alt="Logo TidyUp" class="header-logo">
+            <h1>TidyUp Suite</h1>
+        </div>
+        <p class="subtitle" data-i18n="sub_suite">Il sistema gestionale professionale per attività commerciali e organizzazione domestica.</p>
+
+        <!-- Informazioni Chiave Spiegate -->
+        <div class="info-grid">
+            <div class="info-card">
+                <h3 data-i18n="card1_titolo">🔒 100% Gestione in <span class="highlight-blue">LOCALE</span></h3>
+                <p data-i18n="card1_testo">Cosa significa? Significa che <strong style="color: #f0f6fc;">tutti i dati restano sul tuo dispositivo</strong> e non finiscono su nessun server esterno o cloud. Nessuno può spiare le tue informazioni, garantendoti totale privacy, velocità e controllo anche senza connessione internet.</p>
+            </div>
+            <div class="info-card">
+                <h3 data-i18n="card2_titolo">🚀 Utilizzo completamente <span class="highlight-green">GRATUITO</span></h3>
+                <p data-i18n="card2_testo">Cosa significa? Significa che il software è e <strong style="color: #f0f6fc;">rimarrà gratuito nelle sue funzioni essenziali</strong>. In futuro potremmo inserire moduli o funzioni extra opzionali a pagamento, ma il cuore del programma rimarrà sempre libero per tutti.</p>
+            </div>
+        </div>
+
+        <!-- Scelta del Modulo -->
+        <div class="modules-section">
+            <h2 data-i18n="scegli_modulo">Scegli il modulo operativo</h2>
+            
+            <div class="modules-grid">
+                <!-- Modulo Famiglia (EatMeFirst) -->
+                <div class="module-card">
+                    <div>
+                        <div class="module-header">
+                            <img src="EatMeFirst/IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="module-logo-white">
+                            <h3>EatMeFirst</h3>
+                        </div>
+                        <p data-i18n="desc_eat">Dedicato esclusivamente all'<strong>uso familiare e domestico</strong>. Focalizzato sul controllo delle scadenze della spesa di casa, la gestione della dispensa quotidiana e la riduzione degli sprechi alimentari domestici.</p>
+                    </div>
+                    <a href="EatMeFirst/index.html" class="btn btn-food" data-i18n="btn_eat">Apri EatMeFirst</a>
+                </div>
+
+                <!-- Modulo Ristorazione / Business (ChefStock) -->
+                <div class="module-card">
+                    <div>
+                        <div class="module-header">
+                            <img src="ChefStock/IMG/logo_chefstock.png" alt="ChefStock Logo" class="module-logo-dark">
+                            <h3>ChefStock</h3>
+                        </div>
+                        <p data-i18n="desc_chef">Dedicato alle <strong>realtà della ristorazione in genere</strong> (ristoranti, pizzerie, bar, mense e attività di somministrazione). Ottimizzato per la gestione professionale di scorte, lotti, fornitori e scadenze commerciali.</p>
+                    </div>
+                    <a href="ChefStock/index.html" class="btn btn-nofood" data-i18n="btn_chef">Apri ChefStock</a>
+                </div>
+            </div>
+        </div>
+
+        <footer data-i18n="footer_suite">
+            TidyUp Local Suite &bull; Progettato per PC e Tablet &bull; Semplice, veloce, sicuro.
+        </footer>
+    </div>
+
+    <script>
+        const dizionarioIndex = {
+            it: {
+                sub_suite: "Il sistema gestionale professionale per attività commerciali e organizzazione domestica.",
+                card1_titolo: '🔒 100% Gestione in <span class="highlight-blue">LOCALE</span>',
+                card1_testo: 'Cosa significa? Significa che <strong style="color: #f0f6fc;">tutti i dati restano sul tuo dispositivo</strong> e non finiscono su nessun server esterno o cloud. Nessuno può spiare le tue informazioni, garantendoti totale privacy, velocità e controllo anche senza connessione internet.',
+                card2_titolo: '🚀 Utilizzo completamente <span class="highlight-green">GRATUITO</span>',
+                card2_testo: 'Cosa significa? Significa che il software è e <strong style="color: #f0f6fc;">rimarrà gratuito nelle sue funzioni essenziali</strong>. In futuro potremmo inserire moduli o funzioni extra opzionali a pagamento, ma il cuore del programma rimarrà sempre libero per tutti.',
+                scegli_modulo: "Scegli il modulo operativo",
+                desc_eat: "Dedicato esclusivamente all'<strong>uso familiare e domestico</strong>. Focalizzato sul controllo delle scadenze della spesa di casa, la gestione della dispensa quotidiana e la riduzione degli sprechi alimentari domestici.",
+                btn_eat: "Apri EatMeFirst",
+                desc_chef: "Dedicato alle <strong>realtà della ristorazione in genere</strong> (ristoranti, pizzerie, bar, mense e attività di somministrazione). Ottimizzato per la gestione professionale di scorte, lotti, fornitori e scadenze commerciali.",
+                btn_chef: "Apri ChefStock",
+                footer_suite: "TidyUp Local Suite &bull; Progettato per PC e Tablet &bull; Semplice, veloce, sicuro."
+            },
+            en: {
+                sub_suite: "The professional management system for commercial activities and home organization.",
+                card1_titolo: '🔒 100% <span class="highlight-blue">LOCAL</span> Management',
+                card1_testo: 'What does this mean? It means <strong style="color: #f0f6fc;">all data stays on your device</strong> and never goes to any external server or cloud. Complete privacy, speed, and offline control guaranteed.',
+                card2_titolo: '🚀 Completely <span class="highlight-green">FREE</span> Usage',
+                card2_testo: 'What does this mean? It means the software is and <strong style="color: #f0f6fc;">will remain free for its core features</strong>. Optional paid modules may appear in the future, but the heart of the app will always stay free.',
+                scegli_modulo: "Choose operating module",
+                desc_eat: "Dedicated exclusively to <strong>family and household use</strong>. Focused on household grocery expiration tracking, daily pantry management, and reducing food waste at home.",
+                btn_eat: "Open EatMeFirst",
+                desc_chef: "Dedicated to <strong>food service and restaurant businesses</strong> (restaurants, pizzerias, bars, canteens, and catering). Optimized for professional inventory, batches, suppliers, and commercial expiration tracking.",
+                btn_chef: "Open ChefStock",
+                footer_suite: "TidyUp Local Suite &bull; Designed for PC and Tablet &bull; Simple, fast, secure."
+            },
+            es: {
+                sub_suite: "El sistema de gestión profesional para actividades comerciales y organización del hogar.",
+                card1_titolo: '🔒 Gestión 100% <span class="highlight-blue">LOCAL</span>',
+                card1_testo: '¿Qué significa? Significa que <strong style="color: #f0f6fc;">todos los datos se quedan en tu dispositivo</strong> y no van a ningún servidor externo o nube. Privacidad total y control sin internet.',
+                card2_titolo: '🚀 Uso completamente <span class="highlight-green">GRATUITO</span>',
+                card2_testo: '¿Qué significa? Significa que el software es y <strong style="color: #f0f6fc;">seguirá siendo gratuito en sus funciones esenciales</strong>.',
+                scegli_modulo: "Elige el módulo operativo",
+                desc_eat: "Dedicado exclusivamente al <strong>uso familiar y doméstico</strong>. Centrado en el control de caducidades de la compra en casa, gestión de despensa y reducción de desperdicios.",
+                btn_eat: "Abrir EatMeFirst",
+                desc_chef: "Dedicado a <strong>la hostelería y restauración en general</strong> (restaurantes, pizzerías, bar, comedores y servicios de comida). Optimizado para stock profesional, lotes, proveedores y caducidades.",
+                btn_chef: "Abrir ChefStock",
+                footer_suite: "TidyUp Local Suite &bull; Diseñado para PC y Tablet &bull; Sencillo, rápido, seguro."
+            },
+            fr: {
+                sub_suite: "Le système de gestion professionnelle pour activités commerciales et organisation domestique.",
+                card1_titolo: '🔒 Gestion 100% <span class="highlight-blue">LOCALE</span>',
+                card1_testo: 'Qu\'est-ce que cela signifie ? Que <strong style="color: #f0f6fc;">toutes les données restent sur votre appareil</strong> sans aller sur un serveur externe ou cloud. Confidentialité totale.',
+                card2_titolo: '🚀 Utilisation entièrement <span class="highlight-green">GRATUITE</span>',
+                card2_testo: 'Qu\'est-ce que cela signifie ? Que le logiciel est et <strong style="color: #f0f6fc;">restera gratuit pour ses fonctionnalités principales</strong>.',
+                scegli_modulo: "Choisissez le module opérationnel",
+                desc_eat: "Dédié exclusivement à l'<strong>usage familial et domestique</strong>. Axé sur le contrôle des dates de péremption des courses, la gestion du garde-manger et la réduction du gaspillage.",
+                btn_eat: "Ouvrir EatMeFirst",
+                desc_chef: "Dédié à la <strong>restauration en général</strong> (restaurants, pizzerias, bars, cantines et services de restauration). Optimisé pour la gestion professionnelle des stocks, lots et fournisseurs.",
+                btn_chef: "Ouvrir ChefStock",
+                footer_suite: "TidyUp Local Suite &bull; Conçu pour PC et Tablette &bull; Simple, rapide, sécurisé."
+            },
+            de: {
+                sub_suite: "Das professionelle Verwaltungssystem für Gewerbe und Haushaltsorganisation.",
+                card1_titolo: '🔒 100% <span class="highlight-blue">LOKALE</span> Verwaltung',
+                card1_testo: 'Was bedeutet das? <strong style="color: #f0f6fc;">Alle Daten bleiben auf Ihrem Gerät</strong> und landen auf keinem externen Server. Volle Privatsphäre und Offline-Kontrolle.',
+                card2_titolo: '🚀 Vollständig <span class="highlight-green">KOSTENLOSE</span> Nutzung',
+                card2_testo: 'Was bedeutet das? Die Software ist und <strong style="color: #f0f6fc;">bleibt in ihren Kernfunktionen kostenlos</strong>.',
+                scegli_modulo: "Wählen Sie das Betriebsmodul",
+                desc_eat: "Ausnahmslos für den <strong>Familien- und Haushaltsgebrauch</strong> bestimmt. Konzentriert auf die Überprüfung von Ablaufdaten beim Einkauf zu Hause und Reduzierung von Haushaltsabfällen.",
+                btn_eat: "EatMeFirst öffnen",
+                desc_chef: "Für die <strong>Gastronomie im Allgemeinen</strong> (Restaurants, Pizzerien, Bars, Kantinen und Verpflegungsbetriebe). Optimiert für professionelle Bestände, Chargen, Lieferanten und gewerbliche Fristen.",
+                btn_chef: "ChefStock öffnen",
+                footer_suite: "TidyUp Local Suite &bull; Entwickelt für PC & Tablet &bull; Einfach, schnell, sicher."
+            }
+        };
+
+        function cambiaLinguaIndex(lang) {
+            localStorage.setItem('tidyup_suite_lang', lang);
+            const t = dizionarioIndex[lang] || dizionarioIndex['it'];
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const chiave = el.getAttribute('data-i18n');
+                if (t[chiave]) {
+                    el.innerHTML = t[chiave];
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const langSalvata = localStorage.getItem('tidyup_suite_lang') || 'it';
+            const selectLang = document.getElementById('select-lingua');
+            if (selectLang) {
+                selectLang.value = langSalvata;
+            }
+            cambiaLinguaIndex(langSalvata);
+        });
+    </script>
+</body>
+</html>

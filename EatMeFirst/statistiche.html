@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="titolo-pagina-meta">EatMeFirst - Agenda Scadenze</title>
+    <link rel="stylesheet" href="statistiche.css">
+</head>
+<body>
+
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <h1 id="titolo-header">Agenda Scadenze</h1>
+        <!-- Selettore della lingua in alto a destra -->
+        <select id="selettore-lingua" onchange="cambiaLingua(this.value)" style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">
+            <option value="it" style="color: #333;">🇮🇹 IT</option>
+            <option value="en" style="color: #333;">🇬🇧 EN</option>
+            <option value="es" style="color: #333;">🇪🇸 ES</option>
+            <option value="fr" style="color: #333;">🇫🇷 FR</option>
+            <option value="de" style="color: #333;">🇩🇪 DE</option>
+        </select>
+    </header>
+
+    <!-- Menu a scomparsa (Hamburger) -->
+    <div id="side-menu">
+        <div class="menu-header">
+            <h2 id="menu-titolo">Menu EatMeFirst</h2>
+            <button class="close-menu" onclick="toggleMenu()">✕</button>
+        </div>
+        <a href="dispensa.html" class="menu-item" id="menu-dispensa">📦 Dispensa e Frigorifero</a>
+        <a href="liste.html" class="menu-item" id="menu-liste">🛒 Lista della Spesa</a>
+        <a href="statistiche.html" class="menu-item" id="menu-statistiche" style="background: #2a2a2a; color: #fff;">📅 Agenda Scadenze</a>
+        
+        <div style="margin: 15px 0 10px 0; font-size: 0.75rem; text-transform: uppercase; color: #888; font-weight: bold;" id="menu-sec-impostazioni">Impostazioni & Dati</div>
+        <a href="#" onclick="esportaDatabase()" class="menu-item" id="menu-backup">💾 Scarica Backup Database</a>
+        <a href="#" onclick="avviaDetonatore()" class="menu-item danger" id="menu-detonatore">💣 Svuota Intera Dispensa</a>
+    </div>
+
+    <!-- Contenuto Principale -->
+    <div class="container">
+        
+        <!-- Calendario Scadenze (Vista a 7 giorni visibili + scroll) -->
+        <div class="card">
+            <h3 id="card-titolo-calendario">📅 Prossimi Giorni in Scadenza</h3>
+            <p class="subtitle" id="card-subtitle-calendario"> Scorri la barra per visualizzare l'andamento. Clicca su una colonna per scoprire i prodotti del giorno.</p>
+            
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot" style="background: var(--warning);"></div> <span id="legenda-fresco">Fresco (Tassativo)</span></div>
+                <div class="legend-item"><div class="legend-dot" style="background: var(--warning-soft);"></div> <span id="legenda-consigliato">Consigliato</span></div>
+            </div>
+
+            <div id="calendario-30-giorni"></div>
+        </div>
+
+    </div>
+
+    <!-- Logo fisso in basso a destra -->
+    <img src="IMG/logo_1024_white.png" alt="Logo EatMeFirst" class="fixed-logo">
+
+    <!-- Pop-up Dettaglio Giorno -->
+    <div id="modal-giorno">
+        <div class="modal-content">
+            <h3 id="modal-data-titolo" style="margin-bottom: 10px; color: var(--primary);">Scadenze del giorno</h3>
+            <div id="modal-lista-prodotti" style="max-height: 220px; overflow-y: auto; margin-bottom: 15px; font-size: 0.9rem;"></div>
+            <button onclick="chiudiModalGiorno()" id="btn-chiudi-modal" style="background: var(--accent); color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold;">Chiudi</button>
+        </div>
+    </div>
+
+    <!-- Pop-up Funzione Extra / Premium -->
+    <div id="modal-paywall" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center;">
+        <div class="modal-content" style="text-align: center; border-top: 5px solid #27ae60; background: #1e1e1e; color: #fff;">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">⭐</div>
+            <h3 id="paywall-titolo" style="color: #fff; margin-bottom: 10px;">Funzione Extra Avanzata</h3>
+            <p id="paywall-testo" style="font-size: 0.9rem; color: #ccc; margin-bottom: 20px; line-height: 1.4;">L'Agenda Scadenze è una funzione extra attualmente offerta in uso gratuito, ma che in futuro diventerà a pagamento per lo sviluppo avanzato.</p>
+            <button onclick="sbloccaFunzionePro()" id="paywall-btn-sblocca" style="background: #27ae60; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 10px; font-size: 0.95rem;">Accedi subito alla funzione</button>
+            <button onclick="tornaAlMenuPrincipale()" id="paywall-btn-indietro" style="background: #333; color: #ccc; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: 500; font-size: 0.85rem;">← Torna alla Dispensa</button>
+        </div>
+    </div>
+
+    <script src="statistiche.js"></script>
+</body>
+</html>

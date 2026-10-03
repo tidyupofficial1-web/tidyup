@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benvenuto in EatMeFirst</title>
+    <link rel="stylesheet" href="presentazione.css">
+    <script>
+        // CONTROLLO AUTOMATICO: Se l'utente ha già accettato i termini, 
+        // lo mandiamo direttamente al menu principale evitando di rifare la presentazione.
+        if (localStorage.getItem("termini_accettati") === "true") {
+            window.location.href = "menu.html";
+        }
+    </script>
+</head>
+<body>
+
+    <!-- BARRA SUPERIORE CON SELETTORE LINGUA -->
+    <div class="top-bar-absolute" id="header-lang">
+        <select onchange="cambiaLinguaLocale(this.value)">
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="es">🇪🇸 Español</option>
+        </select>
+    </div>
+
+    <!-- BLOCCO 1: VIDEO INTRODUTTIVO (Usa sigla.mp4 dalla cartella IMG) -->
+    <div id="splash-screen">
+        <video autoplay muted playsinline>
+            <source src="IMG/sigla.mp4" type="video/mp4">
+            Il tuo browser non supporta i video HTML5.
+        </video>
+    </div>
+
+    <!-- BLOCCO 2: CORPO DELLA PRESENTAZIONE -->
+    <div class="container">
+        
+        <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="header-logo">
+        <h1>EatMeFirst</h1>
+        <p class="subtitle" id="txt-subtitle">Il sistema intelligente per la gestione delle scadenze e il controllo della dispensa.</p>
+
+        <!-- Sezione Perché nasce EatMeFirst -->
+        <div class="intro-section">
+            <h2 id="txt-why-title">🎯 Perché nasce questo programma?</h2>
+            <p id="txt-why-p1">Ogni giorno tonnellate di cibo finiscono nella spazzatura solo perché ci dimentichiamo di cosa abbiamo in fondo al frigo o in dispensa. <strong>EatMeFirst</strong> nasce per risolvere questo problema in modo semplice, visivo e veloce.</p>
+            <p id="txt-why-p2"><strong>Totale Privacy in Locale:</strong> A differenza delle solite app online, qui i tuoi dati non viaggiano su server sconosciuti ma restano al 100% protetti e salvati esclusivamente sul tuo dispositivo. Nessun abbonamento a cloud esterni e massima velocità anche senza linea internet.</p>
+        </div>
+
+        <!-- Sezione I Due Mondi: Privato e Commerciale -->
+        <div class="worlds-grid">
+            <!-- Mondo Privato / Famiglia -->
+            <div class="world-card">
+                <h3 id="txt-card1-title">🏠 Per la Famiglia e l'Uso Privato</h3>
+                <ul>
+                    <li id="txt-card1-li1">Controllo visivo immediato di cosa sta per scadere.</li>
+                    <li id="txt-card1-li2">Gestione della dispensa tarata sul numero di persone in casa.</li>
+                    <li id="txt-card1-li3">Lista della spesa intelligente basata sulle reali scorte.</li>
+                    <li id="txt-card1-li4">Inserimento rapido tramite fotocamera e codici a barre.</li>
+                </ul>
+            </div>
+
+            <!-- Mondo Commerciale / Attività -->
+            <div class="world-card">
+                <h3 id="txt-card2-title">🏢 Per Piccole Attività e Ristorazione</h3>
+                <ul>
+                    <li id="txt-card2-li1">Ideale per trattorie, piccoli ristoranti, botteghe e alimentari.</li>
+                    <li id="txt-card2-li2">Tracciabilità rapida dei lotti e delle merci in carico.</li>
+                    <li id="txt-card2-li3">Riduzione drastica degli sprechi e ottimizzazione dei costi.</li>
+                    <li id="txt-card2-li4">Gestione pulita e snella senza la pesantezza dei gestionali tradizionali.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Blocco Azione: Passaggio successivo -->
+        <div class="action-area">
+            <p style="color: var(--text-muted); margin-bottom: 15px;" id="txt-ready">Sei pronto a iniziare la configurazione?</p>
+            <a href="termini.html" class="btn-proceed" id="txt-btn-proceed">Procedi con i Termini e la Configurazione &rarr;</a>
+        </div>
+
+        <footer id="txt-footer">
+            EatMeFirst &bull; Un progetto TidyUp Suite &bull; Semplice, sicuro, locale.
+        </footer>
+    </div>
+
+    <script>
+        // Traduzioni integrate per EatMeFirst
+        const traduzioniEat = {
+            it: {
+                subtitle: "Il sistema intelligente per la gestione delle scadenze e il controllo della dispensa.",
+                whyTitle: "🎯 Perché nasce questo programma?",
+                whyP1: "Ogni giorno tonnellate di cibo finiscono nella spazzatura solo perché ci dimentichiamo di cosa abbiamo in fondo al frigo o in dispensa. <strong>EatMeFirst</strong> nasce per risolvere questo problema in modo semplice, visivo e veloce.",
+                whyP2: "<strong>Totale Privacy in Locale:</strong> A differenza delle solite app online, qui i tuoi dati non viaggiano su server sconosciuti ma restano al 100% protetti e salvati esclusivamente sul tuo dispositivo. Nessun abbonamento a cloud esterni e massima velocità anche senza linea internet.",
+                card1Title: "🏠 Per la Famiglia e l'Uso Privato",
+                card1Li1: "Controllo visivo immediato di cosa sta per scadere.",
+                card1Li2: "Gestione della dispensa tarata sul numero di persone in casa.",
+                card1Li3: "Lista della spesa intelligente basata sulle reali scorte.",
+                card1Li4: "Inserimento rapido tramite fotocamera e codici a barre.",
+                card2Title: "🏢 Per Piccole Attività e Ristorazione",
+                card2Li1: "Ideale per trattorie, piccoli ristoranti, botteghe e alimentari.",
+                card2Li2: "Tracciabilità rapida dei lotti e delle merci in carico.",
+                card2Li3: "Riduzione drastica degli sprechi e ottimizzazione dei costi.",
+                card2Li4: "Gestione pulita e snella senza la pesantezza dei gestionali tradizionali.",
+                ready: "Sei pronto a iniziare la configurazione?",
+                btnProceed: "Procedi con i Termini e la Configurazione &rarr;",
+                footer: "EatMeFirst &bull; Un progetto TidyUp Suite &bull; Semplice, sicuro, locale."
+            },
+            en: {
+                subtitle: "The intelligent system for expiry management and pantry control.",
+                whyTitle: "🎯 Why was this program created?",
+                whyP1: "Every day tons of food end up in the trash just because we forget what is at the back of the fridge or pantry. <strong>EatMeFirst</strong> was created to solve this problem simply, visually, and quickly.",
+                whyP2: "<strong>Total Local Privacy:</strong> Unlike standard online apps, your data never travels to unknown servers but remains 100% protected and stored exclusively on your device. No external cloud subscriptions and maximum speed even offline.",
+                card1Title: "🏠 For Family and Private Use",
+                card1Li1: "Instant visual control of items about to expire.",
+                card1Li2: "Pantry management tailored to the number of people at home.",
+                card1Li3: "Smart shopping list based on actual stock levels.",
+                card1Li4: "Quick entry via camera and barcodes.",
+                card2Title: "🏢 For Small Businesses and Food Service",
+                card2Li1: "Ideal for small restaurants, eateries, shops, and grocers.",
+                card2Li2: "Quick traceability of batches and incoming goods.",
+                card2Li3: "Drastic reduction of waste and cost optimization.",
+                card2Li4: "Clean and lean management without heavy traditional software.",
+                ready: "Are you ready to begin configuration?",
+                btnProceed: "Proceed with Terms and Configuration &rarr;",
+                footer: "EatMeFirst &bull; A TidyUp Suite Project &bull; Simple, secure, local."
+            },
+            fr: {
+                subtitle: "Le système intelligent de gestion des péremptions et de contrôle du garde-manger.",
+                whyTitle: "🎯 Pourquoi ce programme a-t-il été créé ?",
+                whyP1: "Chaque jour, des tonnes de nourriture finissent à la poubelle simplement parce que nous oublions ce qui se cache au fond du frigo ou du placard. <strong>EatMeFirst</strong> a été conçu pour résoudre ce problème.",
+                whyP2: "<strong>Confidentialité locale totale :</strong> Contrairement aux applications en ligne, vos données ne transitent pas par des serveurs inconnus mais restent 100% protégées sur votre appareil. Aucun abonnement et vitesse maximale hors ligne.",
+                card1Title: "🏠 Pour la Famille et l'Usage Privé",
+                card1Li1: "Contrôle visuel immédiat des produits proches de la péremption.",
+                card1Li2: "Gestion du garde-manger adaptée au nombre de personnes à la maison.",
+                card1Li3: "Liste de courses intelligente basée sur les stocks réels.",
+                card1Li4: "Saisie rapide par appareil photo et codes-barres.",
+                card2Title: "🏢 Pour les Petites Entreprises et la Restauration",
+                card2Li1: "Idéal pour petits restaurants, bistrots, boutiques et épiceries.",
+                card2Li2: "Traçabilité rapide des lots et des marchandises entrantes.",
+                card2Li3: "Réduction drastique du gaspillage et optimisation des coûts.",
+                card2Li4: "Gestion fluide et épurée sans la lourdeur des logiciels traditionnels.",
+                ready: "Êtes-vous prêt à commencer la configuration ?",
+                btnProceed: "Continuer vers les Termes et la Configuration &rarr;",
+                footer: "EatMeFirst &bull; Un projet TidyUp Suite &bull; Simple, sécurisé, local."
+            },
+            de: {
+                subtitle: "Das intelligente System für Ablaufdatenmanagement und Vorratskontrolle.",
+                whyTitle: "🎯 Warum wurde dieses Programm entwickelt?",
+                whyP1: "Jeden Tag landen Tonnen von Lebensmitteln im Müll, nur weil wir vergessen, was sich hinten im Kühlschrank oder Vorratsschrank befindet. <strong>EatMeFirst</strong> wurde entwickelt, um dieses Problem einfach und visuell zu lösen.",
+                whyP2: "<strong>Vollständiger lokaler Datenschutz:</strong> Im Gegensatz zu üblichen Online-Apps reisen Ihre Daten nicht zu unbekannten Servern, sondern bleiben zu 100% geschützt auf Ihrem Gerät. Keine externen Cloud-Abonnements und volle Geschwindigkeit auch offline.",
+                card1Title: "🏠 Für Familie und private Nutzung",
+                card1Li1: "Sofortige visuelle Kontrolle über bald ablaufende Artikel.",
+                card1Li2: "Vorratsverwaltung angepasst an die Personenzahl im Haushalt.",
+                card1Li3: "Intelligente Einkaufsliste basierend auf tatsächlichen Beständen.",
+                card1Li4: "Schnelle Erfassung über Kamera und Barcodes.",
+                card2Title: "🏢 Für kleine Unternehmen und Gastronomie",
+                card2Li1: "Ideal für kleine Restaurants, Imbisse, Läden und Lebensmittelgeschäfte.",
+                card2Li2: "Schnelle Rückverfolgbarkeit von Chargen und Wareneingängen.",
+                card2Li3: "Drastische Reduzierung von Abfall und Kostenoptimierung.",
+                card2Li4: "Saubere und schlanke Verwaltung ohne schwere Standardsoftware.",
+                ready: "Sind Sie bereit für die Konfiguration?",
+                btnProceed: "Weiter zu den Bedingungen und Einrichtung &rarr;",
+                footer: "EatMeFirst &bull; Ein TidyUp Suite Projekt &bull; Einfach, sicher, lokal."
+            },
+            es: {
+                subtitle: "El sistema inteligente para la gestión de caducidades y el control de la despensa.",
+                whyTitle: "🎯 ¿Por qué nace este programa?",
+                whyP1: "Cada día toneladas de comida acaban en la basura solo porque olvidamos lo que hay al fondo de la nevera o despensa. <strong>EatMeFirst</strong> nace para resolver este problema de forma sencilla, visual y rápida.",
+                whyP2: "<strong>Privacidad local total:</strong> A diferencia de las aplicaciones online habituales, tus datos no viajan a servidores desconocidos, sino que permanecen 100% protegidos y guardados en tu dispositivo. Sin suscripciones a la nube y máxima velocidad sin internet.",
+                card1Title: "🏠 Para la Familia y el Uso Privado",
+                card1Li1: "Control visual inmediato de lo que está a punto de caducar.",
+                card1Li2: "Gestión de la despensa adaptada al número de personas en casa.",
+                card1Li3: "Lista de la compra inteligente basada en el stock real.",
+                card1Li4: "Entrada rápida mediante cámara y códigos de barras.",
+                card2Title: "🏢 Para Pequeños Negocios y Hostelería",
+                card2Li1: "Ideal para pequeños restaurantes, tascas, tiendas y ultramarinos.",
+                card2Li2: "Trazabilidad rápida de lotes y mercancías entrantes.",
+                card2Li3: "Reducción drástica de desperdicios y optimización de costes.",
+                card2Li4: "Gestión limpia y ágil sin la pesadez de los softwares tradicionales.",
+                ready: "¿Estás listo para iniciar la configuración?",
+                btnProceed: "Continuar con los Términos y Configuración &rarr;",
+                footer: "EatMeFirst &bull; Un proyecto TidyUp Suite &bull; Simple, seguro, local."
+            }
+        };
+
+        function cambiaLinguaLocale(lang) {
+            localStorage.setItem('chefstock_lang', lang); // Mantiene compatibilità di chiave con la suite
+            applicaTraduzioniEat(lang);
+        }
+
+        function applicaTraduzioniEat(lang) {
+            const t = traduzioniEat[lang] || traduzioniEat['it'];
+
+            document.getElementById('txt-subtitle').textContent = t.subtitle;
+            document.getElementById('txt-why-title').innerHTML = t.whyTitle;
+            document.getElementById('txt-why-p1').innerHTML = t.whyP1;
+            document.getElementById('txt-why-p2').innerHTML = t.whyP2;
+            
+            document.getElementById('txt-card1-title').textContent = t.card1Title;
+            document.getElementById('txt-card1-li1').textContent = t.card1Li1;
+            document.getElementById('txt-card1-li2').textContent = t.card1Li2;
+            document.getElementById('txt-card1-li3').textContent = t.card1Li3;
+            document.getElementById('txt-card1-li4').textContent = t.card1Li4;
+
+            document.getElementById('txt-card2-title').textContent = t.card2Title;
+            document.getElementById('txt-card2-li1').textContent = t.card2Li1;
+            document.getElementById('txt-card2-li2').textContent = t.card2Li2;
+            document.getElementById('txt-card2-li3').textContent = t.card2Li3;
+            document.getElementById('txt-card2-li4').textContent = t.card2Li4;
+
+            document.getElementById('txt-ready').textContent = t.ready;
+            document.getElementById('txt-btn-proceed').innerHTML = t.btnProceed;
+            document.getElementById('txt-footer').innerHTML = t.footer;
+
+            // Sincronizza il selettore visivo
+            const selectEl = document.querySelector('#header-lang select');
+            if (selectEl) selectEl.value = lang;
+        }
+
+        // All'avvio carica la lingua salvata o default italiano
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('chefstock_lang') || 'it';
+            applicaTraduzioniEat(savedLang);
+        });
+    </script>
+    <script src="presentazione.js"></script>
+</body>
+</html>

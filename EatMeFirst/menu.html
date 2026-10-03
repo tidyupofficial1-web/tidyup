@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Menu Principale</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <button class="menu-btn-nav" onclick="toggleMenu()">☰</button>
+            <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="header-logo">
+            <h1 data-i18n="titolo_app">EatMeFirst</h1>
+        </div>
+        
+        <div class="top-bar-controls">
+            <div class="dropdown">
+                <button class="dropbtn">
+                    <span data-i18n="suite">≡ Suite</span>
+                </button>
+                <div class="dropdown-content">
+                    <a href="../index.html">
+                        Home TidyUp Suite
+                    </a>
+                    <a href="menu.html">
+                        EatMeFirst
+                    </a>
+                    <a href="../NO_FOOD/index.html">
+                        SortOut
+                    </a>
+                </div>
+            </div>
+            
+            <div id="header-lang">
+                <select id="select-lingua" class="lang-select" onchange="cambiaLingua(this.value)">
+                    <option value="it">🇮🇹 IT</option>
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="es">🇪🇸 ES</option>
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="de">🇩🇪 DE</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <!-- Menu a scomparsa (Hamburger) -->
+    <div id="side-menu">
+        <div class="menu-header">
+            <h2>Menu EatMeFirst</h2>
+            <button class="close-menu" onclick="toggleMenu()">✕</button>
+        </div>
+        <a href="menu.html" class="menu-item" style="background: #30363d; color: var(--accent-blue);">🏠 Plancia Principale</a>
+        <a href="dispensa.html" class="menu-item">📦 Dispensa e Frigorifero</a>
+        <a href="liste.html" class="menu-item">🛒 Lista della Spesa</a>
+        <a href="statistiche.html" class="menu-item">📅 Agenda Scadenze</a>
+        <a href="mia_lista.html" class="menu-item">💭 Ricordarsi di...</a>
+        
+        <div class="menu-divider">Impostazioni & Dati</div>
+        <a href="#" onclick="esportaDatabase()" class="menu-item">💾 Scarica Backup Database</a>
+        <a href="#" onclick="avviaDetonatore()" class="menu-item danger">💣 Svuota Intera Dispensa</a>
+    </div>
+
+    <!-- Struttura suddivisa in tre macro-sezioni -->
+    <div class="container">
+        <!-- Sezione 1: Dispensa e Articoli -->
+        <div class="menu-section-card">
+            <div class="section-title">📦 <span data-i18n="sec_dispensa">Gestione Dispensa</span></div>
+            <a href="carico.html" class="menu-card-btn btn-dispensa">📥 <span data-i18n="carico">Carico Articolo</span></a>
+            <a href="scarico.html" class="menu-card-btn btn-dispensa">📤 <span data-i18n="scarico">Scarico Prodotti</span></a>
+            <a href="dispensa.html" class="menu-card-btn btn-dispensa">📋 <span data-i18n="dispensa">Visualizza Dispensa</span></a>
+        </div>
+
+        <!-- Sezione 2: Spesa -->
+        <div class="menu-section-card">
+            <div class="section-title">🛒 <span data-i18n="sec_spesa">Gestione Spesa</span></div>
+            <a href="liste.html" class="menu-card-btn btn-spesa">📝 <span data-i18n="spesa_lista">Lista della Spesa</span></a>
+            <a href="spesa.html" class="menu-card-btn btn-spesa">🛍️ <span data-i18n="spesa_comperare">Articoli da comperare</span></a>
+        </div>
+
+        <!-- Sezione 3: Agenda & Utility -->
+        <div class="menu-section-card">
+            <div class="section-title">📅 <span data-i18n="sec_utilita">Agenda & Utility</span></div>
+            <a href="statistiche.html" class="menu-card-btn btn-statistiche">⏳ <span data-i18n="agenda">Agenda Scadenze (30 Giorni)</span></a>
+            <a href="mia_lista.html" id="btn-block-notes" class="menu-card-btn btn-note">💭 <span data-i18n="ricordarsi">Ricordarsi di...</span></a>
+        </div>
+    </div>
+
+    <div id="popup-notifica">
+        <div id="popup-box">
+            <h3 data-i18n="pop_titolo">Nuovi Appunti nel Block Notes!</h3>
+            <p data-i18n="pop_testo">Ci sono promemoria o note inserite in "Ricordarsi di..." in attesa di lettura.</p>
+            <div class="popup-actions">
+                <button class="popup-btn btn-chiudi" onclick="chiudiPopupNotifica()" data-i18n="pop_chiudi">Ho capito</button>
+                <button class="popup-btn btn-apri" onclick="apriBlockNotes()" data-i18n="pop_apri">Vai a Ricordarsi di...</button>
+            </div>
+        </div>
+    </div>
+
+    <footer id="txt-footer" data-i18n="footer">
+        EatMeFirst &bull; Gestione locale sicura
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scarico e Consumo - EatMeFirst</title>
+    <link rel="stylesheet" href="scarico.css">
+</head>
+<body>
+
+    <!-- Popup di Guida Iniziale -->
+    <div id="modal-guida-iniziale" class="tooltip-modal" style="display: flex;">
+        <div class="tooltip-content">
+            <h3 id="guida-titolo">📖 Come funziona lo Scarico</h3>
+            <p id="guida-testo">Scrivi liberamente il nome del prodotto che desideri scaricare (es. 'burro' o 'latte'). Se ottieni troppi risultati o nessun risultato, potrai usare le spunte di Categoria o Ubicazione per restringere il campo. Ogni modifica viene confermata subito!</p>
+            <button class="btn-chiudi-tooltip" onclick="chiudiGuidaIniziale()" id="guida-btn">Inizia a Usare</button>
+        </div>
+    </div>
+
+    <!-- Modale Conferma Variazione -->
+    <div id="modal-conferma" class="tooltip-modal">
+        <div class="tooltip-content">
+            <h3 id="conferma-titolo">⚠️ Conferma Variazione</h3>
+            <p id="testo-conferma">Stai per aggiornare la quantità del prodotto...</p>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="chiudiConferma(false)" id="btn-annulla">Annulla</button>
+                <button class="btn-chiudi-tooltip" onclick="chiudiConferma(true)" id="btn-conferma-ok">Conferma e Aggiorna</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header con Logo, Titolo e Selettore Lingue -->
+        <header class="app-header">
+            <div class="header-left">
+                <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="app-logo-img">
+                <h1 id="titolo-pagina">Scarico e Consumo</h1>
+            </div>
+            <select id="selettore-lingua" onchange="cambiaLingua(this.value)" class="lang-select">
+                <option value="it">🇮🇹 IT</option>
+                <option value="en">🇬🇧 EN</option>
+                <option value="es">🇪🇸 ES</option>
+                <option value="fr">🇫🇷 FR</option>
+                <option value="de">🇩🇪 DE</option>
+            </select>
+        </header>
+
+        <!-- Barra di Ricerca Unica e Filtri a Spunta -->
+        <div class="search-box-card">
+            <label for="input-ricerca" id="label-cerca">🔍 Cerca Prodotto</label>
+            <div class="search-input-wrapper">
+                <input type="text" id="input-ricerca" placeholder="Es. burro, pasta, pomodori..." oninput="gestisciRicerca()">
+            </div>
+            
+            <div class="filters-row">
+                <label><input type="checkbox" id="chk-nome" checked> <span id="lbl-nome">Nome</span></label>
+                <label><input type="checkbox" id="chk-categoria"> <span id="lbl-cat">Categoria</span></label>
+                <label><input type="checkbox" id="chk-ubicazione"> <span id="lbl-ubi">Ubicazione</span></label>
+            </div>
+        </div>
+
+        <!-- Sezione Risultati / Prodotti Trovati -->
+        <div class="section-card">
+            <h2 id="titolo-risultati">Risultati Dispensa</h2>
+            <div id="lista-risultati" class="product-list-container">
+                <p class="empty-message" id="msg-iniziale">Digita qualcosa nella casella sopra per iniziare la ricerca.</p>
+            </div>
+        </div>
+
+        <!-- Footer Azioni -->
+        <div class="actions-footer">
+            <button class="btn-secondary" onclick="tornaAlMenu()" id="btn-indietro">← Torna al Menu Principale</button>
+        </div>
+    </div>
+
+    <script src="scarico.js"></script>
+</body>
+</html>

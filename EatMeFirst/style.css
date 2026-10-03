@@ -1,0 +1,586 @@
+/* ==========================================
+   1. VARIABILI E CONFIGURAZIONE GLOBALE
+   ========================================== */
+:root {
+    --bg-color: #0d1117;
+    --card-bg: #161b22;
+    --border-color: #30363d;
+    --text-main: #f0f6fc;
+    --text-muted: #8b949e;
+    --accent-blue: #58a6ff;
+    --accent-green: #238636;
+    --accent-danger: #ef4444;
+    --accent-warning: #f59e0b;
+    --accent-purple: #a855f7;
+}
+
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    padding-bottom: 80px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ==========================================
+   2. HEADER E LOGO
+   ========================================== */
+header { 
+    background: var(--card-bg); 
+    color: var(--text-main); 
+    padding: 1rem 1.5rem; 
+    text-align: center; 
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}
+
+h1 { 
+    font-size: 1.2rem; 
+    margin: 0; 
+    color: var(--accent-blue); 
+}
+
+.fixed-logo {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    z-index: 99;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    object-fit: cover;
+}
+
+/* ==========================================
+   3. CONTROLLI SUPERIORI, LINGUA E MENU
+   ========================================== */
+.top-bar-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.top-bar-absolute {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 1000;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.dropbtn:hover {
+    background-color: #21262d;
+    border-color: var(--text-muted);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: var(--card-bg);
+    min-width: 220px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 100;
+    overflow: hidden;
+    margin-top: 6px;
+    text-align: left;
+}
+
+.dropdown-content a {
+    color: var(--text-main);
+    padding: 10px 14px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.dropdown-content a:hover {
+    background-color: #21262d;
+}
+
+.dropdown-logo {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}
+
+.dropdown:hover .dropdown-content,
+.dropdown-content:hover {
+    display: block;
+}
+
+.lang-select {
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    outline: none;
+}
+
+.lang-select:hover {
+    border-color: var(--text-muted);
+}
+
+.menu-btn-nav { 
+    background: none; 
+    border: none; 
+    color: var(--text-main); 
+    font-size: 1.5rem; 
+    cursor: pointer; 
+    padding: 0 5px; 
+}
+
+#side-menu {
+    display: none;
+    position: fixed;
+    top: 0; 
+    left: 0;
+    width: 260px; 
+    height: 100%;
+    background: var(--card-bg);
+    border-right: 1px solid var(--border-color);
+    box-shadow: 4px 0 15px rgba(0,0,0,0.4);
+    z-index: 1000;
+    padding: 20px;
+    overflow-y: auto;
+    text-align: left;
+}
+
+.menu-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px; 
+    border-bottom: 1px solid var(--border-color); 
+    padding-bottom: 10px; 
+}
+
+.menu-header h2 { 
+    font-size: 1.1rem; 
+    color: var(--text-main); 
+}
+
+.close-menu { 
+    background: none; 
+    border: none; 
+    font-size: 1.2rem; 
+    cursor: pointer; 
+    color: var(--text-muted); 
+}
+
+.close-menu:hover { 
+    color: var(--text-main); 
+}
+
+.menu-item { 
+    display: block; 
+    padding: 10px 12px; 
+    margin-bottom: 8px; 
+    color: var(--text-main); 
+    text-decoration: none; 
+    border-radius: 6px; 
+    font-weight: 500; 
+    background: #21262d; 
+    transition: background 0.2s; 
+}
+
+.menu-item:hover { 
+    background: #30363d; 
+}
+
+.menu-item.danger { 
+    background: rgba(239, 68, 68, 0.15); 
+    color: var(--accent-danger); 
+    font-weight: bold; 
+    border: 1px solid rgba(239, 68, 68, 0.3); 
+}
+
+.menu-divider {
+    margin: 15px 0 10px 0; 
+    font-size: 0.75rem; 
+    text-transform: uppercase; 
+    color: var(--text-muted); 
+    font-weight: bold;
+}
+
+/* ==========================================
+   4. LAYOUT CONTENITORI E CARD
+   ========================================== */
+.container { 
+    max-width: 900px; 
+    width: 100%; 
+    margin: 1.5rem auto; 
+    padding: 0 1rem; 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
+    gap: 1.2rem; 
+}
+
+.menu-section-card, .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.main-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    margin-top: 10px;
+}
+
+/* ==========================================
+   5. BOTTONI E ANIMAZIONI DI NOTIFICA
+   ========================================== */
+.menu-card-btn { 
+    background: #21262d; 
+    color: var(--text-main); 
+    border: 1px solid var(--border-color); 
+    border-left: 4px solid var(--accent-blue);
+    padding: 0.9rem 1rem; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-size: 0.95rem; 
+    font-weight: 600; 
+    text-align: left; 
+    text-decoration: none; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.menu-card-btn:hover { 
+    background: #30363d; 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3); 
+    border-color: var(--text-muted);
+}
+
+.btn-dispensa { border-left-color: var(--accent-blue); }
+.btn-spesa { border-left-color: var(--accent-warning); }
+.btn-note { border-left-color: var(--accent-danger); }
+.btn-statistiche { border-left-color: var(--accent-purple); }
+
+@keyframes pulse-blink {
+    0% { border-left-color: var(--accent-danger); background-color: rgba(239, 68, 68, 0.05); }
+    50% { border-left-color: #b91c1c; background-color: rgba(239, 68, 68, 0.15); }
+    100% { border-left-color: var(--accent-danger); background-color: rgba(239, 68, 68, 0.05); }
+}
+
+.blinking-btn { 
+    animation: pulse-blink 1.2s infinite; 
+}
+
+/* ==========================================
+   6. POPUP DI SISTEMA
+   ========================================== */
+#popup-notifica { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0,0,0,0.7); 
+    display: none; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 1000; 
+    padding: 1rem; 
+}
+
+#popup-box { 
+    background: var(--card-bg); 
+    border: 1px solid var(--border-color); 
+    width: 100%; 
+    max-width: 400px; 
+    padding: 25px 20px; 
+    border-radius: 12px; 
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5); 
+    text-align: center; 
+}
+
+#popup-box h3 { 
+    color: var(--accent-danger); 
+    margin-bottom: 10px; 
+    font-size: 1.2rem; 
+}
+
+#popup-box p { 
+    font-size: 0.95rem; 
+    color: var(--text-muted); 
+    line-height: 1.4; 
+    margin-bottom: 20px; 
+}
+
+.popup-actions { 
+    display: flex; 
+    gap: 10px; 
+}
+
+.popup-btn { 
+    flex: 1; 
+    padding: 12px; 
+    border-radius: 8px; 
+    border: none; 
+    font-weight: bold; 
+    cursor: pointer; 
+    font-size: 0.95rem; 
+    transition: opacity 0.2s; 
+}
+
+.btn-chiudi { 
+    background: #21262d; 
+    color: var(--text-muted); 
+    border: 1px solid var(--border-color); 
+}
+
+.btn-chiudi:hover { 
+    background: #30363d; 
+    color: var(--text-main); 
+}
+
+.btn-apri { 
+    background: var(--accent-blue); 
+    color: #0d1117; 
+}
+
+.btn-apri:hover { 
+    opacity: 0.85; 
+}
+
+/* ==========================================
+   7. LISTE, TAB E PRODOTTI EXTRA (REPARTI)
+   ========================================== */
+#video-container {
+    text-align: center;
+    margin-bottom: 20px;
+    transition: opacity 0.5s ease;
+}
+
+#video-container video {
+    width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}
+
+.sub-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+}
+
+.sub-tab {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    background: var(--card-bg);
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--text-muted);
+    transition: background 0.2s, color 0.2s;
+}
+
+.sub-tab.active {
+    background: #21262d;
+    color: var(--accent-blue);
+    border-bottom: 2px solid var(--accent-blue);
+}
+
+.item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.item-row:last-child {
+    border-bottom: none;
+}
+
+.item-row.low-stock {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-left: 4px solid var(--accent-danger);
+}
+
+.item-row.extra-item {
+    background-color: rgba(168, 85, 247, 0.08);
+    border-left: 4px solid var(--accent-purple);
+}
+
+.reparto-group-title {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--accent-blue);
+    margin: 15px 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 4px;
+}
+
+.item-info {
+    flex-grow: 1;
+    margin-left: 12px;
+}
+
+.item-title {
+    font-weight: bold;
+    color: var(--text-main);
+}
+
+.item-details {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.btn-clean {
+    background-color: var(--accent-blue);
+    color: #0d1117;
+    border: none;
+    padding: 12px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 15px;
+    text-align: center;
+    transition: opacity 0.2s;
+}
+
+.btn-clean:hover { opacity: 0.85; }
+
+.nav-back {
+    display: block;
+    text-align: center;
+    margin-top: 2rem;
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-back:hover { text-decoration: underline; }
+
+/* ==========================================
+   8. FOOTER
+   ========================================== */
+footer {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: auto;
+    text-align: center;
+    padding: 1rem;
+}
+
+/* ==========================================
+   9. CORREZIONE SELETTORE LINGUA HEADER
+   ========================================== */
+#header-lang select {
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    outline: none;
+    display: inline-block;
+}
+
+#header-lang select:hover {
+    border-color: var(--text-muted);
+}

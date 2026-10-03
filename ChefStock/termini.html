@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ChefStock - Termini e Condizioni</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .main-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 35px;
+            width: 100%;
+            max-width: 750px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+        }
+        .card-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 15px;
+        }
+        .card-header-top h1 {
+            font-size: 20px;
+            color: #ffffff;
+        }
+        .header-logo img {
+            max-width: 50px;
+            height: auto;
+            border-radius: 50%; /* Trasforma il logo in un cerchio perfetto */
+            border: 1px solid #334155;
+            display: block;
+        }
+        .terms-container {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 40vh;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+        .terms-container h2 {
+            font-size: 15px;
+            color: #ffffff;
+            margin-top: 15px;
+            margin-bottom: 6px;
+        }
+        .terms-container h2:first-child {
+            margin-top: 0;
+        }
+        .footer-action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: #f8fafc;
+            user-select: none;
+        }
+        .checkbox-container input {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: #2563eb;
+        }
+        .btn-accept {
+            background-color: #2563eb;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            opacity: 0.5;
+            pointer-events: none;
+            transition: opacity 0.2s, background-color 0.2s;
+            white-space: nowrap;
+        }
+        .btn-accept.enabled {
+            opacity: 1;
+            pointer-events: auto;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        @media (max-width: 650px) {
+            .main-card {
+                padding: 20px;
+            }
+            .footer-action-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            .btn-accept {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-card">
+        <div class="card-header-top">
+            <h1>Termini e Condizioni d'Uso</h1>
+            <div class="header-logo">
+                <img src="IMG/logo_chefstock.png" alt="ChefStock Logo">
+            </div>
+        </div>
+
+        <div class="terms-container">
+            <h2>1. Accettazione dei Termini</h2>
+            <p>Utilizzando l'applicazione ChefStock, accetti di rispettare e vincolarti ai presenti Termini e Condizioni d'uso. Ti invitiamo a leggerli attentamente prima di procedere.</p>
+
+            <h2>2. Utilizzo dell'Applicazione</h2>
+            <p>ChefStock è uno strumento di supporto per la gestione della dispensa domestica e professionale. L'utente è l'unico responsabile dei dati inseriti, inclusi inventari, date di scadenza e liste della spesa.</p>
+
+            <h2>3. Privacy e Dati</h2>
+            <p>I dati salvati all'interno dell'applicazione vengono memorizzati localmente sul tuo dispositivo (tramite localStorage) per garantirti la massima privacy, sicurezza e rapidità d'uso.</p>
+
+            <h2>4. Limitazione di Responsabilità</h2>
+            <p>Gli sviluppatori non sono responsabili per eventuali errori di tracciamento delle scadenze o perdita accidentale dei dati memorizzati localmente sul dispositivo.</p>
+        </div>
+
+        <div class="footer-action-row">
+            <label class="checkbox-container">
+                <input type="checkbox" id="accept-checkbox">
+                <span>Ho letto e accetto i Termini e Condizioni</span>
+            </label>
+            
+            <button id="btn-accept" class="btn-accept" onclick="accettaTermini()">Accedi a ChefStock</button>
+        </div>
+    </div>
+
+    <script>
+        const checkbox = document.getElementById('accept-checkbox');
+        const btnAccept = document.getElementById('btn-accept');
+
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                btnAccept.classList.add('enabled');
+            } else {
+                btnAccept.classList.remove('enabled');
+            }
+        });
+
+        function accettaTermini() {
+            localStorage.setItem("termini_accettati", "true");
+            window.location.href = "menu.html"; 
+        }
+    </script>
+
+</body>
+</html>

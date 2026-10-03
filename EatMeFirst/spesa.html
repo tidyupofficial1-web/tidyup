@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="appTitle">EatMeFirst - Lista Spesa Extra</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="i18n.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <img src="IMG/logo_1024_white.png" alt="Logo EatMeFirst" class="header-logo">
+            <h1 data-i18n="spesa_extra_titolo">Spesa Extra (Extra-Dispensa)</h1>
+        </div>
+        <div class="top-bar-controls">
+            <button class="btn-guida-pratico" onclick="apriGuidaSpesa()" data-i18n="btnGuidaTesto">ℹ️ Guida</button>
+            <div id="header-lang"></div>
+        </div>
+    </header>
+
+    <div class="container" style="grid-template-columns: 1fr; max-width: 700px;">
+        
+        <!-- BLOCCO 1: Banner / Video illustrativo (Scompare dopo 3 loop) -->
+        <div class="menu-section-card" id="card-video-container">
+            <div class="section-title" data-i18n="sec_spesa_extra">Lavagnetta Prodotti Extra (Funzione Premium)</div>
+            <div id="video-container" style="text-align: center; margin-bottom: 5px;">
+                <video id="clip-carrello" autoplay muted style="width: 100%; max-height: 140px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color);">
+                    <source src="IMG/carrello_spesa.mp4" type="video/mp4">
+                </video>
+            </div>
+            <p data-i18n="desc_spesa_extra" style="font-size: 0.85rem; color: var(--text-muted);">
+                Inserisci qui i prodotti extra non presenti in dispensa...
+            </p>
+        </div>
+
+        <!-- BLOCCO 2: Input Aggiunta Rapida Extra -->
+        <div class="menu-section-card">
+            <div class="section-title" data-i18n="titolo_aggiungi_extra">Aggiungi Prodotto Extra</div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="input-nuovo-extra" data-i18n-placeholder="placeholder_extra" placeholder="Es. Candeline compleanno, Lampadina..." style="flex: 1; min-width: 250px; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-size: 0.95rem; outline: none;">
+                <button onclick="aggiungiProdottoExtra()" style="background: var(--accent-blue); color: #0d1117; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer;" data-i18n="btnAggiungi">Aggiungi</button>
+            </div>
+        </div>
+
+        <!-- BLOCCO 3: Selettore dei Tab (Da Prendere / Già Presi) -->
+        <div class="sub-tabs" style="margin-bottom: 0;">
+            <div id="tab-btn-prendere" class="sub-tab active" onclick="cambiaVistaSpesa('prendere')" data-i18n="tabPrendere">Da Prendere</div>
+            <div id="tab-btn-presi" class="sub-tab" onclick="cambiaVistaSpesa('presi')" data-i18n="tabPresi">Già Presi (Carrello)</div>
+        </div>
+
+        <!-- BLOCCO 4: Contenuto delle Liste Extra -->
+        <div class="menu-section-card" style="margin-top: 0; border-top-left-radius: 0; border-top-right-radius: 0;">
+            <div id="sezione-prendere">
+                <div id="lista-extra-da-prendere"></div>
+            </div>
+
+            <div id="sezione-presi" style="display: none;">
+                <div id="lista-extra-gia-presi"></div>
+                <button class="btn-clean" onclick="pulisciExtraPresi()" data-i18n="btnPulisciExtra">Pulisci extra acquistati</button>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 10px;">
+            <a href="index.html" class="nav-back" data-i18n="navBack">&larr; Torna al Menu Principale</a>
+        </div>
+
+    </div>
+
+    <!-- MODALE GUIDA -->
+    <div id="modal-guida-spesa" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 450px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="margin: 0; color: var(--accent-purple);" data-i18n="guidaSpesaTitolo">💡 Come funziona la Spesa Extra</h3>
+                <span style="background: var(--accent-warning); color: #0d1117; font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 4px;">PREMIUM</span>
+            </div>
+            
+            <p style="font-size: 0.9rem; margin-bottom: 10px;" data-i18n="guidaSpesaTesto1">Questa sezione ti permette di gestire liberamente elementi che non fanno parte della dispensa monitorata.</p>
+            <p style="font-size: 0.9rem; margin-bottom: 15px;" data-i18n="guidaSpesaTesto2">Inserisci una descrizione dettagliata del prodotto...</p>
+            
+            <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="chk-non-mostrare-spesa" style="transform: scale(1.2); cursor: pointer;">
+                <label for="chk-non-mostrare-spesa" style="font-size: 0.85rem; cursor: pointer; color: var(--text-muted);" data-i18n="nonMostrarePiu">Non mostrare più questo messaggio all'avvio</label>
+            </div>
+
+            <button class="btn-primary" style="width: 100%; padding: 10px; background: var(--accent-purple); color: #ffffff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="chiudiGuidaSpesa()" data-i18n="guidaChiudi">Ho capito, procedi</button>
+        </div>
+    </div>
+
+    <footer>
+        <span data-i18n="footer">EatMeFirst &bull; Gestione locale sicura</span>
+    </footer>
+
+    <script src="spesa.js"></script>
+</body>
+</html>

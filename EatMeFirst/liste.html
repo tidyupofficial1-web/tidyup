@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Lista della Spesa</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- HEADER UNIFICATO CON LOGO E LINGUA -->
+    <header>
+        <div class="header-left">
+            <img src="IMG/logo_1024_white.png" alt="Logo EatMeFirst" class="header-logo">
+            <h1 data-i18n="spesa_lista">Lista della Spesa</h1>
+        </div>
+        <div class="top-bar-controls">
+            <!-- Pulsante Guida pratico ed esplicito -->
+            <button class="btn-guida-pratico" onclick="apriGuidaListe()" data-i18n="btnGuidaTesto">ℹ️ Guida</button>
+            
+            <select id="select-lingua" class="lang-select" onchange="cambiaLingua(this.value)">
+                <option value="it">🇮🇹 IT</option>
+                <option value="en">🇬🇧 EN</option>
+                <option value="es">🇪🇸 ES</option>
+                <option value="fr">🇫🇷 FR</option>
+                <option value="de">🇩🇪 DE</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Selettore dei Tab (Da Prendere / Già Presi) -->
+        <div class="sub-tabs">
+            <div id="tab-btn-prendere" class="sub-tab active" onclick="cambiaVistaSpesa('prendere')" data-i18n="tabPrendere">Da Prendere</div>
+            <div id="tab-btn-presi" class="sub-tab" onclick="cambiaVistaSpesa('presi')" data-i18n="tabPresi">Già Presi (Carrello)</div>
+        </div>
+
+        <!-- Sezione Articoli da Acquistare -->
+        <div id="sezione-prendere" class="card">
+            <h3 data-i18n="titoloSezionePrendere" style="margin-bottom: 8px; color: var(--accent-blue);">Articoli da Acquistare</h3>
+            <p data-i18n="descSezionePrendere" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Metti la spunta sui prodotti presi. Quelli non spuntati rimarranno qui per la prossima spesa.</p>
+            <div id="lista-da-prendere"></div>
+        </div>
+
+        <!-- Sezione Prodotti nel Carrello -->
+        <div id="sezione-presi" class="card" style="display: none;">
+            <h3 data-i18n="titoloSezionePresi" style="margin-bottom: 8px; color: var(--accent-green);">Prodotti nel Carrello (Già Presi)</h3>
+            <p data-i18n="descSezionePresi" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Riepilogo dei prodotti acquistati. Cliccando il pulsante sotto verranno pulite le visualizzazioni sbarrate, lasciando intatti quelli non presi.</p>
+            <div id="lista-gia-presi"></div>
+            <button class="btn-clean" onclick="pulisciProdottiPresi()" data-i18n="btnPulisci">Pulisci testi sbarrati</button>
+        </div>
+
+        <!-- Link di ritorno al Menu -->
+        <div style="grid-column: 1 / -1; text-align: center;">
+            <a href="index.html" class="nav-back" data-i18n="navBack">&larr; Torna al Menu Principale</a>
+        </div>
+
+    </div>
+
+    <!-- MODALE GUIDA / POPUP SPIEGAZIONE FUNZIONI (Funzione Premium) -->
+    <div id="modal-guida" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 450px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 data-i18n="guidaTitolo" style="margin: 0; color: var(--accent-blue);">💡 Come funziona la Lista</h3>
+                <span style="background: var(--accent-warning); color: #0d1117; font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 4px;">PREMIUM</span>
+            </div>
+            
+            <p data-i18n="guidaTesto1" style="font-size: 0.9rem; margin-bottom: 10px;"><b>🔴 Rosso:</b> Prodotti già effettivamente esauriti nella dispensa.</p>
+            <p data-i18n="guidaTesto2" style="font-size: 0.9rem; margin-bottom: 15px;"><b>🟡 Giallo (Smart/Premium):</b> Prodotti che l'algoritmo predittivo calcola si esauriranno prima del tuo prossimo ritorno al supermercato.</p>
+            <p data-i18n="guidaTesto3" style="font-size: 0.9rem; margin-bottom: 20px;">Spunta i prodotti mentre fai la spesa e usa "Pulisci testi sbarrati" per gestire in autonomia il carrello una volta tornato a casa.</p>
+            
+            <!-- Checkbox Non mostrare più -->
+            <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="chk-non-mostrare" style="transform: scale(1.2); cursor: pointer;">
+                <label for="chk-non-mostrare" data-i18n="nonMostrarePiu" style="font-size: 0.85rem; cursor: pointer; color: var(--text-muted);">Non mostrare più questo messaggio all'avvio</label>
+            </div>
+
+            <button class="btn-primary" style="width: 100%; padding: 10px; background: var(--accent-blue); color: #0d1117; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="chiudiGuidaListe()" data-i18n="guidaChiudi">Ho capito, procedi</button>
+        </div>
+    </div>
+
+    <footer>
+        <span data-i18n="footer">EatMeFirst &bull; Gestione locale sicura</span>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="liste.js"></script>
+</body>
+</html>

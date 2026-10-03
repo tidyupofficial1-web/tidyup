@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChefStock - TidyUp Suite</title>
+    <script>
+        // CONTROLLO FLUSSO NUOVO UTENTE: 
+        // Se i termini NON sono stati accettati, reindirizza alla pagina di presentazione.
+        if (localStorage.getItem("termini_accettati") !== "true") {
+            window.location.href = "presentazione.html";
+        }
+    </script>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --card-border: #30363d;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --accent-green: #238636;
+            --accent-green-hover: #2ea043;
+            --accent-blue: #58a6ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 30px 20px;
+            overflow-x: hidden;
+            font-size: 1.05rem;
+        }
+
+        /* --- BARRA SUPERIORE CON SELETTORE LINGUA --- */
+        .top-bar-absolute {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            z-index: 1000;
+        }
+
+        #header-lang select {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        #header-lang select:hover {
+            background-color: #21262d;
+            border-color: var(--text-muted);
+        }
+
+        /* --- SCHERMATA CENTRALE / WELCOME CARD --- */
+        .welcome-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 45px 35px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+
+        .logo-container {
+            margin-bottom: 25px;
+        }
+
+        .header-logo {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            object-fit: contain;
+            border: 2px solid var(--card-border);
+            background-color: #161b22;
+            padding: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 15px;
+            color: var(--accent-blue);
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 35px;
+            line-height: 1.6;
+        }
+
+        .btn-enter {
+            background-color: var(--accent-green);
+            border: none;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 12px rgba(35, 134, 54, 0.3);
+        }
+
+        .btn-enter:hover {
+            background-color: var(--accent-green-hover);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            margin-top: auto;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA SUPERIORE CON SELETTORE LINGUA -->
+    <div class="top-bar-absolute" id="header-lang">
+        <!-- Generato dinamicamente via script -->
+    </div>
+
+    <!-- CONTENUTO PRINCIPALE -->
+    <div class="welcome-card">
+        <div class="logo-container">
+            <img src="IMG/logo_chefstock.png" alt="ChefStock Logo" class="header-logo">
+        </div>
+        <h1>ChefStock</h1>
+        <p id="txt-welcome-desc">Il sistema professionale per la gestione delle scorte, dei lotti, dei fornitori e delle scadenze nella ristorazione.</p>
+        
+        <!-- Sostituisci 'menu.html' o 'app.html' con il file principale della tua applicazione se diverso -->
+        <a href="menu.html" class="btn-enter" id="txt-btn-enter">Entra nell'App</a>
+    </div>
+
+    <footer id="txt-footer">
+        ChefStock &bull; TidyUp Local Suite &bull; Dati locali su dispositivo
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Inserisce il selettore delle 5 lingue
+            const containerLang = document.getElementById('header-lang');
+            if (containerLang) {
+                containerLang.innerHTML = `
+                    <select onchange="cambiaLinguaLocale(this.value)">
+                        <option value="it">🇮🇹 Italiano</option>
+                        <option value="en">🇬🇧 English</option>
+                        <option value="fr">🇫🇷 Français</option>
+                        <option value="de">🇩🇪 Deutsch</option>
+                        <option value="es">🇪🇸 Español</option>
+                    </select>
+                `;
+            }
+
+            // 2. Applica le traduzioni iniziali
+            applicaTraduzioniInterfaccia();
+        });
+
+        function cambiaLinguaLocale(lang) {
+            localStorage.setItem('chefstock_lang', lang);
+            applicaTraduzioniInterfaccia();
+            window.dispatchEvent(new CustomEvent('linguaCambiata', { detail: lang }));
+        }
+
+        function applicaTraduzioniInterfaccia() {
+            let lang = localStorage.getItem('chefstock_lang') || 'it';
+
+            const selectEl = document.querySelector('#header-lang select');
+            if (selectEl) selectEl.value = lang;
+
+            const descrizioni = {
+                it: "Il sistema professionale per la gestione delle scorte, dei lotti, dei fornitori e delle scadenze nella ristorazione.",
+                en: "The professional system for inventory, batch, supplier, and expiry management in food service.",
+                fr: "Le système professionnel de gestion des stocks, des lots, des fournisseurs et des péremptions en restauration.",
+                de: "Das professionelle System für Bestands-, Chargen-, Lieferanten- und Ablaufdatenmanagement in der Gastronomie.",
+                es: "El sistema profesional para la gestión de stock, lotes, proveedores y caducidades en la hostelería."
+            };
+
+            const entraBtn = {
+                it: "Entra nell'App",
+                en: "Enter App",
+                fr: "Entrer dans l'App",
+                de: "App öffnen",
+                es: "Entrar en la App"
+            };
+
+            const footerText = {
+                it: "ChefStock &bull; TidyUp Local Suite &bull; Dati locali su dispositivo",
+                en: "ChefStock &bull; TidyUp Local Suite &bull; Local device data",
+                fr: "ChefStock &bull; TidyUp Local Suite &bull; Données locales sur l'appareil",
+                de: "ChefStock &bull; TidyUp Local Suite &bull; Lokale Gerätedaten",
+                es: "ChefStock &bull; TidyUp Local Suite &bull; Datos locales en el dispositivo"
+            };
+
+            document.getElementById('txt-welcome-desc').textContent = descrizioni[lang] || descrizioni['it'];
+            document.getElementById('txt-btn-enter').textContent = entraBtn[lang] || entraBtn['it'];
+            document.getElementById('txt-footer').innerHTML = footerText[lang] || footerText['it'];
+        }
+
+        window.addEventListener('linguaCambiata', () => {
+            applicaTraduzioniInterfaccia();
+        });
+    </script>
+</body>
+</html>
