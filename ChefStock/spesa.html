@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="spesa_titolo">ChefStock - Lista Approvvigionamento</title>
+    <script src="i18n.js"></script>
+    <link rel="stylesheet" href="inventario.css">
+    <style>
+        .categoria-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .categoria-header {
+            background: rgba(88, 166, 255, 0.1);
+            padding: 12px 18px;
+            font-weight: bold;
+            color: var(--accent-blue);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .categoria-body {
+            padding: 12px 18px;
+        }
+        .item-row-pro {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .item-row-pro:last-child {
+            border-bottom: none;
+        }
+        .sub-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .sub-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        .sub-tab.active {
+            background: rgba(88, 166, 255, 0.15);
+            color: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SELETTORE LINGUA IN ALTO A DESTRA -->
+    <div class="top-bar-absolute">
+        <select id="lingua-select" class="lang-select" onchange="cambiaLingua(this.value)">
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="de">🇩🇪 Deutsch</option>
+        </select>
+    </div>
+
+    <!-- HEADER -->
+    <div class="main-header" style="margin-top: 20px; margin-bottom: 25px;">
+        <img src="IMG/logo_chefstock.png" alt="ChefStock Logo" class="header-logo" style="width: 60px; height: 60px;">
+        <div>
+            <h2 style="font-size: 1.8rem;" data-i18n="spesa_titolo">Lista Approvvigionamento & Magazzino</h2>
+            <span style="font-size: 13px; color: var(--text-muted);" data-i18n="sec_approvvigionamento">Controllo Riordino e Fornitori (Cash & Carry)</span>
+        </div>
+    </div>
+
+    <div class="container" style="max-width: 750px; display: flex; flex-direction: column; gap: 15px;">
+        
+        <!-- BLOCCO DESCRIZIONE -->
+        <div class="menu-section-card" style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px;">
+            <p data-i18n="desc_approvvigionamento" style="font-size: 0.9rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
+                I prodotti in esaurimento calcolati in base ai consumi e le voci extra inserite compaiono qui in automatico, suddivise per categoria.
+            </p>
+        </div>
+
+        <!-- BLOCCO AGGIUNTA EXTRA -->
+        <div class="menu-section-card" style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px;">
+            <div class="section-title" style="font-weight: bold; margin-bottom: 10px; color: var(--text-main);" data-i18n="titolo_aggiungi_extra">Aggiungi Voce al Carico / Extra</div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="input-nuovo-extra" data-i18n-placeholder="placeholder_extra" placeholder="Es. Detersivo lavastoviglie, Stuzzicadenti, Olio..." style="flex: 1; min-width: 250px; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-size: 0.95rem; outline: none;">
+                <button onclick="aggiungiProdottoExtra()" style="background: var(--accent-blue); color: #0d1117; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer;" data-i18n="btnAggiungi">Aggiungi</button>
+            </div>
+        </div>
+
+        <!-- TAB DI NAVIGAZIONE -->
+        <div class="sub-tabs">
+            <div id="tab-btn-prendere" class="sub-tab active" onclick="cambiaVistaSpesa('prendere')" data-i18n="tabPrendere">Da Acquistare / Ordinare</div>
+            <div id="tab-btn-presi" class="sub-tab" onclick="cambiaVistaSpesa('presi')" data-i18n="tabPresi">Già Presi (Registro Arrivi)</div>
+        </div>
+
+        <!-- CONTENUTO LISTE -->
+        <div id="sezione-prendere">
+            <div id="contenitore-categorie-da-prendere"></div>
+        </div>
+
+        <div id="sezione-presi" style="display: none;">
+            <div class="menu-section-card" style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px;">
+                <div id="lista-extra-gia-presi"></div>
+                <button class="btn-clean" onclick="pulisciExtraPresi()" data-i18n="btnPulisciExtra" style="margin-top: 15px; background: rgba(239, 68, 68, 0.1); color: #f85149; border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold;">Pulisci storico arrivi completati</button>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 10px;">
+            <a href="menu.html" class="nav-back" data-i18n="navBack" style="color: var(--accent-blue); text-decoration: none; font-weight: 600;">&larr; Torna al Menu Principale</a>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <img src="IMG/logo_chefstock.png" alt="ChefStock Logo" class="footer-logo">
+        <span data-i18n="footer">ChefStock &bull; Gestione Professionale Magazzino Cucina</span>
+    </footer>
+
+    <script src="spesa.js"></script>
+</body>
+</html>

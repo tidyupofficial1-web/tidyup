@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChefStock - Scarico e Consumo</title>
+    <link rel="stylesheet" href="scarico.css">
+    <script src="i18n.js"></script>
+</head>
+<body>
+
+    <!-- Popup Consigli Operativi Iniziale -->
+    <div id="modal-guida-iniziale" class="tooltip-modal" style="display: flex;">
+        <div class="tooltip-content" style="max-width: 460px; text-align: left;">
+            <div style="text-align: center; margin-bottom: 12px;">
+                <span style="font-size: 2rem;">💡</span>
+                <h3 id="guida-titolo" style="margin: 5px 0 0 0;">Consiglio Operativo per la Cucina</h3>
+            </div>
+            <p id="guida-testo" style="font-size: 0.92rem; line-height: 1.5; color: var(--text-primary); margin-bottom: 15px;">
+                Per esperienza sappiamo che durante il servizio è difficile aggiornare il programma in tempo reale (per mancanza di tempo o perché si hanno le mani occupate/sporche). 
+                <br><br>
+                <strong>Il nostro consiglio:</strong> prendi nota dei prodotti che consumi su un bloc-notes o una lavagnetta in cucina, e procedi allo scarico cumulativo in un momento di pausa o a fine turno!
+            </p>
+            
+            <div style="margin-bottom: 18px; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-muted);">
+                <input type="checkbox" id="chk-non-mostrare" style="cursor: pointer; transform: scale(1.1);">
+                <label for="chk-non-mostrare" id="lbl-non-mostrare" style="cursor: pointer; font-weight: normal;">Non mostrare più questo avviso</label>
+            </div>
+
+            <button class="btn-chiudi-tooltip" onclick="chiudiGuidaIniziale()" id="guida-btn" style="width: 100%;">Ho capito, procedi</button>
+        </div>
+    </div>
+
+    <!-- Modale Info Guide (❓) -->
+    <div id="modal-info-help" class="tooltip-modal">
+        <div class="tooltip-content">
+            <h3 id="info-help-titolo">ℹ Informazioni</h3>
+            <p id="info-help-testo">Testo informativo di aiuto...</p>
+            <button class="btn-chiudi-tooltip" onclick="chiudiInfoHelp()">Chiudi</button>
+        </div>
+    </div>
+
+    <!-- Modale Conferma Variazione -->
+    <div id="modal-conferma" class="tooltip-modal">
+        <div class="tooltip-content">
+            <h3 id="conferma-titolo">⚠️ Conferma Variazione</h3>
+            <p id="testo-conferma">Stai per aggiornare la quantità del prodotto...</p>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="chiudiConferma(false)" id="btn-annulla">Annulla</button>
+                <button class="btn-chiudi-tooltip" onclick="chiudiConferma(true)" id="btn-conferma-ok">Conferma e Aggiorna</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header con Logo, Titolo e Selettore Lingue -->
+        <header class="app-header">
+            <div class="header-left">
+                <img src="IMG/logo_chefstock.png" alt="ChefStock Logo" class="app-logo-img">
+                <h1 id="titolo-pagina">Scarico e Consumo</h1>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button class="btn-help-icon" onclick="apriInfoHelp('generale')" title="Aiuto">❓</button>
+                <select id="selettore-lingua" onchange="cambiaLingua(this.value)" class="lang-select">
+                    <option value="it">🇮🇹 IT</option>
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="es">🇪🇸 ES</option>
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="de">🇩🇪 DE</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Barra di Ricerca Unica e Filtri a Spunta -->
+        <div class="search-box-card">
+            <div class="header-with-help">
+                <label for="input-ricerca" id="label-cerca">🔍 Cerca Prodotto</label>
+                <button class="btn-help-icon" onclick="apriInfoHelp('ricerca')" title="Aiuto ricerca">❓</button>
+            </div>
+            <div class="search-input-wrapper">
+                <input type="text" id="input-ricerca" placeholder="Es. farina, mozzarella, olio..." oninput="gestisciRicerca()">
+            </div>
+            
+            <div class="filters-row">
+                <label><input type="checkbox" id="chk-nome" checked> <span id="lbl-nome">Nome</span></label>
+                <label><input type="checkbox" id="chk-categoria"> <span id="lbl-cat">Categoria</span></label>
+                <label><input type="checkbox" id="chk-ubicazione"> <span id="lbl-ubi">Ubicazione</span></label>
+            </div>
+        </div>
+
+        <!-- Sezione Risultati / Prodotti Trovati -->
+        <div class="section-card">
+            <div class="header-with-help" style="margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                <h2 id="titolo-risultati" style="margin:0; border:none; padding:0;">Risultati Magazzino</h2>
+                <button class="btn-help-icon" onclick="apriInfoHelp('risultati')" title="Aiuto risultati">❓</button>
+            </div>
+            <div id="lista-risultati" class="product-list-container">
+                <p class="empty-message" id="msg-iniziale">Digita qualcosa nella casella sopra per iniziare la ricerca.</p>
+            </div>
+        </div>
+
+        <!-- Footer Azioni -->
+        <div class="actions-footer">
+            <button class="btn-secondary" onclick="tornaAlMenu()" id="btn-indietro">← Torna al Menu Principale</button>
+        </div>
+    </div>
+
+    <script src="scarico.js"></script>
+</body>
+</html>
