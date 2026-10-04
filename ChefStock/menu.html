@@ -3,121 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="menu_page_title">ChefStock - Menu Principale</title>
-    <!-- Fogli di stile -->
-    <link rel="stylesheet" href="inventario.css">
+    <title>ChefStock - Plancia Principale</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="menu.css">
-    <script src="i18n.js"></script>
 </head>
 <body>
 
-    <!-- MODALE INFORMATIVO (POPUP ❓) -->
-    <div id="modal-info-menu" class="modal-overlay" style="display: none;">
-        <div class="modal-card">
-            <h3 id="info-titolo">ℹ Informazioni</h3>
-            <p id="info-testo">Descrizione funzione...</p>
-            <div class="modal-footer right">
-                <button class="btn-primary" onclick="chiudiInfoMenu()">Chiudi</button>
-            </div>
+    <!-- Overlay Video Intro Giornaliero -->
+    <div id="intro-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9999; justify-content:center; align-items:center;">
+        <video id="intro-video" src="IMG/intro.mp4" style="max-width:100%; max-height:100%;" muted playsinline></video>
+        <button onclick="chiudiIntroVideo()" style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.2); color:#fff; border:none; padding:10px 20px; cursor:pointer; border-radius:5px; font-size:16px;">Salva Intro &gt;&gt;</button>
+    </div>
+
+    <!-- Popup Notifica Note -->
+    <div id="popup-notifica" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:8888; justify-content:center; align-items:center;">
+        <div style="background:#161b22; padding:30px; border-radius:10px; text-align:center; max-width:400px; color:#fff; border:1px solid #30363d;">
+            <h3 data-i18n="pop_titolo">Nuovi Appunti nel Block Notes!</h3>
+            <p data-i18n="pop_testo" style="margin: 15px 0; color:#8b949e;">Ci sono promemoria o note inserite in "Ricordarsi di..." in attesa di lettura.</p>
+            <button onclick="apriBlockNotes()" style="background:#238636; color:#fff; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; margin-right:10px;" data-i18n="pop_apri">Vai a Ricordarsi di...</button>
+            <button onclick="chiudiPopupNotifica()" style="background:#30363d; color:#c9d1d9; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;" data-i18n="pop_chiudi">Ho capito</button>
         </div>
     </div>
 
     <div class="container">
-        <!-- BARRA SUPERIORE CON LINGUA -->
-        <div class="top-bar">
-            <div class="app-header-right">
-                <div class="app-title">ChefStock <span>- Menu Principale</span></div>
-            </div>
-            <div id="header-lang">
-                <select id="lingua-select" onchange="cambiaLingua(this.value)">
+        <header class="header">
+            <h1 data-i18n="titolo_app">ChefStock</h1>
+            <div class="header-controls">
+                <select id="select-lingua" onchange="cambiaLingua(this.value)">
                     <option value="it">🇮🇹 Italiano</option>
                     <option value="en">🇬🇧 English</option>
-                    <option value="fr">🇫🇷 Français</option>
                     <option value="es">🇪🇸 Español</option>
+                    <option value="fr">🇫🇷 Français</option>
                     <option value="de">🇩🇪 Deutsch</option>
                 </select>
+                <button onclick="esportaDatabase()" class="btn-icon" title="Esporta Backup Database">💾</button>
             </div>
-        </div>
+        </header>
 
-        <!-- BANNER LETTORE BARCODE -->
-        <div class="barcode-banner">
-            <span class="banner-icon">💡</span>
-            <span data-i18n="tipWelcome">Consiglio: Accanto ad ogni comando trovi un'icona (?) per scoprire i dettagli d'uso.</span>
-        </div>
+        <main class="menu-grid">
+            <!-- Sezione Dispensa -->
+            <section class="menu-section">
+                <h2 data-i18n="sec_dispensa">Gestione Dispensa</h2>
+                <a href="scansione.html" class="menu-item" data-i18n="carico">Carico Articolo</a>
+                <a href="inventario.html" class="menu-item" data-i18n="dispensa">Visualizza Dispensa</a>
+            </section>
 
-        <!-- GRIGLIA / CONTENITORE PULSANTI MENU -->
-        <div class="menu-container" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
-            
-            <!-- COLLEGAMENTO INVENTARIO -->
-            <div class="menu-row" style="display: flex; align-items: center; gap: 10px;">
-                <a href="inventario.html" class="menu-btn" style="flex: 1; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); text-decoration: none;">
-                    <span data-i18n="menu_inventario">📦 Consultazione Inventario</span>
-                    <span class="menu-arrow">➔</span>
-                </a>
-                <button class="btn-help-icon" onclick="apriInfoMenu('inventario')" title="Aiuto">?</button>
-            </div>
+            <!-- Sezione Spesa -->
+            <section class="menu-section">
+                <h2 data-i18n="sec_spesa">Gestione Spesa</h2>
+                <a href="spesa.html" class="menu-item" data-i18n="spesa_lista">Lista della Spesa</a>
+            </section>
 
-            <!-- COLLEGAMENTO CARICO (SCANSIONE) -->
-            <div class="menu-row" style="display: flex; align-items: center; gap: 10px;">
-                <a href="scansione.html" class="menu-btn" style="flex: 1; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); text-decoration: none;">
-                    <span data-i18n="menu_carica">➕ Carica Merci (Scansione)</span>
-                    <span class="menu-arrow">➔</span>
-                </a>
-                <button class="btn-help-icon" onclick="apriInfoMenu('scansione')" title="Aiuto">?</button>
-            </div>
+            <!-- Sezione Utility -->
+            <section class="menu-section">
+                <h2 data-i18n="sec_utilita">Agenda & Utility</h2>
+                <a href="statistiche.html" class="menu-item" data-i18n="agenda">Agenda Scadenze (30 Giorni)</a>
+                <a href="ricordati.html" id="btn-block-notes" class="menu-item" data-i18n="ricordarsi">Ricordarsi di...</a>
+                <button onclick="avviaDetonatore()" class="menu-item danger-btn">💥 Svuota Tutto (Detonatore)</button>
+            </section>
+        </main>
 
-            <!-- COLLEGAMENTO SCARICO E CONSUMO -->
-            <div class="menu-row" style="display: flex; align-items: center; gap: 10px;">
-                <a href="scarico.html" class="menu-btn" style="flex: 1; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: linear-gradient(135deg, rgba(33, 38, 45, 1) 0%, rgba(31, 111, 235, 0.1) 100%); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 10px; color: var(--text-main); text-decoration: none;">
-                    <span data-i18n="menu_scarico">📉 Scarico e Consumo Rapido</span>
-                    <span class="menu-arrow" style="color: var(--accent-blue);">➔</span>
-                </a>
-                <button class="btn-help-icon" onclick="apriInfoMenu('scarico')" title="Aiuto">?</button>
-            </div>
-
-            <!-- COLLEGAMENTO SPESA -->
-            <div class="menu-row" style="display: flex; align-items: center; gap: 10px;">
-                <a href="spesa.html" class="menu-btn" style="flex: 1; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); text-decoration: none;">
-                    <span data-i18n="menu_spesa">🛒 Lista della Spesa</span>
-                    <span class="menu-arrow">➔</span>
-                </a>
-                <button class="btn-help-icon" onclick="apriInfoMenu('spesa')" title="Aiuto">?</button>
-            </div>
-
-            <!-- COLLEGAMENTO STATISTICHE (NUOVO) -->
-            <div class="menu-row" style="display: flex; align-items: center; gap: 10px;">
-                <a href="statistiche.html" class="menu-btn" style="flex: 1; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); text-decoration: none;">
-                    <span data-i18n="menu_statistiche">📊 Statistiche & Report</span>
-                    <span class="menu-arrow">➔</span>
-                </a>
-                <button class="btn-help-icon" onclick="apriInfoMenu('statistiche')" title="Aiuto">?</button>
-            </div>
-
-            <!-- RICORDATI DI... -->
-            <div class="menu-row" style="display: flex; align-items: center; gap: 10px;">
-                <a href="ricordati.html" class="menu-btn" style="flex: 1; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); text-decoration: none;">
-                    <span data-i18n="menu_ricordati">🔔 Ricordati di...</span>
-                    <span class="menu-arrow">➔</span>
-                </a>
-                <button class="btn-help-icon" onclick="apriInfoMenu('ricordati')" title="Aiuto">?</button>
-            </div>
-
-            <!-- AGGIORNAMENTI & MANUTENZIONE -->
-            <div class="menu-row" style="display: flex; align-items: center; gap: 10px;">
-                <a href="aggiornamenti.html" class="menu-btn" style="flex: 1; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); text-decoration: none;">
-                    <span data-i18n="menu_aggiornamenti">🚀 Aggiornamenti & Manutenzione</span>
-                    <span class="menu-arrow">➔</span>
-                </a>
-                <button class="btn-help-icon" onclick="apriInfoMenu('aggiornamenti')" title="Aiuto">?</button>
-            </div>
-
-        </div>
+        <footer class="footer">
+            <p data-i18n="footer">ChefStock &bull; Gestione locale sicura</p>
+        </footer>
     </div>
 
-    <!-- LOGO FISSO FOOTER -->
-    <img src="IMG/logo_chefstock.png" alt="ChefStock Logo" class="footer-logo-fixed">
-
-    <!-- Script JavaScript Dedicato -->
     <script src="menu.js"></script>
 </body>
 </html>

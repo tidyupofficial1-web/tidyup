@@ -1,246 +1,201 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Inizializzazione selettore lingua nella barra superiore
-    const containerLang = document.getElementById('header-lang');
-    if (containerLang && !containerLang.querySelector('select')) {
-        if (typeof creaSelettoreLinguaHTML === 'function') {
-            containerLang.innerHTML = creaSelettoreLinguaHTML();
-        } else {
-            containerLang.innerHTML = `
-                <select id="lingua-select" onchange="cambiaLinguaLocale(this.value)">
-                    <option value="it">🇮🇹 Italiano</option>
-                    <option value="en">🇬🇧 English</option>
-                    <option value="fr">🇫🇷 Français</option>
-                    <option value="de">🇩🇪 Deutsch</option>
-                    <option value="es">🇪🇸 Español</option>
-                </select>
-            `;
-        }
-    }
-
-    // Controllo se l'utente ha scelto di non mostrare più il benvenuto iniziale
-    const hideWelcome = localStorage.getItem('chefstock_hide_welcome');
-    if (!hideWelcome) {
-        const welcomeModal = document.getElementById('welcome-modal');
-        if (welcomeModal) {
-            welcomeModal.style.display = 'flex';
-        }
-    }
-
-    applicaTraduzioniInterfaccia();
-});
-
-function cambiaLinguaLocale(lang) {
-    localStorage.setItem('eat_lang', lang);
-    applicaTraduzioniInterfaccia();
-    window.dispatchEvent(new CustomEvent('linguaCambiata', { detail: lang }));
-}
-
-// Funzione globale compatibile anche con l'onchange del select diretto in HTML
-function cambiaLingua(lang) {
-    cambiaLinguaLocale(lang);
-}
-
-// Funzione per chiudere il benvenuto e salvare la preferenza se spuntato
-function chiudiBenvenuto() {
-    const chk = document.getElementById('chk-dont-show');
-    if (chk && chk.checked) {
-        localStorage.setItem('chefstock_hide_welcome', 'true');
-    }
-    const welcomeModal = document.getElementById('welcome-modal');
-    if (welcomeModal) {
-        welcomeModal.style.display = 'none';
-    }
-}
-
-// Dizionari multilingua per la pagina menu (voci, pulsanti e testi informativi per i modali ❓)
-const dizionarioMenu = {
+const dizionarioGlobale = {
     it: {
-        menu_page_title: "ChefStock - Menu Principale",
-        menu_subtitle: "Menu Principale di Gestione",
-        menu_inventario: "📦 Consultazione Inventario",
-        menu_carica: "➕ Carica Merci (Scansione)",
-        menu_scarico: "📉 Scarico e Consumo Rapido",
-        menu_spesa: "🛒 Lista della Spesa",
-        menu_statistiche: "📊 Statistiche & Report",
-        menu_ricordati: "🔔 Ricordati di...",
-        menu_aggiornamenti: "🚀 Aggiornamenti & Manutenzione",
-        tipWelcome: "Consiglio: Accanto ad ogni comando trovi un'icona (?) per scoprire i dettagli d'uso.",
-        footer_text: "ChefStock • Gestione Professionale Magazzino Cucina",
-        info: {
-            inventario: {
-                titolo: "📦 Consultazione Inventario",
-                testo: "Qui puoi visualizzare l'elenco completo dei prodotti registrati in ChefStock. Puoi verificare in tempo reale le quantità disponibili, i numeri di lotto e le date di scadenza. I prodotti sono evidenziati con colori differenti in base all'urgenza di consumo."
-            },
-            scansione: {
-                titolo: "➕ Carica Merci (Scansione)",
-                testo: "Sezione dedicata al carico rapido delle merci. Puoi collegare un lettore barcode USB/wireless oppure usare la fotocamera. Se un codice manca, l'app ti permette di inserire manualmente descrizione, scadenze e quantità."
-            },
-            scarico: {
-                titolo: "📉 Scarico e Consumo Rapido",
-                testo: "Sezione ottimizzata per il servizio in cucina: cerca rapidamente i prodotti e scala le quantità consumate o scartate, aggiornando istantaneamente le giacenze di magazzino."
-            },
-            spesa: {
-                titolo: "🛒 Lista della Spesa",
-                testo: "Questo blocco monitora automaticamente i prodotti che sono scesi sotto la soglia minima o che risultano esauriti, aiutandoti a generare la lista degli acquisti per i rifornimenti."
-            },
-            statistiche: {
-                titolo: "📊 Statistiche & Report",
-                testo: "Analizza i dati storici sui consumi, i prodotti più movimentati, l'andamento delle scorte e gli sprechi per ottimizzare gli ordini e la gestione del magazzino."
-            },
-            ricordati: {
-                titolo: "🔔 Ricordati di...",
-                testo: "Promemoria e avvisi utili configurati per segnalare scadenze imminenti, pulizie periodiche o attività di controllo importanti in cucina."
-            },
-            aggiornamenti: {
-                titolo: "🚀 Aggiornamenti & Manutenzione",
-                testo: "Verifica lo stato del sistema, gestisci i backup di sicurezza dei dati e consulta le novità e i miglioramenti introdotti nelle ultime versioni."
-            }
-        }
+        titolo_app: "ChefStock",
+        suite: "Suite",
+        sec_dispensa: "Gestione Dispensa",
+        sec_spesa: "Gestione Spesa",
+        sec_utilita: "Agenda & Utility",
+        carico: "Carico Articolo",
+        scarico: "Scarico Prodotti",
+        dispensa: "Visualizza Dispensa",
+        spesa_lista: "Lista della Spesa",
+        spesa_comperare: "Articoli da comperare",
+        agenda: "Agenda Scadenze (30 Giorni)",
+        ricordarsi: "Ricordarsi di...",
+        pop_titolo: "Nuovi Appunti nel Block Notes!",
+        pop_testo: "Ci sono promemoria o note inserite in \"Ricordarsi di...\" in attesa di lettura.",
+        pop_chiudi: "Ho capito",
+        pop_apri: "Vai a Ricordarsi di...",
+        footer: "ChefStock &bull; Gestione locale sicura"
     },
     en: {
-        menu_page_title: "ChefStock - Main Menu",
-        menu_subtitle: "Main Management Menu",
-        menu_inventario: "📦 Stock Inventory",
-        menu_carica: "➕ Add Stock (Scan)",
-        menu_scarico: "📉 Quick Checkout & Consumption",
-        menu_spesa: "🛒 Shopping List",
-        menu_statistiche: "📊 Statistics & Reports",
-        menu_ricordati: "🔔 Remember to...",
-        menu_aggiornamenti: "🚀 Updates & Maintenance",
-        tipWelcome: "Tip: Next to each command you will find a (?) icon to discover usage details.",
-        footer_text: "ChefStock • Professional Kitchen Management",
-        info: {
-            inventario: { titolo: "📦 Stock Inventory", testo: "View the complete list of registered products, available quantities, batch numbers, and expiration dates." },
-            scansione: { titolo: "➕ Add Stock (Scan)", testo: "Register incoming products via barcode scanner or camera, managing batches and expiration dates." },
-            scarico: { titolo: "📉 Quick Checkout", testo: "Quickly look up items and log consumption or waste during service, updating stock levels instantly." },
-            spesa: { titolo: "🛒 Shopping List", testo: "Monitors out-of-stock or low-stock items to help you generate shopping lists easily for upcoming supplies." },
-            statistiche: { titolo: "📊 Statistics & Reports", testo: "Analyze consumption history, top items, stock trends, and waste to optimize orders." },
-            ricordati: { titolo: "🔔 Remember to...", testo: "Reminders and alerts configured for upcoming expiration dates, periodic cleaning, or kitchen controls." },
-            aggiornamenti: { titolo: "🚀 Updates & Maintenance", testo: "Check system status, manage data backups, and view release notes for recent updates." }
-        }
-    },
-    fr: {
-        menu_page_title: "ChefStock - Menu Principal",
-        menu_subtitle: "Menu Principal de Gestion",
-        menu_inventario: "📦 Inventaire des Stocks",
-        menu_carica: "➕ Charger (Scan)",
-        menu_scarico: "📉 Sortie Rapide",
-        menu_spesa: "🛒 Liste de Courses",
-        menu_statistiche: "📊 Statistiques & Rapports",
-        menu_ricordati: "🔔 Rappelez-vous de...",
-        menu_aggiornamenti: "🚀 Mises à jour & Maintenance",
-        tipWelcome: "Conseil : À côté de chaque commande, trouvez une icône (?) pour plus de détails.",
-        footer_text: "ChefStock • Gestion Professionnelle",
-        info: {
-            inventario: { titolo: "📦 Inventaire", testo: "Visualisez l'état actuel des stocks, lots et dates de péremption." },
-            scansione: { titolo: "➕ Charger (Scan)", testo: "Enregistrez l'entrée de nouveaux produits par code-barres." },
-            scarico: { titolo: "📉 Sortie Rapide", testo: "Déduisez rapidement les produits consommés pendant le service." },
-            spesa: { titolo: "🛒 Liste de Courses", testo: "Surveillez les articles épuisés à réapprovisionner." },
-            statistiche: { titolo: "📊 Statistiques & Rapports", testo: "Analysez l'historique des consommations et les tendances de stock." },
-            ricordati: { titolo: "🔔 Rappels", testo: "Alertes et rappels pour les tâches de cuisine." },
-            aggiornamenti: { titolo: "🚀 Mises à jour", testo: "État du système et sauvegardes." }
-        }
+        titolo_app: "ChefStock",
+        suite: "Suite",
+        sec_dispensa: "Pantry Management",
+        sec_spesa: "Shopping Management",
+        sec_utilita: "Agenda & Utilities",
+        carico: "Load Item",
+        scarico: "Unload Products",
+        dispensa: "View Pantry",
+        spesa_lista: "Shopping List",
+        spesa_comperare: "Items to buy",
+        agenda: "Expiration Agenda (30 Days)",
+        ricordarsi: "Remember to...",
+        pop_titolo: "New Notes in Block Notes!",
+        pop_testo: "There are reminders or notes in \"Remember to...\" waiting to be read.",
+        pop_chiudi: "Got it",
+        pop_apri: "Go to Remember to...",
+        footer: "ChefStock &bull; Secure local management"
     },
     es: {
-        menu_page_title: "ChefStock - Menú Principal",
-        menu_subtitle: "Menú Principal de Gestión",
-        menu_inventario: "📦 Inventario de Existencias",
-        menu_carica: "➕ Cargar (Escanear)",
-        menu_scarico: "📉 Descarga y Consumo",
-        menu_spesa: "🛒 Lista de la Compra",
-        menu_statistiche: "📊 Estadísticas e Informes",
-        menu_ricordati: "🔔 Acuérdate de...",
-        menu_aggiornamenti: "🚀 Actualizaciones y Mantenimiento",
-        tipWelcome: "Consejo: Junto a cada comando hay un icono (?) con detalles.",
-        footer_text: "ChefStock • Gestión Profesional",
-        info: {
-            inventario: { titolo: "📦 Inventario", testo: "Consulta el listado completo de existencias y fechas de caducidad." },
-            scansione: { titolo: "➕ Cargar (Escanear)", testo: "Registra nuevos productos escaneando códigos de barras." },
-            scarico: { titolo: "📉 Descarga y Consumo", testo: "Descuenta existencias rápidamente durante el servicio de cocina." },
-            spesa: { titolo: "🛒 Lista de la Compra", testo: "Monitorea artículos agotados para reabastecer." },
-            statistiche: { titolo: "📊 Estadísticas e Informes", testo: "Analiza el historial de consumo, tendencias y mermas." },
-            ricordati: { titolo: "🔔 Acuérdate de...", testo: "Recordatorios y avisos útiles para el control de la cocina." },
-            aggiornamenti: { titolo: "🚀 Actualizaciones", testo: "Estado del sistema y copias de seguridad." }
-        }
+        titolo_app: "ChefStock",
+        suite: "Suite",
+        sec_dispensa: "Gestión de Despensa",
+        sec_spesa: "Gestión de Compras",
+        sec_utilita: "Agenda y Utilidades",
+        carico: "Cargar Artículo",
+        scarico: "Descargar Productos",
+        dispensa: "Ver Despensa",
+        spesa_lista: "Lista de Compras",
+        spesa_comperare: "Artículos para comprar",
+        agenda: "Agenda de Vencimientos (30 Días)",
+        ricordarsi: "Recordar que...",
+        pop_titolo: "¡Nuevas notas en el Block de Notas!",
+        pop_testo: "Hay recordatorios o notas en \"Recordar que...\" esperando ser leídos.",
+        pop_chiudi: "Entendido",
+        pop_apri: "Ir a Recordar que...",
+        footer: "ChefStock &bull; Gestión local segura"
+    },
+    fr: {
+        titolo_app: "ChefStock",
+        suite: "Suite",
+        sec_dispensa: "Gestion du Garde-manger",
+        sec_spesa: "Gestion des Courses",
+        sec_utilita: "Agenda & Utilitaires",
+        carico: "Charger Article",
+        scarico: "Décharger Produits",
+        dispensa: "Voir le Garde-manger",
+        spesa_lista: "Liste de Courses",
+        spesa_comperare: "Articles à acheter",
+        agenda: "Agenda des Échéances (30 Jours)",
+        ricordarsi: "Se rappeler de...",
+        pop_titolo: "Nouvelles notes dans le Bloc-notes !",
+        pop_testo: "Il y a des rappels ou des notes dans \"Se rappeler de...\" en attente de lecture.",
+        pop_chiudi: "Compris",
+        pop_apri: "Aller à Se rappeler de...",
+        footer: "ChefStock &bull; Gestion locale sécurisée"
     },
     de: {
-        menu_page_title: "ChefStock - Hauptmenü",
-        menu_subtitle: "Hauptverwaltungsmenü",
-        menu_inventario: "📦 Bestandsinventar",
-        menu_carica: "➕ Hinzufügen (Scan)",
-        menu_scarico: "📉 Schnell-Ausbuchung",
-        menu_spesa: "🛒 Einkaufsliste",
-        menu_statistiche: "📊 Statistiken & Berichte",
-        menu_ricordati: "🔔 Denken Sie daran...",
-        menu_aggiornamenti: "🚀 Updates & Wartung",
-        tipWelcome: "Tipp: Neben jedem Befehl finden Sie ein (?)-Symbol.",
-        footer_text: "ChefStock • Professionelles Küchenmanagement",
-        info: {
-            inventario: { titolo: "📦 Bestandsinventar", testo: "Aktuellen Lagerbestand, Chargen und Verfallsdaten anzeigen." },
-            scansione: { titolo: "➕ Hinzufügen (Scan)", testo: "Wareneingang per Barcode-Scanner oder Kamera erfassen." },
-            scarico: { titolo: "📉 Schnell-Ausbuchung", testo: "Verbrauchte Artikel während des Service schnell ausbuchen." },
-            spesa: { titolo: "🛒 Einkaufsliste", testo: "Fehlende oder zur Neige gehende Artikel überwachen." },
-            statistiche: { titolo: "📊 Statistiken & Berichte", testo: "Verbrauchshistorie, Trends und Bestandsveränderungen analysieren." },
-            ricordati: { titolo: "🔔 Erinnerungen", testo: "Hinweise zu Verfallsdaten und Küchenaufgaben." },
-            aggiornamenti: { titolo: "🚀 Updates", testo: "Systemstatus und Daten-Backups verwalten." }
-        }
+        titolo_app: "ChefStock",
+        suite: "Suite",
+        sec_dispensa: "Vorratsverwaltung",
+        sec_spesa: "Einkaufsverwaltung",
+        sec_utilita: "Agenda & Werkzeuge",
+        carico: "Artikel Laden",
+        scarico: "Produkte Entladen",
+        dispensa: "Vorratskammer Ansehen",
+        spesa_lista: "Einkaufsliste",
+        spesa_comperare: "Artikel zu kaufen",
+        agenda: "Ablaufkalender (30 Tage)",
+        ricordarsi: "Erinnern an...",
+        pop_titolo: "Neue Notizen im Block!",
+        pop_testo: "Es gibt Erinnerungen oder Notizen in \"Erinnern an...\", die darauf warten, gelesen zu werden.",
+        pop_chiudi: "Verstanden",
+        pop_apri: "Zu Erinnern an... gehen",
+        footer: "ChefStock &bull; Sichere lokale Verwaltung"
     }
 };
 
-function applicaTraduzioniInterfaccia() {
-    let lang = 'it';
-    if (typeof getLinguaCorrente === 'function') {
-        lang = getLinguaCorrente();
-    } else {
-        lang = localStorage.getItem('eat_lang') || 'it';
-    }
+function cambiaLingua(lang) {
+    localStorage.setItem('chef_stock_lang', lang);
+    const traduzioni = dizionarioGlobale[lang] || dizionarioGlobale['it'];
 
-    const selectEl = document.querySelector('#header-lang select') || document.getElementById('lingua-select');
-    if (selectEl) selectEl.value = lang;
-
-    const t = dizionarioMenu[lang] || dizionarioMenu['it'];
-
-    // Traduci elementi con attributo data-i18n
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const chiave = el.getAttribute('data-i18n');
-        if (t[chiave]) {
-            if (el.tagName === 'TITLE') {
-                document.title = t[chiave];
-            } else {
-                el.textContent = t[chiave];
-            }
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+        const chiave = element.getAttribute('data-i18n');
+        if (traduzioni[chiave]) {
+            element.innerHTML = traduzioni[chiave];
         }
     });
 }
 
-window.addEventListener('linguaCambiata', () => {
-    applicaTraduzioniInterfaccia();
+document.addEventListener('DOMContentLoaded', () => {
+    gestisciIntroVideo();
+
+    const langSalvata = localStorage.getItem('chef_stock_lang') || 'it';
+    const selectLang = document.getElementById('select-lingua');
+    if (selectLang) {
+        selectLang.value = langSalvata;
+    }
+    cambiaLingua(langSalvata);
+
+    let db = JSON.parse(localStorage.getItem('chef_stock_db')) || { note: [] };
+    let haNoteNonLette = db.note && db.note.some(n => n.letto === false);
+    
+    if (haNoteNonLette) {
+        const btnNotes = document.getElementById('btn-block-notes');
+        if(btnNotes) btnNotes.classList.add('blinking-btn');
+        const popNotif = document.getElementById('popup-notifica');
+        if(popNotif) popNotif.style.display = 'flex';
+    }
 });
 
-// Apertura del modal informativo specifico con supporto multilingua
-function apriInfoMenu(chiave) {
-    let lang = 'it';
-    if (typeof getLinguaCorrente === 'function') {
-        lang = getLinguaCorrente();
+function gestisciIntroVideo() {
+    const oggi = new Date().toISOString().slice(0, 10);
+    const ultimaRiproduzione = localStorage.getItem('chefstock_intro_last_date');
+    const overlay = document.getElementById('intro-overlay');
+    const video = document.getElementById('intro-video');
+
+    if (ultimaRiproduzione !== oggi) {
+        if (overlay) overlay.style.display = 'flex';
+        
+        if (video) {
+            video.play().catch(e => {
+                console.log("Autoplay bloccato dal browser:", e);
+            });
+
+            video.onended = () => {
+                chiudiIntroVideo();
+            };
+        }
     } else {
-        lang = localStorage.getItem('eat_lang') || 'it';
+        if (overlay) {
+            overlay.remove();
+        }
     }
-
-    const t = dizionarioMenu[lang] || dizionarioMenu['it'];
-    const infoMap = t.info || dizionarioMenu.it.info;
-    const info = infoMap[chiave] || { titolo: "Informazione", testo: "Nessun dettaglio disponibile." };
-
-    const titoloEl = document.getElementById('info-titolo');
-    const testoEl = document.getElementById('info-testo');
-    const modalEl = document.getElementById('modal-info-menu');
-
-    if (titoloEl) titoloEl.textContent = info.titolo;
-    if (testoEl) testoEl.textContent = info.testo;
-    if (modalEl) modalEl.style.display = 'flex';
 }
 
-// Chiusura del modal informativo
-function chiudiInfoMenu() {
-    const modalEl = document.getElementById('modal-info-menu');
-    if (modalEl) modalEl.style.display = 'none';
+function chiudiIntroVideo() {
+    const overlay = document.getElementById('intro-overlay');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        overlay.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => {
+            overlay.remove();
+        }, 500);
+    }
+    const oggi = new Date().toISOString().slice(0, 10);
+    localStorage.setItem('chefstock_intro_last_date', oggi);
+}
+
+function toggleMenu() {
+    const menu = document.getElementById('side-menu');
+    if (menu) {
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+}
+
+function esportaDatabase() {
+    let db = JSON.parse(localStorage.getItem('chef_stock_db')) || {};
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `chef_stock_backup_${new Date().toISOString().slice(0,10)}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+}
+
+function avviaDetonatore() {
+    if(confirm("ATTENZIONE: Stai per attivare il sistema di svuotamento totale della dispensa. Vuoi procedere?")) {
+        alert("Qui collegheremo la sequenza video del detonatore che abbiamo progettato!");
+    }
+}
+
+function chiudiPopupNotifica() {
+    const pop = document.getElementById('popup-notifica');
+    if(pop) pop.style.display = 'none';
+}
+
+function apriBlockNotes() {
+    window.location.href = 'mia_lista.html';
 }
