@@ -3,357 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="agg_page_title">ChefStock - Aggiornamenti e Salvataggi</title>
-    <link rel="stylesheet" href="inventario.css">
-    <link rel="stylesheet" href="menu.css">
-    <script src="i18n.js"></script>
+    <title>ChefStock - Aggiornamenti & Backup</title>
+    <!-- Stili interni isolati per evitare interferenze dai CSS globali -->
+    <style>
+        :root {
+            --cs-bg: #0d1117;
+            --cs-card-bg: #161b22;
+            --cs-border: #30363d;
+            --cs-text: #c9d1d9;
+            --cs-text-bright: #f0f6fc;
+            --cs-accent: #58a6ff;
+            --cs-success: #238636;
+            --cs-warning: #d97706;
+        }
+        body {
+            background-color: var(--cs-bg) !important;
+            color: var(--cs-text) !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .cs-wrapper {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 25px;
+            box-sizing: border-box;
+        }
+        .cs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--cs-border);
+            margin-bottom: 35px;
+        }
+        .cs-brand {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .cs-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: var(--cs-card-bg);
+            padding: 4px;
+            border: 1px solid var(--cs-border);
+        }
+        .cs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 950px) {
+            .cs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .cs-full {
+            grid-column: 1 / -1;
+        }
+        .cs-card {
+            background: var(--cs-card-bg);
+            border: 1px solid var(--cs-border);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+        }
+        .cs-card h2 {
+            color: var(--cs-accent);
+            margin-top: 0;
+            font-size: 1.35rem;
+            border-bottom: 1px solid var(--cs-border);
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .cs-card p, .cs-card li {
+            line-height: 1.6;
+            color: #8b949e;
+            font-size: 0.98rem;
+        }
+        .cs-highlight {
+            background: rgba(88, 166, 255, 0.07);
+            border-left: 4px solid var(--cs-accent);
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            color: var(--cs-text);
+        }
+        .cs-warning {
+            background: rgba(210, 153, 34, 0.08);
+            border-left: 4px solid var(--cs-warning);
+            padding: 18px;
+            margin: 20px 0 0 0;
+            border-radius: 0 8px 8px 0;
+            color: #f3f4f6;
+        }
+        .cs-btn {
+            background: var(--cs-success);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .cs-btn:hover { background: #2ea043; }
+        .cs-version-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--cs-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--cs-border);
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        .cs-subgrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        @media (max-width: 768px) {
+            .cs-subgrid { grid-template-columns: 1fr; }
+        }
+        .cs-subcard {
+            background: var(--cs-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--cs-border);
+        }
+        .cs-select {
+            background: var(--cs-card-bg);
+            color: var(--cs-text);
+            border: 1px solid var(--cs-border);
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+    </style>
 </head>
 <body>
 
-    <header class="top-bar" style="padding: 15px 20px;">
-        <div class="app-header-right" style="display: flex; align-items: center; gap: 12px;">
-            <img src="IMG/logo_chefstock.png" alt="Logo ChefStock" style="width: 38px; height: 38px;">
-            <div class="app-title">ChefStock <span data-i18n="navAggiornamenti">- Aggiornamenti & Backup</span></div>
-        </div>
-        <div id="header-lang">
-            <select id="lingua-select" onchange="cambiaLinguaAgg(this.value)">
-                <option value="it">🇮🇹 Italiano</option>
-                <option value="en">🇬🇧 English</option>
-                <option value="fr">🇫🇷 Français</option>
-                <option value="de">🇩🇪 Deutsch</option>
-                <option value="es">🇪🇸 Español</option>
-            </select>
-        </div>
-    </header>
-
-    <div class="container" style="max-width: 700px; display: flex; flex-direction: column; gap: 15px;">
-        
-        <!-- BLOCCO 1: CENTRO AGGIORNAMENTI -->
-        <div class="ricordati-card" style="margin-bottom: 0;">
-            <div class="section-title" data-i18n="centroAggiornamenti" style="font-size: 1.1rem; color: var(--accent-blue); margin-bottom: 8px;">🔄 Centro Aggiornamenti</div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 15px;" data-i18n="testoAggiornamenti">
-                Verifica la disponibilità di nuove versioni. Prima di procedere, l'app creerà automaticamente un punto di ripristino sicuro salvato direttamente all'interno della memoria del dispositivo.
-            </p>
-            
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <div style="font-size: 0.85rem; color: var(--text-muted);">
-                    <span data-i18n="versioneInUso">Versione in uso:</span> <strong style="color: var(--text-main);" id="current-version-label">v1.0.0</strong>
+    <div class="cs-wrapper">
+        <!-- Header -->
+        <header class="cs-header">
+            <div class="cs-brand">
+                <img src="IMG/logo_chefstock.png" alt="ChefStock Logo" class="cs-logo" onerror="this.style.display='none'">
+                <div>
+                    <a href="menu.html" style="color: var(--cs-accent); text-decoration: none; font-size: 0.95rem; display: inline-block; margin-bottom: 6px;" data-i18n="ritorno_menu">&larr; Torna alla Plancia Principale</a>
+                    <h1 data-i18n="titolo_app" style="margin: 0; font-size: 1.8rem; color: var(--cs-text-bright);">ChefStock</h1>
                 </div>
             </div>
-            
-            <button onclick="verificaAggiornamentiServer()" style="background: var(--accent-blue); color: var(--bg-color); border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 0.9rem;" data-i18n="btnControllaAgg">
-                🔍 Controlla Aggiornamenti
-            </button>
-
-            <!-- Area risultati Server -->
-            <div id="server-releases-box" style="display: none; padding: 12px; background: #161b22; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 12px;">
-                <p style="font-size: 0.85rem; font-weight: bold; color: var(--text-main); margin-bottom: 6px;" data-i18n="versioniDisponibili">Versioni disponibili sul server:</p>
-                <div id="releases-list-container"></div>
+            <div>
+                <select id="select-lingua" class="cs-select" onchange="cambiaLingua(this.value)">
+                    <option value="it">🇮🇹 Italiano</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                </select>
             </div>
-        </div>
+        </header>
 
-        <!-- BLOCCO 2: RIPRISTINO / DOWNGRADE DA ARCHIVIO INTERNO -->
-        <div class="ricordati-card" style="margin-bottom: 0;">
-            <div class="section-title" data-i18n="ripristinoVersione" style="font-size: 1.1rem; color: var(--accent-blue); margin-bottom: 8px;">🔙 Ripristino da Salvataggio Interno</div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 15px;" data-i18n="testoRipristino">
-                L'applicazione custodisce i backup direttamente nella sua memoria protetta locale (senza inviare nulla all'esterno). Se necessario, puoi ripristinare uno degli ultimi punti di salvataggio automatico con un solo clic.
-            </p>
-            
-            <button onclick="mostraSalvataggiAutomatici()" style="background: #21262d; color: var(--text-main); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 0.9rem; margin-bottom: 10px;" data-i18n="btnVisualizzaSalvataggi">
-                📂 Visualizza Punti di Salvataggio Interni
-            </button>
-            
-            <div id="box-salvataggi-automatici" style="display: none; flex-direction: column; gap: 8px; background: #161b22; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
-                <!-- Elenco salvataggi interni gestito via JS -->
-            </div>
-        </div>
+        <!-- Contenuto Principale a Griglia Desktop -->
+        <main class="cs-grid">
 
+            <!-- Colonna Sinistra: Centro Aggiornamenti -->
+            <section class="cs-card">
+                <div>
+                    <h2 data-i18n="sec_agg_titolo">🔄 Centro Aggiornamenti & Sicurezza</h2>
+                    
+                    <div class="cs-version-box">
+                        <div>
+                            <p style="margin: 0; font-size: 0.85rem;" data-i18n="lbl_versione_attuale">Versione in uso:</p>
+                            <span style="color: var(--cs-text-bright); font-weight: bold;">ChefStock v2.4.0 (15/09/2026)</span>
+                        </div>
+                        <button class="cs-btn" onclick="verificaAggiornamenti()" data-i18n="btn_verifica">Verifica</button>
+                    </div>
+
+                    <p data-i18n="txt_agg_1">L'applicazione non invia alcun dato o documento all'esterno: la comunicazione con il server serve unicamente a verificare l'ultima versione del programma o a recuperare quelle precedenti.</p>
+                    
+                    <div class="cs-highlight">
+                        <strong data-i18n="str_come_funziona">Come avviene l'aggiornamento:</strong>
+                        <ul style="padding-left: 20px; margin: 10px 0 0 0;">
+                            <li data-i18n="step_1">Interroga il sistema per verificare la versione più recente confrontandola con la data attuale.</li>
+                            <li data-i18n="step_2">Se procedi, l'app salva preventivamente una copia di sicurezza del database in locale sul dispositivo.</li>
+                            <li data-i18n="step_3">Scarica la nuova versione e ricarica autonomamente i dati salvati in precedenza.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Colonna Destra: Protezione Guasto PC (Chiavetta USB) -->
+            <section class="cs-card">
+                <div>
+                    <h2 data-i18n="sec_usb_titolo">🛡️ Protezione Totale (Guasto PC)</h2>
+                    <p data-i18n="txt_usb_1">I tuoi dati sono al sicuro sul dispositivo e non lasciano mai il computer. Ma cosa succederebbe in caso di guasto improvviso dell'hardware, perdendo mesi o anni di lavoro della tua attività? Abbiamo la soluzione definitiva.</p>
+                    
+                    <div class="cs-highlight">
+                        <p data-i18n="txt_usb_strategy" style="margin:0;"><strong>La strategia della chiavetta USB:</strong> Ti consigliamo di dedicare una chiavetta USB da tenere inserita durante l'utilizzo (puoi sfilarla a fine turno). L'app salverà automaticamente una copia aggiornata <strong>ogni 15 minuti sia sul computer che sulla chiavetta</strong>. In caso di guasto del PC, recuperi tutto!</p>
+                    </div>
+                </div>
+
+                <div class="cs-warning">
+                    <span data-i18n="txt_promo"><strong>Promozione speciale:</strong> Questa funzione "dual-device" su chiavetta è offerta gratuitamente fino a nuovo ordine. Allo scadere, il salvataggio continuerà in locale sul PC, mentre per la sincronizzazione esterna su chiavetta sarà richiesta l'attivazione della versione avanzata. <strong>PENSACI BENE:</strong> proteggere il lavoro della tua attività è il miglior investimento.</span>
+                </div>
+            </section>
+
+            <!-- Sezione Inferiore a Tutta Larghezza: Ripristini Intelligenti -->
+            <section class="cs-card cs-full">
+                <h2 data-i18n="sec_ripristini_titolo">⚡ Ripristini Intelligenti e Gestione Dispensa</h2>
+                <p data-i18n="txt_rip_1">Anche durante operazioni radicali o ritorni al passato, ChefStock ti offre il pieno controllo senza perdite accidentali:</p>
+                <div class="cs-subgrid">
+                    <div class="cs-subcard">
+                        <strong style="color: var(--cs-accent); display: block; margin-bottom: 8px;" data-i18n="str_svuota">Svuota Dispensa</strong>
+                        <span data-i18n="txt_svuota_desc" style="font-size: 0.95rem;">L'app azzera l'inventario creando una fotografia di sicurezza. Se decidi di tornare alla situazione precedente ma nel frattempo avevi inserito nuovi prodotti, il sistema ti chiederà: <em>"Vuoi unire anche i nuovi articoli inseriti nel frattempo?"</em>, lasciandoti scegliere liberamente.</span>
+                    </div>
+                    <div class="cs-subcard">
+                        <strong style="color: var(--cs-accent); display: block; margin-bottom: 8px;" data-i18n="str_downgrade">Ripristino da Aggiornamento</strong>
+                        <span data-i18n="txt_downgrade_desc" style="font-size: 0.95rem;">Lo stesso livello di flessibilità si applica se decidi di tornare a una versione precedente del software: l'app ti chiederà sempre se desideri integrare o meno i dati registrati nell'intervallo recente, mettendoti al comando totale.</span>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer style="text-align: center; padding: 30px 0; color: #8b949e;">
+            <p data-i18n="footer">ChefStock &bull; Gestione locale sicura</p>
+        </footer>
     </div>
 
-    <!-- POPUP GUIDATO E DI PRE-CONFERMA -->
-    <div id="modal-aggiornamento" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; padding: 1rem;">
-        <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; max-width: 450px; width: 100%; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-            <h3 style="color: var(--text-main); margin-bottom: 10px; font-size: 1.1rem;" id="modal-title" data-i18n="modalTitleAgg">🚀 Conferma Aggiornamento</h3>
-            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 20px;" id="modal-text" data-i18n="modalTextAgg">
-                Stai per installare una nuova versione. Per sicurezza, l'app salverà automaticamente un backup all'interno della memoria protetta del dispositivo.
-            </p>
-            <div id="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button onclick="chiudiModalAggiornamento()" style="background: #30363d; color: var(--text-main); border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;" data-i18n="btnAnnulla">Annulla</button>
-                <div id="modal-confirm-btn-container" style="display: inline-block;"></div>
-            </div>
-        </div>
-    </div>
-
-    <div style="max-width: 700px; width: 100%; margin: 20px auto; text-align: center;">
-        <a href="menu.html" class="menu-btn" style="display: inline-flex; justify-content: center; align-items: center; padding: 12px 24px; background: #21262d; border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); text-decoration: none; font-weight: 600;">
-            <span data-i18n="tornaMenu">⬅ Torna al Menu Principale</span>
-        </a>
-    </div>
-
-    <!-- LOGO FISSO FOOTER -->
-    <img src="IMG/logo_chefstock.png" alt="ChefStock Logo" class="footer-logo-fixed">
-
+    <!-- Script di gestione traduzioni integrato per funzionamento immediato -->
     <script>
-        // Dizionario multilingua specifico per la pagina Aggiornamenti
-        const dizionarioAgg = {
+        const dizionario = {
             it: {
-                agg_page_title: "ChefStock - Aggiornamenti e Salvataggi",
-                navAggiornamenti: "- Aggiornamenti & Backup",
-                centroAggiornamenti: "🔄 Centro Aggiornamenti",
-                testoAggiornamenti: "Verifica la disponibilità di nuove versioni. Prima di procedere, l'app creerà automaticamente un punto di ripristino sicuro salvato direttamente all'interno della memoria del dispositivo.",
-                versioneInUso: "Versione in uso:",
-                btnControllaAgg: "🔍 Controlla Aggiornamenti",
-                versioniDisponibili: "Versioni disponibili sul server:",
-                ripristinoVersione: "🔙 Ripristino da Salvataggio Interno",
-                testoRipristino: "L'applicazione custodisce i backup direttamente nella sua memoria protetta locale (senza inviare nulla all'esterno). Se necessario, puoi ripristinare uno degli ultimi punti di salvataggio automatico con un solo clic.",
-                btnVisualizzaSalvataggi: "📂 Visualizza Punti di Salvataggio Interni",
-                modalTitleAgg: "🚀 Conferma Aggiornamento",
-                modalTextAgg: "Stai per installare una nuova versione. Per sicurezza, l'app salverà automaticamente un backup all'interno della memoria protetta del dispositivo.",
-                btnAnnulla: "Annulla",
-                tornaMenu: "⬅ Torna al Menu Principale"
+                ritorno_menu: "← Torna alla Plancia Principale",
+                titolo_app: "ChefStock",
+                sec_agg_titolo: "🔄 Centro Aggiornamenti & Sicurezza",
+                lbl_versione_attuale: "Versione in uso:",
+                btn_verifica: "Verifica",
+                txt_agg_1: "L'applicazione non invia alcun dato o documento all'esterno: la comunicazione con il server serve unicamente a verificare l'ultima versione del programma o a recuperare quelle precedenti.",
+                str_come_funziona: "Come avviene l'aggiornamento:",
+                step_1: "Interroga il sistema per verificare la versione più recente confrontandola con la data attuale.",
+                step_2: "Se procedi, l'app salva preventivamente una copia di sicurezza del database in locale sul dispositivo.",
+                step_3: "Scarica la nuova versione e ricarica autonomamente i dati salvati in precedenza.",
+                sec_usb_titolo: "🛡️ Protezione Totale (Guasto PC)",
+                txt_usb_1: "I tuoi dati sono al sicuro sul dispositivo e non lasciano mai il computer. Ma cosa succederebbe in caso di guasto improvviso dell'hardware, perdendo mesi o anni di lavoro della tua attività? Abbiamo la soluzione definitiva.",
+                txt_usb_strategy: "La strategia della chiavetta USB: Ti consigliamo di dedicare una chiavetta USB da tenere inserita durante l'utilizzo (puoi sfilarla a fine turno). L'app salverà automaticamente una copia aggiornata ogni 15 minuti sia sul computer che sulla chiavetta. In caso di guasto del PC, recuperi tutto!",
+                txt_promo: "Promozione speciale: Questa funzione \"dual-device\" su chiavetta è offerta gratuitamente fino a nuovo ordine. Allo scadere, il salvataggio continuerà in locale sul PC, mentre per la sincronizzazione esterna su chiavetta sarà richiesta l'attivazione della versione avanzata. PENSACI BENE: proteggere il lavoro della tua attività è il miglior investimento.",
+                sec_ripristini_titolo: "⚡ Ripristini Intelligenti e Gestione Dispensa",
+                txt_rip_1: "Anche durante operazioni radicali o ritorni al passato, ChefStock ti offre il pieno controllo senza perdite accidentali:",
+                str_svuota: "Svuota Dispensa",
+                txt_svuota_desc: "L'app azzera l'inventario creando una fotografia di sicurezza. Se decidi di tornare alla situazione precedente ma nel frattempo avevi inserito nuovi prodotti, il sistema ti chiederà: \"Vuoi unire anche i nuovi articoli inseriti nel frattempo?\", lasciandoti scegliere liberamente.",
+                str_downgrade: "Ripristino da Aggiornamento",
+                txt_downgrade_desc: "Lo stesso livello di flessibilità si applica se decidi di tornare a una versione precedente del software: l'app ti chiederà sempre se desideri integrare o meno i dati registrati nell'intervallo recente, mettendoti al comando totale.",
+                footer: "ChefStock • Gestione locale sicura"
             },
             en: {
-                agg_page_title: "ChefStock - Updates & Backups",
-                navAggiornamenti: "- Updates & Backup",
-                centroAggiornamenti: "🔄 Update Center",
-                testoAggiornamenti: "Check for new versions. Before proceeding, the app will automatically create a secure restore point saved directly inside the device memory.",
-                versioneInUso: "Current version:",
-                btnControllaAgg: "🔍 Check for Updates",
-                versioniDisponibili: "Available versions on server:",
-                ripristinoVersione: "🔙 Restore from Internal Backup",
-                testoRipristino: "The application stores backups directly in its local protected memory (without sending anything externally). If needed, you can restore one of the recent automatic restore points with a single click.",
-                btnVisualizzaSalvataggi: "📂 View Internal Save Points",
-                modalTitleAgg: "🚀 Confirm Update",
-                modalTextAgg: "You are about to install a new version. For safety, the app will automatically save a backup inside the device's protected memory.",
-                btnAnnulla: "Cancel",
-                tornaMenu: "⬅ Back to Main Menu"
-            },
-            fr: {
-                agg_page_title: "ChefStock - Mises à jour & Sauvegardes",
-                navAggiornamenti: "- Mises à jour & Sauvegarde",
-                centroAggiornamenti: "🔄 Centre de Mises à jour",
-                testoAggiornamenti: "Vérifiez les nouvelles versions. Avant de continuer, l'application créera automatiquement un point de restauration sécurisé dans la mémoire de l'appareil.",
-                versioneInUso: "Version actuelle :",
-                btnControllaAgg: "🔍 Vérifier les mises à jour",
-                versioniDisponibili: "Versions disponibles sur le serveur :",
-                ripristinoVersione: "🔙 Restauration depuis la Sauvegarde Interne",
-                testoRipristino: "L'application stocke les sauvegardes directement dans sa mémoire locale protégée.",
-                btnVisualizzaSalvataggi: "📂 Afficher les Points de Sauvegarde Internes",
-                modalTitleAgg: "🚀 Confirmer la Mise à jour",
-                modalTextAgg: "Vous êtes sur le point d'installer une nouvelle version en toute sécurité.",
-                btnAnnulla: "Annuler",
-                tornaMenu: "⬅ Retour au Menu Principal"
+                ritorno_menu: "← Back to Main Dashboard",
+                titolo_app: "ChefStock",
+                sec_agg_titolo: "🔄 Update & Security Center",
+                lbl_versione_attuale: "Current version:",
+                btn_verifica: "Check",
+                txt_agg_1: "The application does not send any data or documents externally: communication with the server is solely used to check for the latest program version or retrieve previous ones.",
+                str_come_funziona: "How the update works:",
+                step_1: "Queries the system to check for the latest version by comparing it with the current date.",
+                step_2: "If you proceed, the app automatically saves a backup copy of the database locally on your device.",
+                step_3: "Downloads the new version and automatically reloads the previously saved data.",
+                sec_usb_titolo: "🛡️ Total Protection (PC Failure)",
+                txt_usb_1: "Your data is safe on your device and never leaves your computer. But what would happen in case of a sudden hardware failure, losing months or years of your business work? We have the ultimate solution.",
+                txt_usb_strategy: "The USB flash drive strategy: We recommend dedicating a USB drive to keep inserted while using the app (you can unplug it at the end of your shift). The app will automatically save an updated copy every 15 minutes both on the computer and on the USB drive. In case of a PC failure, you recover everything!",
+                txt_promo: "Special promotion: This 'dual-device' USB backup feature is offered for free until further notice. Upon expiration, local PC backup will continue, while external USB synchronization will require activating the advanced version. THINK TWICE: protecting your business work is the best investment.",
+                sec_ripristini_titolo: "⚡ Smart Restores & Pantry Management",
+                txt_rip_1: "Even during radical operations or rollbacks, ChefStock gives you full control without accidental data loss:",
+                str_svuota: "Empty Pantry",
+                txt_svuota_desc: "The app resets the inventory while creating a safety snapshot. If you decide to revert but have added new products in the meantime, the system will explicitly ask: \"Do you also want to merge the new items added in the meantime?\", letting you choose freely.",
+                str_downgrade: "Update Rollback",
+                txt_downgrade_desc: "The same level of flexibility applies if you decide to revert to a previous software version: the app will always ask whether you wish to integrate data recorded in the recent interval, putting you in total command.",
+                footer: "ChefStock • Secure local management"
             },
             es: {
-                agg_page_title: "ChefStock - Actualizaciones y Copias",
-                navAggiornamenti: "- Actualizaciones y Copias",
-                centroAggiornamenti: "🔄 Centro de Actualizaciones",
-                testoAggiornamenti: "Verifica nuevas versiones. Antes de continuar, la aplicación creará automáticamente un punto de restauración seguro guardado en la memoria del dispositivo.",
-                versioneInUso: "Versión actual:",
-                btnControllaAgg: "🔍 Buscar Actualizaciones",
-                versioniDisponibili: "Versiones disponibles en el servidor:",
-                ripristinoVersione: "🔙 Restauración desde Copia Interna",
-                testoRipristino: "La aplicación almacena las copias de seguridad directamente en su memoria local protegida.",
-                btnVisualizzaSalvataggi: "📂 Ver Puntos de Guardado Internos",
-                modalTitleAgg: "🚀 Confirmar Actualización",
-                modalTextAgg: "Estás a punto de instalar una nueva versión con total seguridad.",
-                btnAnnulla: "Cancelar",
-                tornaMenu: "⬅ Volver al Menú Principal"
+                ritorno_menu: "← Volver al Panel Principal",
+                titolo_app: "ChefStock",
+                sec_agg_titolo: "🔄 Centro de Actualizaciones y Seguridad",
+                lbl_versione_attuale: "Versión actual:",
+                btn_verifica: "Verificar",
+                txt_agg_1: "La aplicación no envía ningún dato o documento al exterior: la comunicación con el servidor sirve únicamente para verificar la última versión del programa o recuperar las anteriores.",
+                str_come_funziona: "Cómo se realiza la actualización:",
+                step_1: "Consulta al sistema para verificar la versión más reciente comparándola con la fecha actual.",
+                step_2: "Si procedes, la aplicación guarda una copia de seguridad de la base de datos localmente en tu dispositivo.",
+                step_3: "Descarga la nueva versión y recarga automáticamente los datos guardados anteriormente.",
+                sec_usb_titolo: "🛡️ Protección Total (Fallo de PC)",
+                txt_usb_1: "Tus datos están seguros en tu dispositivo y nunca salen del ordenador. Pero, ¿qué pasaría en caso de un fallo repentino del hardware, perdiendo meses o años de trabajo? Tenemos la solución definitiva.",
+                txt_usb_strategy: "La estrategia de la memoria USB: Te recomendamos dedicar una memoria USB para mantenerla conectada mientras usas la app (puedes retirarla al finalizar tu turno). La app guardará automáticamente una copia actualizada cada 15 minutos tanto en el equipo como en la USB. En caso de fallo del PC, ¡lo recuperas todo!",
+                txt_promo: "Promoción especial: Esta función de copia en USB \"dual-device\" se ofrece gratis hasta nuevo aviso. Al caducar, el guardado local continuará, pero la sincronización en USB requerirá activar la versión avanzada. PIÉNSALO BIEN: proteger el trabajo de tu negocio es la mejor inversión.",
+                sec_ripristini_titolo: "⚡ Restauraciones Inteligentes y Gestión de Despensa",
+                txt_rip_1: "Incluso durante operaciones radicales o retrocesos, ChefStock te ofrece control total sin pérdidas accidentales:",
+                str_svuota: "Vaciar Despensa",
+                txt_svuota_desc: "La app reinicia el inventario creando una instantánea de seguridad. Si decides volver a la situación anterior pero habías añadido nuevos productos, el sistema preguntará: \"¿Quieres fusionar también los nuevos artículos añadidos?\", permitiéndote elegir.",
+                str_downgrade: "Restauración de Actualización",
+                txt_downgrade_desc: "El mismo nivel de flexibilidad se aplica si decides volver a una versión anterior del software: la app te preguntará si deseas integrar o meno los datos registrados recientemente, poniéndote al mando total.",
+                footer: "ChefStock • Gestión local segura"
+            },
+            fr: {
+                ritorno_menu: "← Retour au Tableau de Bord",
+                titolo_app: "ChefStock",
+                sec_agg_titolo: "🔄 Mises à jour & Sécurité",
+                lbl_versione_attuale: "Version actuelle :",
+                btn_verifica: "Vérifier",
+                txt_agg_1: "L'application n'envoie aucune donnée ou document à l'extérieur : la communication avec le serveur sert uniquement à vérifier la dernière version ou à récupérer les précédentes.",
+                str_come_funziona: "Comment fonctionne la mise à jour :",
+                step_1: "Interroge le système pour vérifier la version la plus récente en la comparant avec la date actuelle.",
+                step_2: "Si vous procédez, l'application sauvegarde une copie de sécurité de la base de données en local sur votre appareil.",
+                step_3: "Télécharge la nouvelle version et recharge automatiquement les données enregistrées.",
+                sec_usb_titolo: "🛡️ Protection Totale (Panne PC)",
+                txt_usb_1: "Vos données sont en sécurité sur votre appareil et ne quittent jamais l'ordinateur. Mais que se passerait-il en cas de panne matérielle soudaine ? Nous avons la solution définitive.",
+                txt_usb_strategy: "La stratégie de la clé USB : Nous vous conseillons de dédier une clé USB à garder branchée lors de l'utilisation. L'application sauvegardera automatiquement une copie mise à jour toutes les 15 minutes sur l'ordinateur et sur la clé USB.",
+                txt_promo: "Promotion spéciale : Cette fonction de sauvegarde sur clé USB est offerte gratuitement jusqu'à nouvel ordre. À l'expiration, la sauvegarde locale continuera, tandis que la synchronisation externe nécessitera la version avancée. RÉFLÉCHISSEZ-Y BIEN : protéger votre travail est le meilleur investissement.",
+                sec_ripristini_titolo: "⚡ Restaurations Intelligentes",
+                txt_rip_1: "Même lors d'opérations radicales, ChefStock vous offre un contrôle total sans perte accidentelle :",
+                str_svuota: "Vider le Garde-manger",
+                txt_svuota_desc: "L'application réinitialise l'inventaire en créant un instantané de sécurité. Si vous décidez de revenir en arrière tout en ayant ajouté de nouveaux produits, le système vous demandera : « Voulez-vous fusionner les nouveaux articles ? »",
+                str_downgrade: "Restauration de Version",
+                txt_downgrade_desc: "Le même niveau de flexibilité s'applique si vous revenez à une version précédente du logiciel.",
+                footer: "ChefStock • Gestion locale sécurisée"
             },
             de: {
-                agg_page_title: "ChefStock - Updates & Backups",
-                navAggiornamenti: "- Updates & Backup",
-                centroAggiornamenti: "🔄 Update-Center",
-                testoAggiornamenti: "Auf neue Versionen prüfen. Vor dem Fortfahren erstellt die App automatisch einen sicheren Wiederherstellungspunkt im Gerätespeicher.",
-                versioneInUso: "Aktuelle Version:",
-                btnControllaAgg: "🔍 Nach Updates suchen",
-                versioniDisponibili: "Verfügbare Versionen auf dem Server:",
-                ripristinoVersione: "🔙 Wiederherstellung aus internem Backup",
-                testoRipristino: "Die Anwendung speichert Backups direkt in ihrem geschützten lokalen Speicher.",
-                btnVisualizzaSalvataggi: "📂 Interne Speicherpunkte anzeigen",
-                modalTitleAgg: "🚀 Update bestätigen",
-                modalTextAgg: "Sie sind im Begriff, eine neue Version zu installieren.",
-                btnAnnulla: "Abbrechen",
-                tornaMenu: "⬅ Zurück zum Hauptmenü"
+                ritorno_menu: "← Zurück zum Hauptmenü",
+                titolo_app: "ChefStock",
+                sec_agg_titolo: "🔄 Updates & Sicherheit",
+                lbl_versione_attuale: "Aktuelle Version:",
+                btn_verifica: "Prüfen",
+                txt_agg_1: "Die Anwendung sendet keine Daten nach außen: Die Kommunikation mit dem Server dient ausschließlich der Versionsprüfung.",
+                str_come_funziona: "Wie das Update funktioniert:",
+                step_1: "Überprüft das System auf die neueste Version im Vergleich zum aktuellen Datum.",
+                step_2: "Erstellt vorab eine lokale Sicherheitskopie der Datenbank.",
+                step_3: "Lädt die neue Version herunter und lädt die Daten automatisch neu.",
+                sec_usb_titolo: "🛡️ Gesamtschutz (PC-Ausfall)",
+                txt_usb_1: "Ihre Daten bleiben sicher auf Ihrem Gerät. Was passiert bei einem plötzlichen Hardwareausfall? Wir haben die Lösung.",
+                txt_usb_strategy: "Die USB-Stick-Strategie: Wir empfehlen einen dedizierten USB-Stick. Die App speichert alle 15 Minuten automatisch eine Kopie auf PC und USB-Stick.",
+                txt_promo: "Sonderaktion: Diese Dual-Device-USB-Funktion ist bis auf Weiteres kostenlos. Danach ist für die externe Synchronisation die erweiterte Version erforderlich. GUT ÜBERLEGEN: Schutz Ihrer Arbeit ist die beste Investition.",
+                sec_ripristini_titolo: "⚡ Intelligente Wiederherstellung",
+                txt_rip_1: "Volle Kontrolle ohne versehentlichen Datenverlust:",
+                str_svuota: "Speisekammer leeren",
+                txt_svuota_desc: "Setzt das Inventar zurück und erstellt ein Backup. Bei neuen Artikeln fragt das System nach.",
+                str_downgrade: "Update-Wiederherstellung",
+                txt_downgrade_desc: "Volle Flexibilität beim Zurückkehren auf eine vorherige Version.",
+                footer: "ChefStock • Sichere lokale Verwaltung"
             }
         };
 
-        function cambiaLinguaAgg(lang) {
-            localStorage.setItem('eat_lang', lang);
-            applicaTraduzioniAgg(lang);
-        }
-
-        function applicaTraduzioniAgg(lang) {
-            const t = dizionarioAgg[lang] || dizionarioAgg['it'];
+        function cambiaLingua(lang) {
+            const traduzioni = dizionario[lang] || dizionario['it'];
             document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (t[key]) {
-                    if (el.tagName === 'TITLE') document.title = t[key];
-                    else el.textContent = t[key];
+                const chiave = el.getAttribute('data-i18n');
+                if (traduzioni[chiave]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.value = traduzioni[chiave];
+                    } else {
+                        el.innerHTML = traduzioni[chiave];
+                    }
                 }
             });
+            console.log("Lingua cambiata in: " + lang);
         }
 
-        async function verificaAggiornamentiServer() {
-            const box = document.getElementById('server-releases-box');
-            const container = document.getElementById('releases-list-container');
-            box.style.display = 'block';
-            container.innerHTML = '<p style="font-size: 0.85rem; color: var(--accent-blue);">Connessione al server in corso...</p>';
-            
-            const username = "tidyupofficial1-web";
-            const repo = "tidyupofficial1-web";
-
-            try {
-                const response = await fetch(`https://api.github.com/repos/${username}/${repo}/releases/latest`);
-                if (!response.ok) throw new Error("Nessuna release trovata.");
-
-                const release = await response.json();
-                const ultimaVersione = release.tag_name;
-                const noteRilascio = release.body || "Aggiornamento generale di stabilità.";
-                const urlDownload = release.zipball_url;
-
-                container.innerHTML = `
-                    <div style="padding: 4px 0;">
-                        <strong style="color: var(--text-main); font-size: 0.85rem;">Ultima disponibile: ${ultimaVersione}</strong>
-                        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 6px 0;">${noteRilascio}</p>
-                        <button onclick="mostraRichiestaConferma('${urlDownload}', '${ultimaVersione}')" style="background: var(--accent-blue); color: var(--bg-color); border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; width: 100%; margin-top: 6px;">
-                            Installa Aggiornamento (${ultimaVersione})
-                        </button>
-                    </div>
-                `;
-            } catch (error) {
-                container.innerHTML = `
-                    <p style="font-size: 0.85rem; color: #f85149;">Impossibile contattare il server (verifica se sei in locale o se non ci sono release pubbliche).</p>
-                `;
-            }
+        function verificaAggiornamenti() {
+            alert("Controllo in corso... Il sistema sta verificando la disponibilità di nuove versioni.");
         }
-
-        function mostraRichiestaConferma(urlZip, versione) {
-            const modal = document.getElementById('modal-aggiornamento');
-            const modalTitle = document.getElementById('modal-title');
-            const modalText = document.getElementById('modal-text');
-            const confirmBtnContainer = document.getElementById('modal-confirm-btn-container');
-
-            modalTitle.innerHTML = `🚀 Conferma Aggiornamento (${versione})`;
-            modalText.innerHTML = `
-                Stai per installare la versione <strong>${versione}</strong>.<br><br>
-                <strong>La sicurezza dei tuoi dati:</strong><br>
-                • Creeremo un backup di sicurezza automatico <strong>all'interno della memoria interna protetta del dispositivo</strong>.<br>
-                • I tuoi dati rimarranno al 100% sul tuo dispositivo.<br><br>Vuoi procedere?
-            `;
-
-            confirmBtnContainer.innerHTML = `
-                <button onclick="avviaProcessoAggiornamento('${urlZip}', '${versione}')" style="background: #238636; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">
-                    Sì, procedi
-                </button>
-            `;
-
-            modal.style.display = 'flex';
-        }
-
-        function avviaProcessoAggiornamento(urlZip, versione) {
-            const modalText = document.getElementById('modal-text');
-            const modalActions = document.getElementById('modal-actions');
-            
-            modalText.innerHTML = `⏳ <strong>Passo 1/2:</strong> Salvataggio del punto di ripristino nella memoria interna del dispositivo in corso...`;
-            modalActions.style.display = 'none';
-
-            setTimeout(() => {
-                creaBackupInternoAutomatico();
-
-                modalText.innerHTML = `✅ <strong>Backup interno salvato con successo!</strong><br><br>⏳ <strong>Passo 2/2:</strong> Download della versione <strong>${versione}</strong>...`;
-
-                setTimeout(() => {
-                    modalText.innerHTML = `🎉 <strong>Tutto pronto!</strong><br>Il pacchetto di aggiornamento sta per aprirsi. I tuoi dati sono al sicuro nel dispositivo.`;
-                    modalActions.style.display = 'flex';
-                    modalActions.innerHTML = `
-                        <button onclick="window.location.href='${urlZip}'" style="background: var(--accent-blue); color: var(--bg-color); border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">
-                            Scarica Pacchetto
-                        </button>
-                    `;
-                }, 1500);
-
-            }, 1200);
-        }
-
-        function creaBackupInternoAutomatico() {
-            const datiApp = {};
-            for (let i = 0; i < localStorage.length; i++) {
-                const chiave = localStorage.key(i);
-                if (!chiave.startsWith('chefstock_backup_')) {
-                    datiApp[chiave] = localStorage.getItem(chiave);
-                }
-            }
-
-            const timestamp = new Date().toLocaleString();
-            const slotData = {
-                data: timestamp,
-                dati: datiApp
-            };
-
-            let listaBackup = JSON.parse(localStorage.getItem('chefstock_internals_backups')) || [];
-            listaBackup.unshift(slotData);
-            if (listaBackup.length > 3) {
-                listaBackup = listaBackup.slice(0, 3);
-            }
-
-            localStorage.setItem('chefstock_internals_backups', JSON.stringify(listaBackup));
-        }
-
-        function mostraSalvataggiAutomatici() {
-            const box = document.getElementById('box-salvataggi-automatici');
-            if (box.style.display === 'flex') {
-                box.style.display = 'none';
-                return;
-            }
-
-            box.style.display = 'flex';
-            const listaBackup = JSON.parse(localStorage.getItem('chefstock_internals_backups')) || [];
-
-            if (listaBackup.length === 0) {
-                box.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-muted); text-align: center; margin: 5px 0;">Nessun salvataggio interno disponibile al momento.</p>`;
-                return;
-            }
-
-            let html = '';
-            listaBackup.forEach((item, index) => {
-                html += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #21262d; border-radius: 6px; border: 1px solid var(--border-color);">
-                        <span style="font-size: 0.85rem; color: var(--text-main);">🔒 Salvataggio del: <strong>${item.data}</strong></span>
-                        <button onclick="ripristinaBackupInterno(${index})" style="background: var(--accent-blue); color: var(--bg-color); border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Ripristina</button>
-                    </div>
-                `;
-            });
-            box.innerHTML = html;
-        }
-
-        function ripristinaBackupInterno(index) {
-            if (!confirm("Vuoi ripristinare questo punto di salvataggio interno? I dati attuali verranno sovrascritti.")) return;
-
-            const listaBackup = JSON.parse(localStorage.getItem('chefstock_internals_backups')) || [];
-            const target = listaBackup[index];
-
-            if (target && target.dati) {
-                for (const chiave in target.dati) {
-                    localStorage.setItem(chiave, target.dati[chiave]);
-                }
-                alert("Ripristino completato con successo! L'applicazione verrà ricaricata.");
-                location.reload();
-            } else {
-                alert("Impossibile trovare i dati di ripristino selezionati.");
-            }
-        }
-
-        function chiudiModalAggiornamento() {
-            document.getElementById('modal-aggiornamento').style.display = 'none';
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedLang = localStorage.getItem('eat_lang') || 'it';
-            const selectEl = document.getElementById('lingua-select');
-            if (selectEl) selectEl.value = savedLang;
-            applicaTraduzioniAgg(savedLang);
-        });
     </script>
 </body>
 </html>

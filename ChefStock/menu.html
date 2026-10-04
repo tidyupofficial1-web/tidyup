@@ -25,10 +25,12 @@
         </div>
     </div>
 
-    <div class="container">
-        <header class="header">
-            <h1 data-i18n="titolo_app">ChefStock</h1>
-            <div class="header-controls">
+    <div class="container" style="display: flex; flex-direction: column; width: 100%; max-width: 600px; margin: 0 auto; box-sizing: border-box;">
+        
+        <!-- Testata principale -->
+        <header class="header" style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #30363d; padding-bottom: 15px; box-sizing: border-box;">
+            <h1 data-i18n="titolo_app" style="margin: 0; font-size: 24px; color: #58a6ff;">ChefStock</h1>
+            <div class="header-controls" style="display: flex; gap: 10px; align-items: center;">
                 <select id="select-lingua" onchange="cambiaLingua(this.value)">
                     <option value="it">🇮🇹 Italiano</option>
                     <option value="en">🇬🇧 English</option>
@@ -36,11 +38,19 @@
                     <option value="fr">🇫🇷 Français</option>
                     <option value="de">🇩🇪 Deutsch</option>
                 </select>
-                <button onclick="esportaDatabase()" class="btn-icon" title="Esporta Backup Database">💾</button>
             </div>
         </header>
 
-        <main class="menu-grid">
+        <!-- Banner rapido per passare a EatMeFirst / Gestione Domestica -->
+        <a href="../index.html" style="display: flex; align-items: center; gap: 12px; background: #161b22; border: 1px solid #30363d; padding: 12px 18px; border-radius: 8px; text-decoration: none; color: #c9d1d9; margin-bottom: 20px; width: 100%; box-sizing: border-box;">
+            <img src="../EatMeFirst/IMG/logo_1024_white.png" alt="EatMeFirst" style="width: 38px; height: 38px; border-radius: 50%; object-fit: contain; background: #fff; padding: 2px; flex-shrink: 0;">
+            <div style="text-align: left; flex-grow: 1;">
+                <span style="font-size: 0.75rem; color: #8b949e; display: block;" data-i18n="lbl_suite_domestica">Gestione Domestica / Famiglia</span>
+                <strong style="color: #58a6ff; font-size: 0.9rem;" data-i18n="lnk_switch_eat">Hai anche la versione per casa? Apri EatMeFirst &rarr;</strong>
+            </div>
+        </a>
+
+        <main class="menu-grid" style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
             <!-- Sezione Dispensa -->
             <section class="menu-section">
                 <h2 data-i18n="sec_dispensa">Gestione Dispensa</h2>
@@ -59,11 +69,11 @@
                 <h2 data-i18n="sec_utilita">Agenda & Utility</h2>
                 <a href="statistiche.html" class="menu-item" data-i18n="agenda">Agenda Scadenze (30 Giorni)</a>
                 <a href="ricordati.html" id="btn-block-notes" class="menu-item" data-i18n="ricordarsi">Ricordarsi di...</a>
-                <button onclick="avviaDetonatore()" class="menu-item danger-btn">💥 Svuota Tutto (Detonatore)</button>
+                <a href="aggiornamenti.html" class="menu-item" style="text-decoration: none;">🔄 Aggiornamenti & Backup</a>
             </section>
         </main>
 
-        <footer class="footer">
+        <footer class="footer" style="width: 100%;">
             <p data-i18n="footer">ChefStock &bull; Gestione locale sicura</p>
         </footer>
     </div>

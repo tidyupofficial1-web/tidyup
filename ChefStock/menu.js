@@ -16,7 +16,9 @@ const dizionarioGlobale = {
         pop_testo: "Ci sono promemoria o note inserite in \"Ricordarsi di...\" in attesa di lettura.",
         pop_chiudi: "Ho capito",
         pop_apri: "Vai a Ricordarsi di...",
-        footer: "ChefStock &bull; Gestione locale sicura"
+        footer: "ChefStock &bull; Gestione locale sicura",
+        lbl_suite_domestica: "Gestione Domestica / Famiglia",
+        lnk_switch_eat: "Hai anche la versione per casa? Apri EatMeFirst &rarr;"
     },
     en: {
         titolo_app: "ChefStock",
@@ -35,7 +37,9 @@ const dizionarioGlobale = {
         pop_testo: "There are reminders or notes in \"Remember to...\" waiting to be read.",
         pop_chiudi: "Got it",
         pop_apri: "Go to Remember to...",
-        footer: "ChefStock &bull; Secure local management"
+        footer: "ChefStock &bull; Secure local management",
+        lbl_suite_domestica: "Home / Family Management",
+        lnk_switch_eat: "Have a home version too? Open EatMeFirst &rarr;"
     },
     es: {
         titolo_app: "ChefStock",
@@ -54,7 +58,9 @@ const dizionarioGlobale = {
         pop_testo: "Hay recordatorios o notas en \"Recordar que...\" esperando ser leídos.",
         pop_chiudi: "Entendido",
         pop_apri: "Ir a Recordar que...",
-        footer: "ChefStock &bull; Gestión local segura"
+        footer: "ChefStock &bull; Gestión local segura",
+        lbl_suite_domestica: "Gestión Doméstica / Familiar",
+        lnk_switch_eat: "¿Tienes versión para casa? Abre EatMeFirst &rarr;"
     },
     fr: {
         titolo_app: "ChefStock",
@@ -73,7 +79,9 @@ const dizionarioGlobale = {
         pop_testo: "Il y a des rappels ou des notes dans \"Se rappeler de...\" en attente de lecture.",
         pop_chiudi: "Compris",
         pop_apri: "Aller à Se rappeler de...",
-        footer: "ChefStock &bull; Gestion locale sécurisée"
+        footer: "ChefStock &bull; Gestion locale sécurisée",
+        lbl_suite_domestica: "Gestion Domestique / Famille",
+        lnk_switch_eat: "Vous avez aussi une version maison ? Ouvrez EatMeFirst &rarr;"
     },
     de: {
         titolo_app: "ChefStock",
@@ -92,7 +100,9 @@ const dizionarioGlobale = {
         pop_testo: "Es gibt Erinnerungen oder Notizen in \"Erinnern an...\", die darauf warten, gelesen zu werden.",
         pop_chiudi: "Verstanden",
         pop_apri: "Zu Erinnern an... gehen",
-        footer: "ChefStock &bull; Sichere lokale Verwaltung"
+        footer: "ChefStock &bull; Sichere lokale Verwaltung",
+        lbl_suite_domestica: "Haushalts- / Familienverwaltung",
+        lnk_switch_eat: "Auch eine Heimversion? EatMeFirst öffnen &rarr;"
     }
 };
 
