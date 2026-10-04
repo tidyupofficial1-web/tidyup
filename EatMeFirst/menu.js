@@ -1,7 +1,7 @@
 const dizionarioGlobale = {
     it: {
         titolo_app: "EatMeFirst",
-        suite: "Suite",
+        suite_menu: "≡ Menu",
         sec_dispensa: "Gestione Dispensa",
         sec_spesa: "Gestione Spesa",
         sec_utilita: "Agenda & Utility",
@@ -16,11 +16,13 @@ const dizionarioGlobale = {
         pop_testo: "Ci sono promemoria o note inserite in \"Ricordarsi di...\" in attesa di lettura.",
         pop_chiudi: "Ho capito",
         pop_apri: "Vai a Ricordarsi di...",
-        footer: "EatMeFirst &bull; Gestione locale sicura"
+        footer: "EatMeFirst &bull; Gestione locale sicura",
+        lbl_suite_prof: "Gestione Professionale",
+        lnk_switch_chef: "Hai un ristorante o un'attività? Scopri la versione per la ristorazione &rarr;"
     },
     en: {
         titolo_app: "EatMeFirst",
-        suite: "Suite",
+        suite_menu: "≡ Menu",
         sec_dispensa: "Pantry Management",
         sec_spesa: "Shopping Management",
         sec_utilita: "Agenda & Utilities",
@@ -35,11 +37,13 @@ const dizionarioGlobale = {
         pop_testo: "There are reminders or notes in \"Remember to...\" waiting to be read.",
         pop_chiudi: "Got it",
         pop_apri: "Go to Remember to...",
-        footer: "EatMeFirst &bull; Secure local management"
+        footer: "EatMeFirst &bull; Secure local management",
+        lbl_suite_prof: "Professional Management",
+        lnk_switch_chef: "Run a restaurant or business? Discover the catering version &rarr;"
     },
     es: {
         titolo_app: "EatMeFirst",
-        suite: "Suite",
+        suite_menu: "≡ Menú",
         sec_dispensa: "Gestión de Despensa",
         sec_spesa: "Gestión de Compras",
         sec_utilita: "Agenda y Utilidades",
@@ -54,11 +58,13 @@ const dizionarioGlobale = {
         pop_testo: "Hay recordatorios o notas en \"Recordar que...\" esperando ser leídos.",
         pop_chiudi: "Entendido",
         pop_apri: "Ir a Recordar que...",
-        footer: "EatMeFirst &bull; Gestión local segura"
+        footer: "EatMeFirst &bull; Gestión local segura",
+        lbl_suite_prof: "Gestión Profesional",
+        lnk_switch_chef: "¿Tienes un restaurante o negocio? Descubre la versión para hostelería &rarr;"
     },
     fr: {
         titolo_app: "EatMeFirst",
-        suite: "Suite",
+        suite_menu: "≡ Menu",
         sec_dispensa: "Gestion du Garde-manger",
         sec_spesa: "Gestion des Courses",
         sec_utilita: "Agenda & Utilitaires",
@@ -73,11 +79,13 @@ const dizionarioGlobale = {
         pop_testo: "Il y a des rappels ou des notes dans \"Se rappeler de...\" en attente de lecture.",
         pop_chiudi: "Compris",
         pop_apri: "Aller à Se rappeler de...",
-        footer: "EatMeFirst &bull; Gestion locale sécurisée"
+        footer: "EatMeFirst &bull; Gestion locale sécurisée",
+        lbl_suite_prof: "Gestion Professionnelle",
+        lnk_switch_chef: "Vous avez un restaurant ou un commerce ? Découvrez la version pro &rarr;"
     },
     de: {
         titolo_app: "EatMeFirst",
-        suite: "Suite",
+        suite_menu: "≡ Menü",
         sec_dispensa: "Vorratsverwaltung",
         sec_spesa: "Einkaufsverwaltung",
         sec_utilita: "Agenda & Werkzeuge",
@@ -92,7 +100,9 @@ const dizionarioGlobale = {
         pop_testo: "Es gibt Erinnerungen oder Notizen in \"Erinnern an...\", die darauf warten, gelesen zu werden.",
         pop_chiudi: "Verstanden",
         pop_apri: "Zu Erinnern an... gehen",
-        footer: "EatMeFirst &bull; Sichere lokale Verwaltung"
+        footer: "EatMeFirst &bull; Sichere lokale Verwaltung",
+        lbl_suite_prof: "Gewerbliche Verwaltung",
+        lnk_switch_chef: "Haben Sie ein Restaurant oder Geschäft? Entdecken Sie die Gastro-Version &rarr;"
     }
 };
 
