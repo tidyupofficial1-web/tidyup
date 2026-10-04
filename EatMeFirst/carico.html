@@ -52,10 +52,10 @@
                     </select>
                 </div>
 
-                <div class="form-group" data-help="Nome del prodotto compilato automaticamente. Massimo 45 caratteri per mantenere le schermate pulite e leggibili.">
+                <div class="form-group" data-help="Nome del prodotto compilato automaticamente o inserito a mano. Sii specifico (es. 'pomodori freschi' o 'pomodori secchi') per attivare le stime intelligenti!">
                     <label>Descrizione / Nome Prodotto (Max 45 caratteri)</label>
-                    <input type="text" id="nome-prodotto" maxlength="45" placeholder="Es. Dentifricio AZ, Uova Bio..." required oninput="stimaScadenzaDallaDescrizione(this.value)">
-                    <small style="color: #8b949e;">Database: <span id="inf-nome">-</span></small>
+                    <input type="text" id="nome-prodotto" maxlength="45" placeholder="Es. Dentifricio AZ, Uova Bio..." required oninput="verificaDescrizioneDettagliata(this.value)">
+                    <small style="color: #8b949e;">Database: <span id="inf-nome">-</span> | Suggerimento: <span id="suggerimento-dettaglio" style="color: #ff9800;"></span></small>
                 </div>
 
                 <div class="form-group" data-help="Inserisci il marchio del produttore o l'origine (es. 'Mercato rionale', 'Fatto in casa'). Opzionale.">
@@ -86,13 +86,20 @@
                     <small style="color: #58a6ff;" id="inf-conversione">💡 Unità standard singola</small>
                 </div>
 
-                <!-- Sezione Data di Scadenza -->
-                <div class="form-group" id="group-scadenza" data-help="Verifica la data di scadenza proposta o selezionala dal calendario. Puoi sempre modificarla o allungarla se il prodotto dura di più.">
-                    <label>Data di Scadenza</label>
-                    <div class="date-inputs-container">
+                <!-- Sezione Data di Scadenza Intelligente / Senza Scadenza -->
+                <div class="form-group" id="group-scadenza" data-help="Verifica la scadenza stimata o gestisci i prodotti senza scadenza.">
+                    <label>Data di Scadenza o Gestione Durevoli</label>
+                    <div id="box-senza-scadenza-container" style="margin-bottom: 8px; display: none; background: #21262d; padding: 10px; border-radius: 6px; border: 1px solid #30363d;">
+                        <span id="testo-avviso-scadenza" style="font-size: 13px; display: block; margin-bottom: 6px; color: #e6edf3;"></span>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" onclick="confermaSenzaScadenza(true)" style="background: #238636; flex: 1; padding: 6px;">Sì (Senza Scadenza)</button>
+                            <button type="button" onclick="confermaSenzaScadenza(false)" style="background: #da3633; flex: 1; padding: 6px;">No (Inserisci Scadenza)</button>
+                        </div>
+                    </div>
+                    <div class="date-inputs-container" id="container-input-data">
                         <input type="date" id="scadenza" style="width: 100%; text-align: center;">
                     </div>
-                    <div id="inf-tipo-scadenza-badge"></div>
+                    <div id="inf-tipo-scadenza-badge" style="margin-top: 5px;"></div>
                 </div>
 
                 <img id="img-anteprima" src="" alt="Anteprima prodotto">

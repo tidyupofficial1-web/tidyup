@@ -2,6 +2,7 @@ let html5QrCode = null;
 let cameraAttiva = false;
 let tipoScadenzaCorrente = "consigliata"; 
 let mostraAiutiAttivo = true;
+let isProdottoSenzaScadenza = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     const savedHelpPref = localStorage.getItem('eat_me_first_help');
@@ -10,7 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('chk-mostra-aiuti').checked = false;
     }
 
-    document.getElementById('barcode-input').focus();
+    const barcodeInput = document.getElementById('barcode-input');
+    if (barcodeInput) barcodeInput.focus();
+    
     inizializzaListenerCampi();
     impostaDataOdierna();
 });
@@ -20,27 +23,52 @@ function toggleGlobalHelp(stato) {
     localStorage.setItem('eat_me_first_help', stato);
 }
 
+// Gestione pulita dei suggerimenti senza bloccare la digitazione
 function inizializzaListenerCampi() {
     const gruppi = document.querySelectorAll('.form-group');
-    gruppi.forEach(gruppo => {
+    gruppi.forEach((gruppo, index) => {
         const input = gruppo.querySelector('input, select');
-        if (input) {
+        if (input && gruppo.dataset.help) {
+            const campoId = input.id || `campo_${index}`;
+            
             input.addEventListener('focus', () => {
-                if (mostraAiutiAttivo && gruppo.dataset.help) {
-                    mostraTooltip(gruppo.dataset.help);
-                }
+                if (!mostraAiutiAttivo) return;
+
+                const oggi = new Date().toISOString().split('T')[0];
+                const ultimiAiutiLetti = JSON.parse(localStorage.getItem('eat_me_first_visti') || "{}");
+
+                // Se l'utente ha già chiuso l'aiuto oggi per questo campo, non facciamo nulla
+                if (ultimiAiutiLetti[campoId] === oggi) return;
+
+                mostraTooltipModal(gruppo.dataset.help, campoId);
             });
         }
     });
 }
 
-function mostraTooltip(testo) {
+function mostraTooltipModal(testo, campoId) {
+    let modal = document.getElementById('tooltip-modal');
+    if (!modal) return;
+
     document.getElementById('tooltip-text').textContent = testo;
-    document.getElementById('tooltip-modal').style.display = 'flex';
+    modal.dataset.campoAttivo = campoId;
+    modal.style.display = 'flex';
 }
 
 function chiudiTooltip() {
-    document.getElementById('tooltip-modal').style.display = 'none';
+    const modal = document.getElementById('tooltip-modal');
+    if (!modal) return;
+
+    const campoId = modal.dataset.campoAttivo;
+
+    if (campoId) {
+        const oggi = new Date().toISOString().split('T')[0];
+        let ultimiAiutiLetti = JSON.parse(localStorage.getItem('eat_me_first_visti') || "{}");
+        ultimiAiutiLetti[campoId] = oggi;
+        localStorage.setItem('eat_me_first_visti', JSON.stringify(ultimiAiutiLetti));
+    }
+
+    modal.style.display = 'none';
 }
 
 function impostaDataOdierna() {
@@ -108,16 +136,20 @@ async function chiudiFotocamera() {
         } catch (e) {}
     }
     html5QrCode = null;
-    document.getElementById('reader').style.display = 'none';
-    document.getElementById('btn-toggle-cam').textContent = "📷 Attiva Fotocamera / Scanner";
+    const reader = document.getElementById('reader');
+    if (reader) reader.style.display = 'none';
+    const btnCam = document.getElementById('btn-toggle-cam');
+    if (btnCam) btnCam.textContent = "📷 Attiva Fotocamera / Scanner";
     cameraAttiva = false;
 }
 
-// Ricerca Multipla con gestione ubicazioni dinamiche e storico
+// Ricerca Multipla con gestione ubicazioni dinamiche e dizionario corposo
 async function cercaBarcodeMultiplo() {
     if (cameraAttiva) await chiudiFotocamera();
 
-    const barcode = document.getElementById('barcode-input').value.trim();
+    const barcodeInput = document.getElementById('barcode-input');
+    if (!barcodeInput) return;
+    const barcode = barcodeInput.value.trim();
     if (!barcode) return;
 
     let fonteTrovata = "alimentari";
@@ -155,13 +187,13 @@ async function cercaBarcodeMultiplo() {
             impostaCategoriaIntelligente(fonteTrovata, nome);
             impostaUbicazioneStorica(barcode, nome);
             gestisciQuantitaPezzoSingolo(prodotto.quantity || "");
-            impostaScadenzaIntelligentePerCategoria(fonteTrovata, nome);
+            analizzaScadenzaEValutaDizionario(fonteTrovata, nome);
 
             const imgEl = document.getElementById('img-anteprima');
-            if(immagine) {
+            if(immagine && imgEl) {
                 imgEl.src = immagine;
                 imgEl.style.display = 'block';
-            } else {
+            } else if (imgEl) {
                 imgEl.style.display = 'none';
             }
 
@@ -177,27 +209,109 @@ async function cercaBarcodeMultiplo() {
 
 function impostaCategoriaIntelligente(fonte, nomeProdotto) {
     const selectCat = document.getElementById('categoria-prodotto');
+    if (!selectCat) return;
     const t = nomeProdotto.toLowerCase();
 
-    if (fonte === "igiene" || t.includes('dentifricio') || t.includes('shampoo') || t.includes('sapone') || t.includes('bagnoschiuma')) {
+    if (fonte === "igiene" || t.includes('dentifricio') || t.includes('shampoo') || t.includes('sapone') || t.includes('bagnoschiuma') || t.includes('deodorante')) {
         selectCat.value = "Igiene";
-    } else if (fonte === "casa" || t.includes('pile') || t.includes('batterie') || t.includes('piatti') || t.includes('fazzoletti') || t.includes('carta')) {
+    } else if (fonte === "casa" || t.includes('pile') || t.includes('batterie') || t.includes('piatti') || t.includes('bicchieri') || t.includes('tovaglioli') || t.includes('carta igienica') || t.includes('scottex') || t.includes('alluminio')) {
         selectCat.value = "Casa & Varie";
-    } else if (t.includes('detersivo') || t.includes('candeggina') || t.includes('sgrassatore')) {
+    } else if (t.includes('detersivo') || t.includes('candeggina') || t.includes('sgrassatore') || t.includes('ammorbidente') || t.includes('pavimenti')) {
         selectCat.value = "Pulizia";
-    } else if (t.includes('latte') || t.includes('yogurt') || t.includes('formaggio')) {
+    } else if (t.includes('latte') || t.includes('yogurt') || t.includes('formaggio') || t.includes('mozzarella') || t.includes('burro')) {
         selectCat.value = "Latticini";
-    } else if (t.includes('acqua') || t.includes('bibita') || t.includes('succo')) {
+    } else if (t.includes('acqua') || t.includes('bibita') || t.includes('succo') || t.includes('vino')  || t.includes('birra')) {
         selectCat.value = "Bevande";
+    } else if (t.includes('prosciutto') || t.includes('salame') || t.includes('bresaola') || t.includes('speck')) {
+        selectCat.value = "Salumeria";
     } else {
         selectCat.value = "Dispensa / Generi alimentari";
     }
 }
 
-// Gestione Ubicazioni Dinamiche (Partono vuote e si popolano solo con i salvataggi utente)
+function verificaDescrizioneDettagliata(testo) {
+    const t = testo.trim().toLowerCase();
+    const suggerimentoEl = document.getElementById('suggerimento-dettaglio');
+    if (!suggerimentoEl) return;
+    
+    const generici = ['pomodori', 'verdura', 'frutta', 'formaggio', 'carne', 'pesce', 'pane', 'olio', 'farina'];
+    
+    if (generici.includes(t)) {
+        suggerimentoEl.textContent = `💡 Suggerimento: specifica meglio (es. "${t} freschi" o "${t} secchi") per stimare la scadenza corretta!`;
+    } else {
+        suggerimentoEl.textContent = "";
+        analizzaScadenzaEValutaDizionario("manuale", t);
+    }
+}
+
+function analizzaScadenzaEValutaDizionario(fonte, nomeProdotto) {
+    const t = nomeProdotto.toLowerCase();
+    const boxSenzaScadenza = document.getElementById('box-senza-scadenza-container');
+    const testoAvviso = document.getElementById('testo-avviso-scadenza');
+    const containerInputData = document.getElementById('container-input-data');
+    const badgeEl = document.getElementById('inf-tipo-scadenza-badge');
+
+    if (!boxSenzaScadenza || !containerInputData || !badgeEl) return;
+
+    isProdottoSenzaScadenza = false;
+    boxSenzaScadenza.style.display = 'none';
+    containerInputData.style.display = 'block';
+
+    if (t.includes('tovaglioli') || t.includes('carta igienica') || t.includes('scottex') || t.includes('rotoloni') || t.includes('pile') || t.includes('batterie') || t.includes('piatti di plastica') || t.includes('bicchieri di plastica') || t.includes('candeggina') || t.includes('sgrassatore') || t.includes('pellicola') || t.includes('alluminio')) {
+        boxSenzaScadenza.style.display = 'block';
+        testoAvviso.textContent = "🔍 Questo articolo sembra un prodotto durevole o senza scadenza. Ha una data di scadenza?";
+        badgeEl.innerHTML = '<span class="scadenza-badge" style="background: #30363d; color: #8b949e;">📦 Prodotto Durevole</span>';
+        return;
+    }
+
+    let giorniStima = 30; 
+    let tipoBadge = "consigliata";
+    let testoBadge = "⏳ Scadenza Stimata (Dizionario)";
+
+    if (t.includes('pasta') || t.includes('riso') || t.includes('farina') || t.includes('biscotti') || t.includes('caffè') || t.includes('zucchero') || t.includes('sale') || t.includes('tonno') || t.includes('passata') || t.includes('pelati') || t.includes('legumi') || t.includes('fagioli') || t.includes('ceci') || t.includes('piselli') || t.includes('olio') || t.includes('aceto') || t.includes('miele') || t.includes('marmellata') || t.includes('fette biscottate') || t.includes('crackers') || t.includes('cioccolato') || t.includes('latte uht')) {
+        giorniStima = 365; 
+    } else if (t.includes('latte fresco') || t.includes('yogurt') || t.includes('formaggio fresco') || t.includes('mozzarella') || t.includes('ricotta') || t.includes('stracchino') || t.includes('affettati') || t.includes('prosciutto') || t.includes('salame') || t.includes('carne') || t.includes('pesce') || t.includes('verdura') || t.includes('frutta')) {
+        giorniStima = 5; 
+        testoBadge = "⚠️ Prodotto Fresco: Verifica con attenzione l'etichetta!";
+        tipoBadge = "fresco";
+    }
+
+    const d = new Date();
+    d.setDate(d.getDate() + giorniStima);
+    const campoScadenza = document.getElementById('scadenza');
+    if (campoScadenza) campoScadenza.value = d.toISOString().split('T')[0];
+    
+    if (tipoBadge === "fresco") {
+        badgeEl.innerHTML = `<span class="scadenza-badge" style="background: #9e6a03; color: #fff;">${testoBadge}</span>`;
+    } else {
+        badgeEl.innerHTML = `<span class="scadenza-badge badge-consigliata">${testoBadge}</span>`;
+    }
+}
+
+function confermaSenzaScadenza(rispostaSi) {
+    const boxSenzaScadenza = document.getElementById('box-senza-scadenza-container');
+    const containerInputData = document.getElementById('container-input-data');
+    const badgeEl = document.getElementById('inf-tipo-scadenza-badge');
+
+    if (rispostaSi) {
+        isProdottoSenzaScadenza = true;
+        document.getElementById('scadenza').value = "";
+        containerInputData.style.display = 'none';
+        boxSenzaScadenza.style.display = 'none';
+        badgeEl.innerHTML = '<span class="scadenza-badge" style="background: #238636; color: #fff;">✅ Nessuna Scadenza (Confermato)</span>';
+    } else {
+        isProdottoSenzaScadenza = false;
+        boxSenzaScadenza.style.display = 'none';
+        containerInputData.style.display = 'block';
+        badgeEl.innerHTML = '<span class="scadenza-badge badge-consigliata">📅 Inserisci manualmente la data</span>';
+        document.getElementById('scadenza').focus();
+    }
+}
+
 function aggiornaListaUbicazioniDinamiche(ubicazioneSelezionata = "") {
     let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [], spesa: [] };
     const selectUbicazione = document.getElementById('ubicazione');
+    if (!selectUbicazione) return;
     
     const ubicazioniSalvate = [...new Set((db.dispensa || []).map(item => item.ubicazione).filter(Boolean))];
     
@@ -246,71 +360,58 @@ function impostaUbicazioneStorica(barcode, nome) {
 function gestisciQuantitaPezzoSingolo(rawQuantity) {
     document.getElementById('quantita').value = "1";
     document.getElementById('unita-misura').value = "pezzi";
-    if (rawQuantity) {
-        document.getElementById('inf-conversione').textContent = `💡 Confezione singola (${rawQuantity})`;
-    } else {
-        document.getElementById('inf-conversione').textContent = `💡 Confezione singola`;
+    const infConv = document.getElementById('inf-conversione');
+    if (infConv) {
+        infConv.textContent = rawQuantity ? `💡 Confezione singola (${rawQuantity})` : `💡 Confezione singola`;
     }
-}
-
-function impostaScadenzaIntelligentePerCategoria(fonte, nomeProdotto) {
-    tipoScadenzaCorrente = "consigliata";
-    const t = nomeProdotto.toLowerCase();
-    let giorni = 30; // Default generico per dispensa
-
-    // Regole intelligenti basate su parole chiave
-    if (fonte === "igiene" || fonte === "casa" || t.includes('dentifricio') || t.includes('pile') || t.includes('piatti')) {
-        giorni = 365;
-    } else if (t.includes('pasta') || t.includes('riso') || t.includes('farina') || t.includes('biscotti') || t.includes('caffè') || t.includes('zucchero') || t.includes('sale') || t.includes('scatola') || t.includes('tonno') || t.includes('passata')) {
-        giorni = 365; // 1 anno per i secchi e le conserve a lunga conservazione
-    } else if (t.includes('latte') || t.includes('fresco')) {
-        giorni = 7;
-    } else if (t.includes('carne') || t.includes('pesce')) {
-        giorni = 3;
-    }
-
-    const dataProposta = new Date();
-    dataProposta.setDate(dataProposta.getDate() + giorni);
-    document.getElementById('scadenza').value = dataProposta.toISOString().split('T')[0];
-    document.getElementById('inf-tipo-scadenza-badge').innerHTML = '<span class="scadenza-badge badge-consigliata">⏳ Scadenza Stimata</span>';
-}
-
-function stimaScadenzaDallaDescrizione(testo) {
-    if (tipoScadenzaCorrente !== "consigliata") return;
-    const t = testo.toLowerCase();
-    let giorni = 30;
-
-    if (t.includes('dentifricio') || t.includes('pile') || t.includes('piatti') || t.includes('fazzoletti')) {
-        giorni = 365;
-    } else if (t.includes('pasta') || t.includes('riso') || t.includes('farina') || t.includes('biscotti') || t.includes('caffè') || t.includes('zucchero') || t.includes('sale') || t.includes('tonno') || t.includes('passata')) {
-        giorni = 365;
-    } else if (t.includes('latte') || t.includes('fresco')) {
-        giorni = 7;
-    }
-
-    const d = new Date();
-    d.setDate(d.getDate() + giorni);
-    document.getElementById('scadenza').value = d.toISOString().split('T')[0];
 }
 
 function abilitaCompilazioneManuale() {
     if (cameraAttiva) chiudiFotocamera();
     aggiornaListaUbicazioniDinamiche("");
-    document.getElementById('preview-prodotto').style.display = 'block';
-    document.getElementById('nome-prodotto').focus();
+    
+    const preview = document.getElementById('preview-prodotto');
+    if (preview) preview.style.display = 'block';
+    
+    const nomeProd = document.getElementById('nome-prodotto');
+    if (nomeProd) {
+        nomeProd.value = "";
+        nomeProd.focus();
+    }
+    const marcaProd = document.getElementById('marca-prodotto');
+    if (marcaProd) marcaProd.value = "";
+    
+    const infNome = document.getElementById('inf-nome');
+    if (infNome) infNome.textContent = "Inserimento manuale";
+    const infMarca = document.getElementById('inf-marca');
+    if (infMarca) infMarca.textContent = "Locale";
+    
+    const imgAnt = document.getElementById('img-anteprima');
+    if (imgAnt) imgAnt.style.display = 'none';
+
+    impostaDataOdierna();
 }
 
 function gestisciProdottoNonTrovato(barcode) {
     document.getElementById('inf-nome').textContent = "Non catalogato";
     document.getElementById('inf-marca').textContent = "Inserimento manuale";
-    document.getElementById('img-anteprima').style.display = 'none';
-    aggiornaListaUbicazioniDinamiche("");
-    document.getElementById('preview-prodotto').style.display = 'block';
+    const imgAnt = document.getElementById('img-anteprima');
+    if (imgAnt) imgAnt.style.display = 'none';
     
-    document.getElementById('nome-prodotto').value = `Prodotto [${barcode}]`;
-    document.getElementById('marca-prodotto').value = "";
-    document.getElementById('quantita').value = "1";
-    document.getElementById('nome-prodotto').focus();
+    aggiornaListaUbicazioniDinamiche("");
+    
+    const preview = document.getElementById('preview-prodotto');
+    if (preview) preview.style.display = 'block';
+    
+    const nomeProd = document.getElementById('nome-prodotto');
+    if (nomeProd) {
+        nomeProd.value = `Prodotto [${barcode}]`;
+        nomeProd.focus();
+    }
+    const marcaProd = document.getElementById('marca-prodotto');
+    if (marcaProd) marcaProd.value = "";
+    const quantita = document.getElementById('quantita');
+    if (quantita) quantita.value = "1";
 }
 
 function registraCarico(event) {
@@ -326,7 +427,15 @@ function registraCarico(event) {
         return;
     }
 
-    const scadenzaVal = document.getElementById('scadenza').value || "Nessuna scadenza";
+    let scadenzaVal = isProdottoSenzaScadenza ? "Nessuna scadenza" : (document.getElementById('scadenza').value || "Nessuna scadenza");
+
+    const confermaMessaggio = isProdottoSenzaScadenza 
+        ? `Confermi di caricare "${nome}" senza data di scadenza?` 
+        : `Confermi la scadenza al ${scadenzaVal} per "${nome}"?`;
+
+    if (!confirm(confermaMessaggio)) {
+        return; 
+    }
 
     const nuovoArticolo = {
         id: Date.now(),
