@@ -1,8 +1,6 @@
 let html5QrCode = null;
 let cameraAttiva = false;
-let tipoScadenzaCorrente = "consigliata"; 
 let mostraAiutiAttivo = true;
-let isProdottoSenzaScadenza = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     const savedHelpPref = localStorage.getItem('eat_me_first_help');
@@ -23,7 +21,6 @@ function toggleGlobalHelp(stato) {
     localStorage.setItem('eat_me_first_help', stato);
 }
 
-// Gestione pulita dei suggerimenti senza bloccare la digitazione
 function inizializzaListenerCampi() {
     const gruppi = document.querySelectorAll('.form-group');
     gruppi.forEach((gruppo, index) => {
@@ -37,7 +34,6 @@ function inizializzaListenerCampi() {
                 const oggi = new Date().toISOString().split('T')[0];
                 const ultimiAiutiLetti = JSON.parse(localStorage.getItem('eat_me_first_visti') || "{}");
 
-                // Se l'utente ha già chiuso l'aiuto oggi per questo campo, non facciamo nulla
                 if (ultimiAiutiLetti[campoId] === oggi) return;
 
                 mostraTooltipModal(gruppo.dataset.help, campoId);
@@ -84,7 +80,6 @@ function handleBarcodeKey(event) {
     }
 }
 
-// Gestione Fotocamera robusta
 async function toggleFotocamera() {
     const readerDiv = document.getElementById('reader');
     const btnCam = document.getElementById('btn-toggle-cam');
@@ -143,7 +138,6 @@ async function chiudiFotocamera() {
     cameraAttiva = false;
 }
 
-// Ricerca Multipla con gestione ubicazioni dinamiche e dizionario corposo
 async function cercaBarcodeMultiplo() {
     if (cameraAttiva) await chiudiFotocamera();
 
@@ -187,7 +181,9 @@ async function cercaBarcodeMultiplo() {
             impostaCategoriaIntelligente(fonteTrovata, nome);
             impostaUbicazioneStorica(barcode, nome);
             gestisciQuantitaPezzoSingolo(prodotto.quantity || "");
-            analizzaScadenzaEValutaDizionario(fonteTrovata, nome);
+            
+            // Suggerimento orientativo nei campi senza bloccare l'utente
+            suggerisciScadenzaOrientativa(fonteTrovata, nome);
 
             const imgEl = document.getElementById('img-anteprima');
             if(immagine && imgEl) {
@@ -237,74 +233,59 @@ function verificaDescrizioneDettagliata(testo) {
     const generici = ['pomodori', 'verdura', 'frutta', 'formaggio', 'carne', 'pesce', 'pane', 'olio', 'farina'];
     
     if (generici.includes(t)) {
-        suggerimentoEl.textContent = `💡 Suggerimento: specifica meglio (es. "${t} freschi" o "${t} secchi") per stimare la scadenza corretta!`;
+        suggerimentoEl.textContent = `💡 Suggerimento: specifica meglio (es. "${t} freschi" o "${t} secchi")!`;
     } else {
         suggerimentoEl.textContent = "";
-        analizzaScadenzaEValutaDizionario("manuale", t);
+        suggerisciScadenzaOrientativa("manuale", t);
     }
 }
 
-function analizzaScadenzaEValutaDizionario(fonte, nomeProdotto) {
+// Gestione pulizia incrociata dei campi di scadenza
+function pulisciAltriCampiScadenza(origine) {
+    if (origine === 'giorni') {
+        document.getElementById('stima-mesi').value = '';
+        document.getElementById('scad-gg').value = '';
+        document.getElementById('scad-mm').value = '';
+        document.getElementById('scad-aa').value = '';
+    } else if (origine === 'mesi') {
+        document.getElementById('stima-giorni').value = '';
+        document.getElementById('scad-gg').value = '';
+        document.getElementById('scad-mm').value = '';
+        document.getElementById('scad-aa').value = '';
+    } else if (origine === 'data') {
+        document.getElementById('stima-giorni').value = '';
+        document.getElementById('stima-mesi').value = '';
+    }
+}
+
+function saltoAutomatico(corrente, prossimoId, maxLunghezza) {
+    if (corrente.value.length >= maxLunghezza) {
+        document.getElementById(prossimoId).focus();
+    }
+}
+
+function suggerisciScadenzaOrientativa(fonte, nomeProdotto) {
     const t = nomeProdotto.toLowerCase();
-    const boxSenzaScadenza = document.getElementById('box-senza-scadenza-container');
-    const testoAvviso = document.getElementById('testo-avviso-scadenza');
-    const containerInputData = document.getElementById('container-input-data');
     const badgeEl = document.getElementById('inf-tipo-scadenza-badge');
+    if (!badgeEl) return;
 
-    if (!boxSenzaScadenza || !containerInputData || !badgeEl) return;
+    // Pulisci i campi iniziali per lasciare spazio all'utente, oppure precompila un suggerimento modificabile
+    document.getElementById('stima-giorni').value = '';
+    document.getElementById('stima-mesi').value = '';
 
-    isProdottoSenzaScadenza = false;
-    boxSenzaScadenza.style.display = 'none';
-    containerInputData.style.display = 'block';
-
-    if (t.includes('tovaglioli') || t.includes('carta igienica') || t.includes('scottex') || t.includes('rotoloni') || t.includes('pile') || t.includes('batterie') || t.includes('piatti di plastica') || t.includes('bicchieri di plastica') || t.includes('candeggina') || t.includes('sgrassatore') || t.includes('pellicola') || t.includes('alluminio')) {
-        boxSenzaScadenza.style.display = 'block';
-        testoAvviso.textContent = "🔍 Questo articolo sembra un prodotto durevole o senza scadenza. Ha una data di scadenza?";
-        badgeEl.innerHTML = '<span class="scadenza-badge" style="background: #30363d; color: #8b949e;">📦 Prodotto Durevole</span>';
+    if (t.includes('tovaglioli') || t.includes('carta igienica') || t.includes('scottex') || t.includes('pile') || t.includes('batterie') || t.includes('candeggina') || t.includes('alluminio')) {
+        badgeEl.innerHTML = '<span class="scadenza-badge" style="background: #30363d; color: #8b949e;">📦 Prodotto Durevole (Nessuna scadenza necessaria)</span>';
         return;
     }
 
-    let giorniStima = 30; 
-    let tipoBadge = "consigliata";
-    let testoBadge = "⏳ Scadenza Stimata (Dizionario)";
-
-    if (t.includes('pasta') || t.includes('riso') || t.includes('farina') || t.includes('biscotti') || t.includes('caffè') || t.includes('zucchero') || t.includes('sale') || t.includes('tonno') || t.includes('passata') || t.includes('pelati') || t.includes('legumi') || t.includes('fagioli') || t.includes('ceci') || t.includes('piselli') || t.includes('olio') || t.includes('aceto') || t.includes('miele') || t.includes('marmellata') || t.includes('fette biscottate') || t.includes('crackers') || t.includes('cioccolato') || t.includes('latte uht')) {
-        giorniStima = 365; 
-    } else if (t.includes('latte fresco') || t.includes('yogurt') || t.includes('formaggio fresco') || t.includes('mozzarella') || t.includes('ricotta') || t.includes('stracchino') || t.includes('affettati') || t.includes('prosciutto') || t.includes('salame') || t.includes('carne') || t.includes('pesce') || t.includes('verdura') || t.includes('frutta')) {
-        giorniStima = 5; 
-        testoBadge = "⚠️ Prodotto Fresco: Verifica con attenzione l'etichetta!";
-        tipoBadge = "fresco";
-    }
-
-    const d = new Date();
-    d.setDate(d.getDate() + giorniStima);
-    const campoScadenza = document.getElementById('scadenza');
-    if (campoScadenza) campoScadenza.value = d.toISOString().split('T')[0];
-    
-    if (tipoBadge === "fresco") {
-        badgeEl.innerHTML = `<span class="scadenza-badge" style="background: #9e6a03; color: #fff;">${testoBadge}</span>`;
+    if (t.includes('pasta') || t.includes('riso') || t.includes('farina') || t.includes('biscotti') || t.includes('caffè') || t.includes('zucchero') || t.includes('tonno') || t.includes('olio') || t.includes('latte uht')) {
+        document.getElementById('stima-mesi').value = 12;
+        badgeEl.innerHTML = '<span class="scadenza-badge badge-consigliata">💡 Suggerimento: 12 mesi (modificabile)</span>';
+    } else if (t.includes('latte fresco') || t.includes('yogurt') || t.includes('mozzarella') || t.includes('affettati') || t.includes('carne') || t.includes('pesce')) {
+        document.getElementById('stima-giorni').value = 5;
+        badgeEl.innerHTML = '<span class="scadenza-badge" style="background: #9e6a03; color: #fff;">💡 Suggerimento fresco: 5 giorni (verifica etichetta)</span>';
     } else {
-        badgeEl.innerHTML = `<span class="scadenza-badge badge-consigliata">${testoBadge}</span>`;
-    }
-}
-
-function confermaSenzaScadenza(rispostaSi) {
-    const boxSenzaScadenza = document.getElementById('box-senza-scadenza-container');
-    const containerInputData = document.getElementById('container-input-data');
-    const badgeEl = document.getElementById('inf-tipo-scadenza-badge');
-
-    if (rispostaSi) {
-        isProdottoSenzaScadenza = true;
-        document.getElementById('scadenza').value = "";
-        containerInputData.style.display = 'none';
-        boxSenzaScadenza.style.display = 'none';
-        badgeEl.innerHTML = '<span class="scadenza-badge" style="background: #238636; color: #fff;">✅ Nessuna Scadenza (Confermato)</span>';
-    } else {
-        isProdottoSenzaScadenza = false;
-        boxSenzaScadenza.style.display = 'none';
-        containerInputData.style.display = 'block';
-        badgeEl.innerHTML = '<span class="scadenza-badge badge-consigliata">📅 Inserisci manualmente la data</span>';
-        document.getElementById('scadenza').focus();
+        badgeEl.innerHTML = '<span class="scadenza-badge" style="background: #21262d; color: #8b949e;">Inserisci giorni, mesi o data esatta</span>';
     }
 }
 
@@ -420,19 +401,45 @@ function registraCarico(event) {
     const nome = document.getElementById('nome-prodotto').value.trim();
     const barcode = document.getElementById('barcode-input').value.trim();
     const ubicazioneScelta = document.getElementById('ubicazione').value;
+    const quantitaInput = document.getElementById('quantita');
 
     if (!ubicazioneScelta || ubicazioneScelta === "__nuova__") {
-        alert("Seleziona o crea un'ubicazione valida per il prodotto.");
+        alert("Attenzione: seleziona o crea un'ubicazione valida per il prodotto.");
         document.getElementById('ubicazione').focus();
         return;
     }
 
-    let scadenzaVal = isProdottoSenzaScadenza ? "Nessuna scadenza" : (document.getElementById('scadenza').value || "Nessuna scadenza");
+    if (!quantitaInput || !quantitaInput.value.trim() || parseInt(quantitaInput.value) <= 0) {
+        alert("Attenzione: inserisci una quantità valida.");
+        quantitaInput.focus();
+        return;
+    }
 
-    const confermaMessaggio = isProdottoSenzaScadenza 
-        ? `Confermi di caricare "${nome}" senza data di scadenza?` 
-        : `Confermi la scadenza al ${scadenzaVal} per "${nome}"?`;
+    // Calcolo della scadenza basato sui campi attivi
+    let scadenzaVal = "";
+    const giorniInput = document.getElementById('stima-giorni').value.trim();
+    const mesiInput = document.getElementById('stima-mesi').value.trim();
+    
+    const gg = document.getElementById('scad-gg').value.trim();
+    const mm = document.getElementById('scad-mm').value.trim();
+    const aa = document.getElementById('scad-aa').value.trim();
 
+    const oggi = new Date();
+
+    if (gg && mm && aa) {
+        const annoPieno = aa.length === 2 ? `20${aa}` : aa;
+        scadenzaVal = `${annoPieno}-${mm.padStart(2, '0')}-${gg.padStart(2, '0')}`;
+    } else if (giorniInput) {
+        oggi.setDate(oggi.getDate() + parseInt(giorniInput));
+        scadenzaVal = oggi.toISOString().split('T')[0];
+    } else if (mesiInput) {
+        oggi.setMonth(oggi.getMonth() + parseInt(mesiInput));
+        scadenzaVal = oggi.toISOString().split('T')[0];
+    } else {
+        scadenzaVal = "Nessuna scadenza";
+    }
+
+    const confermaMessaggio = `Confermi il carico di "${nome}" con scadenza al ${scadenzaVal}?`;
     if (!confirm(confermaMessaggio)) {
         return; 
     }
@@ -445,7 +452,7 @@ function registraCarico(event) {
         marca: document.getElementById('marca-prodotto').value.trim(),
         ubicazione: ubicazioneScelta,
         scadenza: scadenzaVal,
-        quantita: parseInt(document.getElementById('quantita').value) || 1,
+        quantita: parseInt(quantitaInput.value) || 1,
         unitaMisura: document.getElementById('unita-misura').value,
         immagine: document.getElementById('img-anteprima').src || "",
         dataCarico: document.getElementById('data-carico').value
@@ -459,4 +466,4 @@ function registraCarico(event) {
 
     alert("Articolo caricato con successo nella dispensa!");
     window.location.href = "dispensa.html";
-}
+}c

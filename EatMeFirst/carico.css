@@ -43,10 +43,6 @@ input:focus, select:focus {
     outline: none;
     box-shadow: 0 0 5px rgba(88, 166, 255, 0.5);
 }
-.date-inputs-container {
-    display: flex;
-    gap: 10px;
-}
 button {
     background-color: #238636;
     color: white;
