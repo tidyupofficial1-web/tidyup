@@ -1,8 +1,17 @@
-/* Nasconde definitivamente qualsiasi elemento legato alle categorie dalla pagina */
-#categoria-prodotto, 
-.lista-categorie, 
-.categories-container,
-select[name="categoria"],
-div:has(> label[for*="categoria"]) {
-    display: none !important;
+/* Rimuove completamente qualsiasi puntino, marcatore o stile elenco dalle categorie */
+ul, ol, li {
+    list-style: none !important;
+    list-style-type: none !important;
+    background-image: none !important;
+}
+
+li::before, li::after, ::marker {
+    content: none !important;
+}
+
+/* Rimuove qualsiasi stato attivo o evidenziazione predefinita (es. il pallino su latticini) */
+.latticini, [data-categoria="latticini"], .selected, .active, .categoria-item.active {
+    list-style: none !important;
+    background: transparent !important;
+    font-weight: normal !important;
 }

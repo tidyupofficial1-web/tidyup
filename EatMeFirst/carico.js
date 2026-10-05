@@ -16,21 +16,14 @@ function toggleFotocamera() {
             { facingMode: "environment" },
             { fps: 10, qrbox: { width: 250, height: 150 } },
             (decodedText) => {
-                // Inserisce il codice a barre rilevato nella casella di input
                 const barcodeInput = document.getElementById('barcode-input');
                 if (barcodeInput) {
                     barcodeInput.value = decodedText;
                 }
-                
-                // Ferma la fotocamera dopo la scansione riuscita
                 fermaFotocamera();
-                
-                // Avvia lo scaricamento delle informazioni dal database
                 cercaProdottoPerBarcode(decodedText);
             },
-            (errorMessage) => {
-                // Eventuali errori di scansione fotogramma (ignorati per evitare log superflui)
-            }
+            (errorMessage) => {}
         ).catch(err => {
             console.error("Errore avvio fotocamera:", err);
             alert("Impossibile avviare la fotocamera.");
@@ -74,11 +67,9 @@ function cercaProdottoPerBarcode(barcode) {
             if (data.status === 1) {
                 const p = data.product;
                 
-                // Recupera nome e marca (senza toccare alcuna categoria)
                 const nome = p.product_name_it || p.product_name || p.product_name_en || '';
                 const marca = p.brands || '';
                 
-                // Assegnazione dei soli campi nome e marca
                 const nomeInput = document.getElementById('nome-prodotto');
                 if (nomeInput) {
                     nomeInput.value = nome;
@@ -89,7 +80,6 @@ function cercaProdottoPerBarcode(barcode) {
                     marcaInput.value = marca;
                 }
                 
-                // Mostra la sezione di anteprima
                 const previewProdotto = document.getElementById('preview-prodotto');
                 if (previewProdotto) {
                     previewProdotto.style.display = 'block';
@@ -109,10 +99,19 @@ function cercaProdottoPerBarcode(barcode) {
         });
 }
 
-// Inizializzazione al caricamento della pagina
+// Inizializzazione all'avvio della pagina
 document.addEventListener('DOMContentLoaded', () => {
     const btnFotocamera = document.getElementById('btn-fotocamera');
     if (btnFotocamera) {
         btnFotocamera.addEventListener('click', toggleFotocamera);
     }
+
+    // Rimuove qualsiasi puntino, marcatore o selezione automatica dalle categorie all'avvio
+    const elementiCategorie = document.querySelectorAll('ul, ol, li, .latticini, [data-categoria], .categoria-item');
+    elementiCategorie.forEach(el => {
+        el.classList.remove('active', 'selected', 'evidenziato', 'latticini');
+        if (el.style) {
+            el.style.listStyleType = 'none';
+        }
+    });
 });
