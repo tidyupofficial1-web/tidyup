@@ -52,10 +52,10 @@
                     </select>
                 </div>
 
-                <div class="form-group" data-help="Nome del prodotto compilato automaticamente o inserito a mano. Sii specifico (es. 'pomodori freschi' o 'pomodori secchi').">
+                <div class="form-group" data-help="Nome del prodotto compilato automaticamente o inserito a mano.">
                     <label>Descrizione / Nome Prodotto (Max 45 caratteri)</label>
-                    <input type="text" id="nome-prodotto" maxlength="45" placeholder="Es. Dentifricio AZ, Uova Bio..." required oninput="verificaDescrizioneDettagliata(this.value)">
-                    <small style="color: #8b949e;">Database: <span id="inf-nome">-</span> | Suggerimento: <span id="suggerimento-dettaglio" style="color: #ff9800;"></span></small>
+                    <input type="text" id="nome-prodotto" maxlength="45" placeholder="Es. Dentifricio AZ, Uova Bio..." required>
+                    <small style="color: #8b949e;">Database: <span id="inf-nome">-</span></small>
                 </div>
 
                 <div class="form-group" data-help="Inserisci il marchio del produttore o l'origine (es. 'Mercato rionale', 'Fatto in casa'). Opzionale.">
@@ -73,7 +73,7 @@
                 </div>
 
                 <!-- Gestione Quantità e Unità di Misura -->
-                <div class="form-group" data-help="Per oggetti singoli come tubetti di dentifricio o flaconi, la quantità è 1 pezzo. Gestisci qui eventuali confezioni multiple.">
+                <div class="form-group" data-help="Gestisci qui la quantità e l'unità di misura.">
                     <label>Quantità Confezione</label>
                     <div style="display: flex; gap: 10px;">
                         <input type="number" id="quantita" value="1" min="1" required style="flex: 2;">
@@ -86,22 +86,22 @@
                     <small style="color: #58a6ff;" id="inf-conversione">💡 Unità standard singola</small>
                 </div>
 
-                <!-- Gestione Scadenza Rapida (Giorni o Mesi) o Data Esatta Manuale -->
-                <div class="form-group" data-help="Inserisci rapidamente quanti giorni o mesi mancano alla scadenza, oppure compila direttamente la data esatta stampata sulla confezione.">
-                    <label>Gestione Scadenza (Scegli un metodo)</label>
+                <!-- Gestione Scadenza Pulita: Giorni, Mesi o Data Esatta (Senza stime automatiche) -->
+                <div class="form-group" data-help="Inserisci i giorni, i mesi mancanti alla scadenza, oppure compila direttamente la data esatta stampata sulla confezione.">
+                    <label>Gestione Scadenza (Scegli come inserire)</label>
                     
                     <div style="display: flex; flex-direction: column; gap: 12px; background: #21262d; padding: 12px; border-radius: 8px; border: 1px solid #30363d;">
                         
-                        <!-- 1. Stima Giorni -->
+                        <!-- 1. Giorni -->
                         <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
                             <label style="font-size: 13px; font-weight: normal; color: #e6edf3; margin-bottom: 0; flex: 1;">⏳ Tra quanti **giorni** scade?</label>
                             <input type="number" id="stima-giorni" placeholder="Es. 3" min="1" oninput="pulisciAltriCampiScadenza('giorni')" style="width: 110px; background-color: #ffffff; color: #24292e; text-align: center;">
                         </div>
 
-                        <!-- 2. Stima Mesi -->
+                        <!-- 2. Mesi -->
                         <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
                             <label style="font-size: 13px; font-weight: normal; color: #e6edf3; margin-bottom: 0; flex: 1;">📅 Tra quanti **mesi** scade?</label>
-                            <input type="number" id="stima-mesi" placeholder="Es. 12" min="1" oninput="pulisciAltriCampiScadenza('mesi')" style="width: 110px; background-color: #ffffff; color: #24292e; text-align: center;">
+                            <input type="number" id="stima-mesi" placeholder="Es. 6" min="1" oninput="pulisciAltriCampiScadenza('mesi')" style="width: 110px; background-color: #ffffff; color: #24292e; text-align: center;">
                         </div>
 
                         <!-- 3. Data Esatta Manuale (GG / MM / AAAA) -->
@@ -117,7 +117,6 @@
                         </div>
 
                     </div>
-                    <div id="inf-tipo-scadenza-badge" style="margin-top: 5px;"></div>
                 </div>
 
                 <img id="img-anteprima" src="" alt="Anteprima prodotto">

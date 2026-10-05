@@ -72,22 +72,6 @@ button:hover {
 .btn-camera:hover {
     filter: brightness(1.2);
 }
-.scadenza-badge {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: bold;
-    margin-top: 5px;
-}
-.badge-tassativa {
-    background-color: #da3633;
-    color: #ffff00;
-}
-.badge-consigliata {
-    background-color: #f1e05a;
-    color: #000000;
-}
 #preview-prodotto {
     display: none;
     border-top: 1px solid #30363d;

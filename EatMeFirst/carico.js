@@ -181,9 +181,9 @@ async function cercaBarcodeMultiplo() {
             impostaCategoriaIntelligente(fonteTrovata, nome);
             impostaUbicazioneStorica(barcode, nome);
             gestisciQuantitaPezzoSingolo(prodotto.quantity || "");
-            
-            // Suggerimento orientativo nei campi senza bloccare l'utente
-            suggerisciScadenzaOrientativa(fonteTrovata, nome);
+
+            // PULIZIA TOTALE DEI CAMPI SCADENZA: NESSUNA STIMA PRECOMPILATA
+            pulisciTuttiCampiScadenza();
 
             const imgEl = document.getElementById('img-anteprima');
             if(immagine && imgEl) {
@@ -194,7 +194,9 @@ async function cercaBarcodeMultiplo() {
             }
 
             document.getElementById('preview-prodotto').style.display = 'block';
-            document.getElementById('ubicazione').focus();
+            
+            // Focus immediato sul campo giorni per procedere subito all'inserimento
+            document.getElementById('stima-giorni').focus();
         } else {
             gestisciProdottoNonTrovato(barcode);
         }
@@ -225,22 +227,14 @@ function impostaCategoriaIntelligente(fonte, nomeProdotto) {
     }
 }
 
-function verificaDescrizioneDettagliata(testo) {
-    const t = testo.trim().toLowerCase();
-    const suggerimentoEl = document.getElementById('suggerimento-dettaglio');
-    if (!suggerimentoEl) return;
-    
-    const generici = ['pomodori', 'verdura', 'frutta', 'formaggio', 'carne', 'pesce', 'pane', 'olio', 'farina'];
-    
-    if (generici.includes(t)) {
-        suggerimentoEl.textContent = `💡 Suggerimento: specifica meglio (es. "${t} freschi" o "${t} secchi")!`;
-    } else {
-        suggerimentoEl.textContent = "";
-        suggerisciScadenzaOrientativa("manuale", t);
-    }
+function pulisciTuttiCampiScadenza() {
+    document.getElementById('stima-giorni').value = '';
+    document.getElementById('stima-mesi').value = '';
+    document.getElementById('scad-gg').value = '';
+    document.getElementById('scad-mm').value = '';
+    document.getElementById('scad-aa').value = '';
 }
 
-// Gestione pulizia incrociata dei campi di scadenza
 function pulisciAltriCampiScadenza(origine) {
     if (origine === 'giorni') {
         document.getElementById('stima-mesi').value = '';
@@ -261,31 +255,6 @@ function pulisciAltriCampiScadenza(origine) {
 function saltoAutomatico(corrente, prossimoId, maxLunghezza) {
     if (corrente.value.length >= maxLunghezza) {
         document.getElementById(prossimoId).focus();
-    }
-}
-
-function suggerisciScadenzaOrientativa(fonte, nomeProdotto) {
-    const t = nomeProdotto.toLowerCase();
-    const badgeEl = document.getElementById('inf-tipo-scadenza-badge');
-    if (!badgeEl) return;
-
-    // Pulisci i campi iniziali per lasciare spazio all'utente, oppure precompila un suggerimento modificabile
-    document.getElementById('stima-giorni').value = '';
-    document.getElementById('stima-mesi').value = '';
-
-    if (t.includes('tovaglioli') || t.includes('carta igienica') || t.includes('scottex') || t.includes('pile') || t.includes('batterie') || t.includes('candeggina') || t.includes('alluminio')) {
-        badgeEl.innerHTML = '<span class="scadenza-badge" style="background: #30363d; color: #8b949e;">📦 Prodotto Durevole (Nessuna scadenza necessaria)</span>';
-        return;
-    }
-
-    if (t.includes('pasta') || t.includes('riso') || t.includes('farina') || t.includes('biscotti') || t.includes('caffè') || t.includes('zucchero') || t.includes('tonno') || t.includes('olio') || t.includes('latte uht')) {
-        document.getElementById('stima-mesi').value = 12;
-        badgeEl.innerHTML = '<span class="scadenza-badge badge-consigliata">💡 Suggerimento: 12 mesi (modificabile)</span>';
-    } else if (t.includes('latte fresco') || t.includes('yogurt') || t.includes('mozzarella') || t.includes('affettati') || t.includes('carne') || t.includes('pesce')) {
-        document.getElementById('stima-giorni').value = 5;
-        badgeEl.innerHTML = '<span class="scadenza-badge" style="background: #9e6a03; color: #fff;">💡 Suggerimento fresco: 5 giorni (verifica etichetta)</span>';
-    } else {
-        badgeEl.innerHTML = '<span class="scadenza-badge" style="background: #21262d; color: #8b949e;">Inserisci giorni, mesi o data esatta</span>';
     }
 }
 
@@ -370,6 +339,7 @@ function abilitaCompilazioneManuale() {
     const imgAnt = document.getElementById('img-anteprima');
     if (imgAnt) imgAnt.style.display = 'none';
 
+    pulisciTuttiCampiScadenza();
     impostaDataOdierna();
 }
 
@@ -393,6 +363,8 @@ function gestisciProdottoNonTrovato(barcode) {
     if (marcaProd) marcaProd.value = "";
     const quantita = document.getElementById('quantita');
     if (quantita) quantita.value = "1";
+
+    pulisciTuttiCampiScadenza();
 }
 
 function registraCarico(event) {
@@ -415,7 +387,7 @@ function registraCarico(event) {
         return;
     }
 
-    // Calcolo della scadenza basato sui campi attivi
+    // Calcolo della scadenza basato esclusivamente sull'input scelto dall'utente
     let scadenzaVal = "";
     const giorniInput = document.getElementById('stima-giorni').value.trim();
     const mesiInput = document.getElementById('stima-mesi').value.trim();
@@ -466,4 +438,4 @@ function registraCarico(event) {
 
     alert("Articolo caricato con successo nella dispensa!");
     window.location.href = "dispensa.html";
-}c
+}
