@@ -462,14 +462,19 @@ button {
     color: var(--accent-color);
 }
 
-.footer-logo-fixed {
+/* Watermark Logo Fisso in Basso a Destra (Sicuro e dimensionato) */
+.chefstock-logo-watermark {
     position: fixed;
     bottom: 15px;
     right: 15px;
-    width: 35px;
-    height: 35px;
+    width: 35px !important;
+    height: 35px !important;
+    max-width: 35px !important;
+    max-height: 35px !important;
+    object-fit: contain;
     opacity: 0.7;
     pointer-events: none;
+    z-index: 999;
 }
 
 /* Modale */
