@@ -23,7 +23,9 @@ function toggleFotocamera() {
                 fermaFotocamera();
                 cercaProdottoPerBarcode(decodedText);
             },
-            (errorMessage) => {}
+            (errorMessage) => {
+                // Errori di scansione fotogramma ignorati per pulizia log
+            }
         ).catch(err => {
             console.error("Errore avvio fotocamera:", err);
             alert("Impossibile avviare la fotocamera.");
@@ -67,6 +69,7 @@ function cercaProdottoPerBarcode(barcode) {
             if (data.status === 1) {
                 const p = data.product;
                 
+                // Estrae nome e marca (nessuna manipolazione di categorie)
                 const nome = p.product_name_it || p.product_name || p.product_name_en || '';
                 const marca = p.brands || '';
                 
@@ -106,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnFotocamera.addEventListener('click', toggleFotocamera);
     }
 
-    // Rimuove qualsiasi puntino, marcatore o selezione automatica dalle categorie all'avvio
+    // Pulizia di sicurezza all'avvio contro classi di selezione residue
     const elementiCategorie = document.querySelectorAll('ul, ol, li, .latticini, [data-categoria], .categoria-item');
     elementiCategorie.forEach(el => {
         el.classList.remove('active', 'selected', 'evidenziato', 'latticini');
