@@ -78,7 +78,10 @@ function cercaProdottoPerBarcode(barcode) {
                 const nome = p.product_name_it || p.product_name || p.product_name_en || '';
                 const marca = p.brands || '';
                 
-                // Assegnazione dei campi di testo trovati
+                // Prende direttamente la stringa della categoria da Open Food Facts se presente, altrimenti stringa vuota
+                const categoria = p.categories || '';
+                
+                // Assegnazione dei campi del form
                 const nomeInput = document.getElementById('nome-prodotto');
                 if (nomeInput) {
                     nomeInput.value = nome;
@@ -89,11 +92,10 @@ function cercaProdottoPerBarcode(barcode) {
                     marcaInput.value = marca;
                 }
                 
-                // Lasciamo inalterata/vuota la categoria: sarà l'utente a sceglierla o compilarla manualmente
+                // Se Open Food Facts fornisce la categoria la scrive, altrimenti la lascia bianca per l'utente
                 const categoriaInput = document.getElementById('categoria-prodotto');
-                if (categoriaInput && !categoriaInput.value) {
-                    // Eventualmente resetta a vuoto se è un input o una select senza scelta forzata
-                    // categoriaInput.value = ""; 
+                if (categoriaInput) {
+                    categoriaInput.value = categoria;
                 }
                 
                 // Mostra la sezione di anteprima
@@ -103,6 +105,8 @@ function cercaProdottoPerBarcode(barcode) {
                 }
             } else {
                 alert("Prodotto non trovato nel database. Inserisci i dati manualmente.");
+                
+                // Pulisce o lascia vuoti i campi e mostra comunque il form per l'inserimento manuale
                 const previewProdotto = document.getElementById('preview-prodotto');
                 if (previewProdotto) {
                     previewProdotto.style.display = 'block';
