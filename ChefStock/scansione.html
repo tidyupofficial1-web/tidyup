@@ -38,7 +38,7 @@
                 <h2>💡 Come funziona l'Entrata Merci</h2>
                 <button class="btn-close-guide" onclick="chiudiGuidaIniziale()">×</button>
             </div>
-            <p>Inquadra qualsiasi codice a barre o digitalo manualmente. Compila i dati del prodotto, seleziona la modalità di scadenza pulita e registra l'articolo nel tuo inventario!</p>
+            <p>Inquadra qualsiasi codice a barre o digitalo manualmente. Compila i dati del prodotto, seleziona il tipo di scadenza e registra l'articolo nel tuo inventario!</p>
         </div>
 
         <h1>Entrata & Scansione Merci</h1>
@@ -75,7 +75,7 @@
                         <option value="Ortofrutta">🍎 Ortofrutta & Mercato</option>
                         <option value="Salumeria & Carni">🥓 Salumeria & Carni</option>
                         <option value="Dispensa / Generi alimentari">🥫 Dispensa / Alimentari</option>
-                        <option value="Surgelati">❄️️ Surgelati & Piatti Pronti</option>
+                        <option value="Surgelati">❄ Surgelati & Piatti Pronti</option>
                         <option value="Bevande">🧃 Bevande</option>
                         <option value="Packaging & Asporto">📦 Packaging (Cartoni pizza, sacchetti)</option>
                         <option value="Sala & Consumo">🍽️ Sala (Tovaglioli, tovaglie, bicchieri)</option>
@@ -134,17 +134,23 @@
                     </div>
                 </div>
 
-                <!-- GESTIONE SCADENZA PULITA E LINEARE -->
-                <div class="form-group" data-help="Scegli il tipo di scadenza e compila giorni, mesi o data esatta.">
+                <!-- GESTIONE SCADENZA CON 3 CASELLA DA SPUNTARE (SELEZIONE UNICA) -->
+                <div class="form-group" data-help="Seleziona che tipo di scadenza ha il prodotto spuntando una sola casella.">
                     <div class="label-flex">
-                        <label>Gestione Scadenza</label>
+                        <label>Che scadenza è?</label>
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
                     
-                    <div class="tipo-scadenza-selector">
-                        <label><input type="radio" name="tipo-scadenza" value="tassativa" onclick="impostaTipoScadenza('tassativa')"> 🔴 Tassativa</label>
-                        <label><input type="radio" name="tipo-scadenza" value="consigliata" checked onclick="impostaTipoScadenza('consigliata')"> 🟡 Consigliata</label>
-                        <label><input type="radio" name="tipo-scadenza" value="nessuna" onclick="impostaTipoScadenza('nessuna')"> ⚪ Senza Scadenza</label>
+                    <div class="scadenza-checkbox-group">
+                        <label class="check-scad-label">
+                            <input type="checkbox" id="chk-scad-tassativa" onclick="gestisciSelezioneScadenza('tassativa')"> Scadenza Tassativa
+                        </label>
+                        <label class="check-scad-label">
+                            <input type="checkbox" id="chk-scad-consigliata" checked onclick="gestisciSelezioneScadenza('consigliata')"> Scadenza Consigliata
+                        </label>
+                        <label class="check-scad-label">
+                            <input type="checkbox" id="chk-scad-nessuna" onclick="gestisciSelezioneScadenza('nessuna')"> Senza Scadenza (Consumo/Materiale)
+                        </label>
                     </div>
 
                     <div class="scadenza-box-container">

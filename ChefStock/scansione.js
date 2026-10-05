@@ -86,11 +86,8 @@ function handleBarcodeKey(event) {
 }
 
 function gestisciCodiceTrovato(barcode) {
-    // Mostra il form di preview dei dettagli prodotto
     document.getElementById('preview-prodotto').style.display = 'block';
     document.getElementById('inf-nome').innerText = "Codice " + barcode;
-    
-    // Esempio simulato di riconoscimento base o recupero offline
     document.getElementById('nome-prodotto').focus();
 }
 
@@ -119,7 +116,43 @@ function analizzaDescrizioneTestuale(testo) {
     }
 }
 
-// --- Gestione Scadenza Pulita ---
+// --- Gestione Scadenza con 3 Checkbox a Selezione Esclusiva ---
+function gestisciSelezioneScadenza(tipoSelezionato) {
+    const chkTassativa = document.getElementById('chk-scad-tassativa');
+    const chkConsigliata = document.getElementById('chk-scad-consigliata');
+    const chkNessuna = document.getElementById('chk-scad-nessuna');
+    const containerScadenza = document.querySelector('.scadenza-box-container');
+
+    // Comportamento esclusivo (tipo radio ma con le caselle richieste)
+    if (tipoSelezionato === 'tassativa') {
+        chkTassativa.checked = true;
+        chkConsigliata.checked = false;
+        chkNessuna.checked = false;
+    } else if (tipoSelezionato === 'consigliata') {
+        chkTassativa.checked = false;
+        chkConsigliata.checked = true;
+        chkNessuna.checked = false;
+    } else if (tipoSelezionato === 'nessuna') {
+        chkTassativa.checked = false;
+        chkConsigliata.checked = false;
+        chkNessuna.checked = true;
+    }
+
+    // Se è "nessuna", disattiva i box di input data/giorni
+    if (chkNessuna.checked) {
+        containerScadenza.style.opacity = '0.3';
+        containerScadenza.style.pointerEvents = 'none';
+        document.getElementById('stima-giorni').value = '';
+        document.getElementById('stima-mesi').value = '';
+        document.getElementById('scad-gg').value = '';
+        document.getElementById('scad-mm').value = '';
+        document.getElementById('scad-aa').value = '';
+    } else {
+        containerScadenza.style.opacity = '1';
+        containerScadenza.style.pointerEvents = 'auto';
+    }
+}
+
 function pulisciAltriCampiScadenza(origine) {
     if (origine === 'giorni') {
         document.getElementById('stima-mesi').value = '';
@@ -143,26 +176,9 @@ function saltoAutomatico(corrente, prossimoId, maxLen) {
     }
 }
 
-function impostaTipoScadenza(tipo) {
-    const containerScadenza = document.querySelector('.scadenza-box-container');
-    if (tipo === 'nessuna') {
-        containerScadenza.style.opacity = '0.3';
-        containerScadenza.style.pointerEvents = 'none';
-        document.getElementById('stima-giorni').value = '';
-        document.getElementById('stima-mesi').value = '';
-        document.getElementById('scad-gg').value = '';
-        document.getElementById('scad-mm').value = '';
-        document.getElementById('scad-aa').value = '';
-    } else {
-        containerScadenza.style.opacity = '1';
-        containerScadenza.style.pointerEvents = 'auto';
-    }
-}
-
 // --- Ubicazioni Dinamiche ---
 function caricaUbicazioniSalvate() {
     const selectUbicazione = document.getElementById('ubicazione');
-    // Ubicazioni predefinite per la ristorazione
     const ubicazioniDefault = [
         "Cella Frigo Principale",
         "Frigo Negozio / Esposizione",
@@ -205,7 +221,14 @@ function registraCarico(event) {
     const unita = document.getElementById('unita-misura').value;
     const note = document.getElementById('note-prodotto').value;
 
-    const tipoScadenza = document.querySelector('input[name="tipo-scadenza"]:checked').value;
+    // Rileva quale casella di spunta è attiva per definire la scadenza (Tassativa -> Rosso, Consigliata -> Giallo, Nessuna -> Senza scadenza)
+    let tipoScadenza = 'consigliata';
+    if (document.getElementById('chk-scad-tassativa').checked) {
+        tipoScadenza = 'tassativa';
+    } else if (document.getElementById('chk-scad-nessuna').checked) {
+        tipoScadenza = 'nessuna';
+    }
+
     let giorni = document.getElementById('stima-giorni').value;
     let mesi = document.getElementById('stima-mesi').value;
     let gg = document.getElementById('scad-gg').value;
@@ -222,7 +245,7 @@ function registraCarico(event) {
         unita,
         note,
         scadenza: {
-            tipo: tipoScadenza,
+            tipo: tipoScadenza, // 'tassativa', 'consigliata' o 'nessuna' per gestire i colori in dispensa
             giorni: giorni || null,
             mesi: mesi || null,
             dataEsatta: (gg && mm && aa) ? `${aa}-${mm}-${gg}` : null
@@ -236,6 +259,9 @@ function registraCarico(event) {
     // Reset del form
     document.querySelector('form').reset();
     document.getElementById('preview-prodotto').style.display = 'none';
+    // Ripristina la spunta di default su "consigliata"
+    document.getElementById('chk-scad-consigliata').checked = true;
+    gestisciSelezioneScadenza('consigliata');
     impostaDataOdierna();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -266,6 +292,6 @@ function chiudiTooltip() {
 }
 
 function apriGuidaPrincipale() {
-    document.getElementById('tooltip-text').innerText = "ChefStock Pro: Inquadra il codice a barre o inserisci l'articolo manualmente. Compila la quantità, scegli la modalità di scadenza pulita e registra l'inventario.";
+    document.getElementById('tooltip-text').innerText = "ChefStock Pro: Inquadra il codice a barre o inserisci l'articolo manualmente. Spunta la tipologia di scadenza (Tassativa, Consigliata o Senza Scadenza) e registra l'inventario.";
     document.getElementById('tooltip-modal').style.display = 'flex';
 }

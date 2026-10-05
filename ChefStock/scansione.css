@@ -261,7 +261,7 @@ button {
     margin-bottom: 15px;
 }
 
-/* Anteprima e Selettori Scadenza Puliti */
+/* Anteprima e Selettori Scadenza con 3 Checkbox */
 #preview-prodotto {
     border-top: 1px solid var(--border-color);
     padding-top: 20px;
@@ -274,17 +274,18 @@ button {
     color: #93c5fd;
 }
 
-.tipo-scadenza-selector {
+.scadenza-checkbox-group {
     display: flex;
+    flex-wrap: wrap;
     gap: 15px;
     margin-bottom: 10px;
     font-size: 0.85rem;
 }
 
-.tipo-scadenza-selector label {
+.check-scad-label {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
     cursor: pointer;
     color: var(--text-main);
     font-weight: normal;
