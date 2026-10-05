@@ -74,14 +74,11 @@ function cercaProdottoPerBarcode(barcode) {
             if (data.status === 1) {
                 const p = data.product;
                 
-                // Cerca prima il nome in italiano, altrimenti ripiega sulle altre lingue disponibili
+                // Recupera nome e marca (senza toccare alcuna categoria)
                 const nome = p.product_name_it || p.product_name || p.product_name_en || '';
                 const marca = p.brands || '';
                 
-                // Prende direttamente la stringa della categoria da Open Food Facts se presente, altrimenti stringa vuota
-                const categoria = p.categories || '';
-                
-                // Assegnazione dei campi del form
+                // Assegnazione dei soli campi nome e marca
                 const nomeInput = document.getElementById('nome-prodotto');
                 if (nomeInput) {
                     nomeInput.value = nome;
@@ -92,12 +89,6 @@ function cercaProdottoPerBarcode(barcode) {
                     marcaInput.value = marca;
                 }
                 
-                // Se Open Food Facts fornisce la categoria la scrive, altrimenti la lascia bianca per l'utente
-                const categoriaInput = document.getElementById('categoria-prodotto');
-                if (categoriaInput) {
-                    categoriaInput.value = categoria;
-                }
-                
                 // Mostra la sezione di anteprima
                 const previewProdotto = document.getElementById('preview-prodotto');
                 if (previewProdotto) {
@@ -106,7 +97,6 @@ function cercaProdottoPerBarcode(barcode) {
             } else {
                 alert("Prodotto non trovato nel database. Inserisci i dati manualmente.");
                 
-                // Pulisce o lascia vuoti i campi e mostra comunque il form per l'inserimento manuale
                 const previewProdotto = document.getElementById('preview-prodotto');
                 if (previewProdotto) {
                     previewProdotto.style.display = 'block';
