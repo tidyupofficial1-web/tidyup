@@ -128,7 +128,10 @@ function renderizzaRicette() {
                     <div class="item-info">
                         <div class="item-title">🍳 ${r.titolo}</div>
                     </div>
-                    <span class="arrow-icon">&rarr;</span>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button class="btn-elimina-rapida" onclick="eliminaRicetta(${r.id}, event)" title="${t.btn_elimina}">&times;</button>
+                        <span class="arrow-icon">&rarr;</span>
+                    </div>
                 </div>`;
         });
     } else {
@@ -178,13 +181,29 @@ function chiudiModal() {
     ricettaSelezionataId = null;
 }
 
-function eliminaRicettaCorrente() {
+function eliminaRicetta(id, event) {
+    event.stopPropagation(); // Evita di aprire il modale di dettaglio quando si clicca la X
     const lang = localStorage.getItem('eat_me_first_lang') || 'it';
     const t = dizionarioRicette[lang] || dizionarioRicette['it'];
 
-    if (ricettaSelezionataId && confirm(t.conferma_elimina)) {
-        db.ricette = db.ricette.filter(r => r.id !== ricettaSelezionataId);
+    if (confirm(t.conferma_elimina)) {
+        db.ricette = db.ricette.filter(r => r.id !== id);
         salvaDb();
-        chiudiModal();
+        if (ricettaSelezionataId === id) {
+            chiudiModal();
+        }
+    }
+}
+
+function eliminaRicettaDalModal() {
+    if (ricettaSelezionataId) {
+        const lang = localStorage.getItem('eat_me_first_lang') || 'it';
+        const t = dizionarioRicette[lang] || dizionarioRicette['it'];
+
+        if (confirm(t.conferma_elimina)) {
+            db.ricette = db.ricette.filter(r => r.id !== ricettaSelezionataId);
+            salvaDb();
+            chiudiModal();
+        }
     }
 }
