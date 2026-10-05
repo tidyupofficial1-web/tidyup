@@ -1,177 +1,75 @@
-const dizionarioTraduzioni = {
-    it: {
-        mostraAiuti: "Mostra suggerimenti",
-        titoloCarico: "Carico Merci",
-        labelScanner: "🔍 Scanner Barcode & Database Globali (Usa Spazio o Invio per cercare)",
-        btnAttivaCam: "Attiva Fotocamera / Scanner",
-        btnChiudiCam: "Chiudi Fotocamera",
-        btnManuale: "Inserimento Manuale (Mercato, Fatto in casa, No Barcode)",
-        titoloDettagli: "Dettagli Prodotto",
-        labelCategoria: "Categoria",
-        labelNome: "Descrizione / Nome Prodotto (Max 45 caratteri)",
-        labelMarca: "Marca / Origine (Opzionale, Max 30 caratteri)",
-        labelUbicazione: "Ubicazione (Dinamica basata sui tuoi inserimenti)",
-        opzioneSelezionaUbicazione: "-- Seleziona o crea un'ubicazione --",
-        notaUbicazione: "💡 Puoi aggiungere nuove ubicazioni al volo.",
-        labelQuantita: "Quantità Confezione",
-        umPezzi: "Pezzi",
-        umGrammi: "Grammi (g)",
-        umMl: "Millilitri (ml)",
-        notaConv: "💡 Unità standard singola",
-        labelScadenzaGestione: "Gestione Scadenza (Scegli come inserire)",
-        labelGiorni: "⏳ Tra quanti giorni scade?",
-        labelMesi: "📅 Tra quanti mesi scade?",
-        labelDataEsatta: "Oppure inserisci la data esatta stampata:",
-        btnRegistra: "Registra Carico in Dispensa",
-        linkTornaMenu: "← Torna al Menu Principale",
-        footerText: "Gestione locale sicura • Risparmia cibo, vivi meglio",
-        modalTitolo: "💡 Suggerimento Utile",
-        modalBtn: "Ho capito",
-        etichettaDatabase: "Database",
-        etichettaBrand: "Brand"
-    },
-    en: {
-        mostraAiuti: "Show tips",
-        titoloCarico: "Goods Intake",
-        labelScanner: "🔍 Barcode Scanner & Global Databases (Use Space or Enter to search)",
-        btnAttivaCam: "Activate Camera / Scanner",
-        btnChiudiCam: "Close Camera",
-        btnManuale: "Manual Entry (Market, Homemade, No Barcode)",
-        titoloDettagli: "Product Details",
-        labelCategoria: "Category",
-        labelNome: "Description / Product Name (Max 45 chars)",
-        labelMarca: "Brand / Origin (Optional, Max 30 chars)",
-        labelUbicazione: "Location (Dynamic based on your inputs)",
-        opzioneSelezionaUbicazione: "-- Select or create a location --",
-        notaUbicazione: "💡 You can add new locations on the fly.",
-        labelQuantita: "Package Quantity",
-        umPezzi: "Pieces",
-        umGrammi: "Grams (g)",
-        umMl: "Milliliters (ml)",
-        notaConv: "💡 Single standard unit",
-        labelScadenzaGestione: "Expiry Management (Choose input method)",
-        labelGiorni: "⏳ In how many days does it expire?",
-        labelMesi: "📅 In how many months does it expire?",
-        labelDataEsatta: "Or enter the exact date printed on package:",
-        btnRegistra: "Register Intake in Pantry",
-        linkTornaMenu: "← Back to Main Menu",
-        footerText: "Secure local management • Save food, live better",
-        modalTitolo: "💡 Useful Tip",
-        modalBtn: "Got it",
-        etichettaDatabase: "Database",
-        etichettaBrand: "Brand"
-    },
-    fr: {
-        mostraAiuti: "Afficher les conseils",
-        titoloCarico: "Entrée de Marchandises",
-        labelScanner: "🔍 Scanner Code-barres & Bases de données (Espace ou Entrée)",
-        btnAttivaCam: "Activer Caméra / Scanner",
-        btnChiudiCam: "Fermer Caméra",
-        btnManuale: "Saisie Manuelle (Marché, Fait maison, Sans code-barres)",
-        titoloDettagli: "Détails du Produit",
-        labelCategoria: "Catégorie",
-        labelNome: "Description / Nom du Produit (Max 45 car.)",
-        labelMarca: "Marque / Origine (Optionnel, Max 30 car.)",
-        labelUbicazione: "Emplacement (Dynamique selon vos saisies)",
-        opzioneSelezionaUbicazione: "-- Sélectionner ou créer un emplacement --",
-        notaUbicazione: "💡 Vous pouvez ajouter des emplacements à la volée.",
-        labelQuantita: "Quantité du Paquet",
-        umPezzi: "Pièces",
-        umGrammi: "Grammes (g)",
-        umMl: "Millilitres (ml)",
-        notaConv: "💡 Unité standard unique",
-        labelScadenzaGestione: "Gestion de la Péremption (Choisissez la méthode)",
-        labelGiorni: "⏳ Expire dans combien de jours ?",
-        labelMesi: "📅 Expire dans combien de mois ?",
-        labelDataEsatta: "Ou entrez la date exacte imprimée :",
-        btnRegistra: "Enregistrer dans le Garde-manger",
-        linkTornaMenu: "← Retour au Menu Principal",
-        footerText: "Gestion locale sécurisée • Sauvez de la nourriture",
-        modalTitolo: "💡 Astuce Utile",
-        modalBtn: "Compris",
-        etichettaDatabase: "Base de données",
-        etichettaBrand: "Marque"
-    },
-    es: {
-        mostraAiuti: "Mostrar sugerencias",
-        titoloCarico: "Entrada de Mercancías",
-        labelScanner: "🔍 Escáner de Código y Bases de Datos (Usa Espacio o Enter)",
-        btnAttivaCam: "Activar Cámara / Escáner",
-        btnChiudiCam: "Cerrar Cámara",
-        btnManuale: "Entrada Manual (Mercado, Casero, Sin código)",
-        titoloDettagli: "Detalles del Producto",
-        labelCategoria: "Categoría",
-        labelNome: "Descripción / Nombre del Producto (Máx 45 car.)",
-        labelMarca: "Marca / Origen (Opcional, Máx 30 car.)",
-        labelUbicazione: "Ubicación (Dinámica basada en tus entradas)",
-        opzioneSelezionaUbicazione: "-- Selecciona o crea una ubicación --",
-        notaUbicazione: "💡 Puedes añadir nuevas ubicaciones al vuelo.",
-        labelQuantita: "Cantidad del Paquete",
-        umPezzi: "Piezas",
-        umGrammi: "Gramos (g)",
-        umMl: "Mililitros (ml)",
-        notaConv: "💡 Unidad estándar única",
-        labelScadenzaGestione: "Gestión de Caducidad (Elige el método)",
-        labelGiorni: "⏳ ¿En cuántos días caduca?",
-        labelMesi: "📅 ¿En cuántos meses caduca?",
-        labelDataEsatta: "O introduce la fecha exacta impresa:",
-        btnRegistra: "Registrar Entrada en Despensa",
-        linkTornaMenu: "← Volver al Menú Principal",
-        footerText: "Gestión local segura • Ahorra comida, vive mejor",
-        modalTitolo: "💡 Consejo Útil",
-        modalBtn: "Entendido",
-        etichettaDatabase: "Base de datos",
-        etichettaBrand: "Marca"
-    },
-    de: {
-        mostraAiuti: "Tipps anzeigen",
-        titoloCarico: "Wareneingang",
-        labelScanner: "🔍 Barcode-Scanner & Globale Datenbanken (Leertaste oder Enter)",
-        btnAttivaCam: "Kamera / Scanner aktivieren",
-        btnChiudiCam: "Kamera schließen",
-        btnManuale: "Manuelle Eingabe (Markt, Selbstgemacht, Kein Barcode)",
-        titoloDettagli: "Produktdetails",
-        labelCategoria: "Kategorie",
-        labelNome: "Beschreibung / Produktname (Max. 45 Zeichen)",
-        labelMarca: "Marke / Herkunft (Optional, Max. 30 Zeichen)",
-        labelUbicazione: "Standort (Dynamisch basierend auf Eingaben)",
-        opzioneSelezionaUbicazione: "-- Standort auswählen oder erstellen --",
-        notaUbicazione: "💡 Sie können neue Standorte direkt hinzufügen.",
-        labelQuantita: "Verpackungsmenge",
-        umPezzi: "Stück",
-        umGrammi: "Gramm (g)",
-        umMl: "Milliliter (ml)",
-        notaConv: "💡 Einzelne Standardeinheit",
-        labelScadenzaGestione: "Verwaltung des Verfallsdatums (Methode wählen)",
-        labelGiorni: "⏳ In wie vielen Tagen läuft es ab?",
-        labelMesi: "📅 In wie vielen Monaten läuft es ab?",
-        labelDataEsatta: "Oder geben Sie das genaue gedruckte Datum ein:",
-        btnRegistra: "In Speisekammer eintragen",
-        linkTornaMenu: "← Zurück zum Hauptmenü",
-        footerText: "Sichere lokale Verwaltung • Essen sparen, besser leben",
-        modalTitolo: "💡 Nützlicher Tipp",
-        modalBtn: "Verstanden",
-        etichettaDatabase: "Datenbank",
-        etichettaBrand: "Marke"
+let html5QrCode = null;
+let cameraAttiva = false;
+
+// Funzione per avviare o fermare la fotocamera
+function toggleFotocamera() {
+    const readerDiv = document.getElementById('reader');
+
+    if (!cameraAttiva) {
+        readerDiv.style.display = 'block';
+        cameraAttiva = true;
+
+        html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 150 } },
+            (decodedText) => {
+                // Azione eseguita alla lettura corretta del codice a barre
+                document.getElementById('barcode-input').value = decodedText;
+                fermaFotocamera();
+                
+                // Mostra la sezione di anteprima del prodotto (assicurati che esista l'elemento nel tuo HTML)
+                const previewProdotto = document.getElementById('preview-prodotto');
+                if (previewProdotto) {
+                    previewProdotto.style.display = 'block';
+                }
+                
+                const nomeProdotto = document.getElementById('nome-prodotto');
+                if (nomeProdotto) {
+                    nomeProdotto.focus();
+                }
+            },
+            (errorMessage) => {
+                // Eventuali errori di scansione fotogramma (ignorati per evitare log superflui)
+            }
+        ).catch(err => {
+            console.error("Errore avvio fotocamera:", err);
+            alert("Impossibile avviare la fotocamera.");
+            fermaFotocamera();
+        });
+    } else {
+        fermaFotocamera();
     }
-};
-
-function cambiaLingua(lang) {
-    localStorage.setItem('eat_me_first_lang', lang);
-    const traduzioni = dizionarioTraduzioni[lang] || dizionarioTraduzioni['it'];
-
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const chiave = el.getAttribute('data-i18n');
-        if (traduzioni[chiave]) {
-            el.textContent = traduzioni[chiave];
-        }
-    });
 }
 
-// All'avvio della pagina, applica la lingua salvata
+// Funzione per interrompere la scansione
+function fermaFotocamera() {
+    if (html5QrCode && cameraAttiva) {
+        html5QrCode.stop().then(() => {
+            html5QrCode.clear();
+            chiudiStreamFotocamera();
+        }).catch(err => {
+            chiudiStreamFotocamera();
+        });
+    } else {
+        chiudiStreamFotocamera();
+    }
+}
+
+// Nasconde il box video e resetta lo stato
+function chiudiStreamFotocamera() {
+    const readerDiv = document.getElementById('reader');
+    if (readerDiv) {
+        readerDiv.style.display = 'none';
+    }
+    cameraAttiva = false;
+}
+
+// Eventuale logica aggiuntiva di gestione del form o del caricamento dati
 document.addEventListener('DOMContentLoaded', () => {
-    const savedLang = localStorage.getItem('eat_me_first_lang') || 'it';
-    const selectLang = document.getElementById('lingua-select');
-    if (selectLang) selectLang.value = savedLang;
-    cambiaLingua(savedLang);
+    // Esempio di associazione automatica se il pulsante ha un id specifico (es. btn-fotocamera)
+    const btnFotocamera = document.getElementById('btn-fotocamera');
+    if (btnFotocamera) {
+        btnFotocamera.addEventListener('click', toggleFotocamera);
+    }
 });
