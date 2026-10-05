@@ -68,8 +68,18 @@ body {
 .right-header-controls {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     margin-left: auto;
+}
+
+.select-lingua {
+    background: #0f172a;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    outline: none;
 }
 
 .help-toggle-bar {
@@ -252,7 +262,7 @@ button {
     margin-bottom: 15px;
 }
 
-/* Anteprima e Selettori Scadenza con 3 Checkbox */
+/* Anteprima e Selettori Scadenza */
 #preview-prodotto {
     border-top: 1px solid var(--border-color);
     padding-top: 20px;
@@ -366,6 +376,13 @@ button {
     border: 1px solid var(--border-color);
 }
 
+.extra-info-description {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    line-height: 1.3;
+}
+
 .extra-row {
     display: flex;
     gap: 8px;
@@ -427,7 +444,7 @@ button {
     color: var(--text-main);
 }
 
-/* Watermark Logo Fisso in Basso a Destra (Blindato con !important) */
+/* Watermark Logo Fisso in Basso a Destra */
 img.chefstock-logo-watermark {
     position: fixed !important;
     bottom: 15px !important;
