@@ -5,10 +5,10 @@
 let html5QrCode = null;
 let cameraAttiva = false;
 
-// Al caricamento della pagina inizializza la data odierna e carica le ubicazioni
+// Al caricamento della pagina inizializza la data odierna e carica le ubicazioni salvate dall'utente (localStorage)
 document.addEventListener('DOMContentLoaded', () => {
     impostaDataOdierna();
-    caricaUbicazioniSalvate();
+    caricaUbicazioniUtente();
 });
 
 function impostaDataOdierna() {
@@ -34,14 +34,11 @@ function toggleFotocamera() {
             { facingMode: "environment" },
             { fps: 10, qrbox: { width: 250, height: 150 } },
             (decodedText) => {
-                // Barcode scansionato con successo
                 document.getElementById('barcode-input').value = decodedText;
                 fermaFotocamera();
                 gestisciCodiceTrovato(decodedText);
             },
-            (errorMessage) => {
-                // Errori di scansione ignorati per fluidità
-            }
+            (errorMessage) => {}
         ).catch(err => {
             console.error("Errore avvio fotocamera:", err);
             alert("Impossibile avviare la fotocamera.");
@@ -58,7 +55,6 @@ function fermaFotocamera() {
             html5QrCode.clear();
             chiudiStreamFotocamera();
         }).catch(err => {
-            console.error("Errore arresto scanner:", err);
             chiudiStreamFotocamera();
         });
     } else {
@@ -74,7 +70,6 @@ function chiudiStreamFotocamera() {
     cameraAttiva = false;
 }
 
-// Gestione invio/spazio sul campo barcode o digitazione manuale
 function handleBarcodeKey(event) {
     if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
@@ -87,14 +82,12 @@ function handleBarcodeKey(event) {
 
 function gestisciCodiceTrovato(barcode) {
     document.getElementById('preview-prodotto').style.display = 'block';
-    document.getElementById('inf-nome').innerText = "Codice " + barcode;
     document.getElementById('nome-prodotto').focus();
 }
 
 function abilitaCompilazioneManuale() {
     document.getElementById('preview-prodotto').style.display = 'block';
     document.getElementById('barcode-input').value = "MANUALE-" + Date.now();
-    document.getElementById('inf-nome').innerText = "Inserimento Manuale / Articolo Libero";
     document.getElementById('nome-prodotto').focus();
 }
 
@@ -116,6 +109,77 @@ function analizzaDescrizioneTestuale(testo) {
     }
 }
 
+// --- Gestione Ubicazioni Dinamiche dell'Utente ---
+function caricaUbicazioniUtente() {
+    const selectUbicazione = document.getElementById('ubicazione-select');
+    selectUbicazione.innerHTML = '<option value="" disabled selected>-- Seleziona ubicazione --</option>';
+    
+    // Recupera le ubicazioni salvate in precedenza dall'utente nel browser
+    let ubicazioniSalvate = JSON.parse(localStorage.getItem('chefstock_ubicazioni')) || [];
+    
+    ubicazioniSalvate.forEach(ub => {
+        let opt = document.createElement('option');
+        opt.value = ub;
+        opt.textContent = "📍 " + ub;
+        selectUbicazione.appendChild(opt);
+    });
+}
+
+function attivaNuovaUbicazione() {
+    const selectUbicazione = document.getElementById('ubicazione-select');
+    const inputNuova = document.getElementById('ubicazione-nuova');
+    const btnNuova = document.getElementById('btn-toggle-nuova-ub');
+
+    selectUbicazione.style.display = 'none';
+    selectUbicazione.value = '';
+    inputNuova.style.display = 'block';
+    inputNuova.focus();
+    btnNuova.innerText = "Annulla";
+    btnNuova.setAttribute('onclick', 'annullaNuovaUbicazione()');
+}
+
+function annullaNuovaUbicazione() {
+    const selectUbicazione = document.getElementById('ubicazione-select');
+    const inputNuova = document.getElementById('ubicazione-nuova');
+    const btnNuova = document.getElementById('btn-toggle-nuova-ub');
+
+    inputNuova.style.display = 'none';
+    inputNuova.value = '';
+    selectUbicazione.style.display = 'block';
+    btnNuova.innerText = "+ Nuova";
+    btnNuova.setAttribute('onclick', 'attivaNuovaUbicazione()');
+}
+
+function gestisciCambioUbicazione(valore) {
+    // Se seleziona qualcosa dalla lista, azzera l'input manuale se era attivo
+    document.getElementById('ubicazione-nuova').value = '';
+}
+
+function sincronizzaNuovaUbicazione(valore) {
+    // Gestito in fase di salvataggio
+}
+
+function ottieniUbicazioneCorrente() {
+    const inputNuova = document.getElementById('ubicazione-nuova');
+    const selectUbicazione = document.getElementById('ubicazione-select');
+
+    if (inputNuova.style.display !== 'none' && inputNuova.value.trim() !== '') {
+        let nuovaUb = inputNuova.value.trim();
+        salvaNuovaUbicazioneNelDatabase(nuovaUb);
+        return nuovaUb;
+    } else {
+        return selectUbicazione.value;
+    }
+}
+
+function salvaNuovaUbicazioneNelDatabase(nuovaUb) {
+    let ubicazioniSalvate = JSON.parse(localStorage.getItem('chefstock_ubicazioni')) || [];
+    if (!ubicazioniSalvate.includes(nuovaUb)) {
+        ubicazioniSalvate.push(nuovaUb);
+        localStorage.setItem('chefstock_ubicazioni', JSON.stringify(ubicazioniSalvate));
+    }
+}
+
 // --- Gestione Scadenza con 3 Checkbox a Selezione Esclusiva ---
 function gestisciSelezioneScadenza(tipoSelezionato) {
     const chkTassativa = document.getElementById('chk-scad-tassativa');
@@ -123,7 +187,6 @@ function gestisciSelezioneScadenza(tipoSelezionato) {
     const chkNessuna = document.getElementById('chk-scad-nessuna');
     const containerScadenza = document.querySelector('.scadenza-box-container');
 
-    // Comportamento esclusivo (tipo radio ma con le caselle richieste)
     if (tipoSelezionato === 'tassativa') {
         chkTassativa.checked = true;
         chkConsigliata.checked = false;
@@ -138,7 +201,6 @@ function gestisciSelezioneScadenza(tipoSelezionato) {
         chkNessuna.checked = true;
     }
 
-    // Se è "nessuna", disattiva i box di input data/giorni
     if (chkNessuna.checked) {
         containerScadenza.style.opacity = '0.3';
         containerScadenza.style.pointerEvents = 'none';
@@ -176,26 +238,6 @@ function saltoAutomatico(corrente, prossimoId, maxLen) {
     }
 }
 
-// --- Ubicazioni Dinamiche ---
-function caricaUbicazioniSalvate() {
-    const selectUbicazione = document.getElementById('ubicazione');
-    const ubicazioniDefault = [
-        "Cella Frigo Principale",
-        "Frigo Negozio / Esposizione",
-        "Congelatore / Freezer",
-        "Dispensa / Magazzino Secchi",
-        "Scaffale Sala / Servizio",
-        "Locale Pulizie & Detergenti"
-    ];
-
-    ubicazioniDefault.forEach(ub => {
-        let opt = document.createElement('option');
-        opt.value = ub;
-        opt.textContent = "📍 " + ub;
-        selectUbicazione.appendChild(opt);
-    });
-}
-
 // --- Righe Extra Dinamiche ---
 function aggiungiRigaExtra() {
     const container = document.getElementById('container-campi-extra');
@@ -216,17 +258,22 @@ function registraCarico(event) {
     const categoria = document.getElementById('categoria-prodotto').value;
     const nome = document.getElementById('nome-prodotto').value;
     const marca = document.getElementById('marca-prodotto').value;
-    const ubicazione = document.getElementById('ubicazione').value;
+    const ubicazione = ottieniUbicazioneCorrente();
+
+    if (!ubicazione) {
+        alert("Seleziona o inserisci un'ubicazione per l'articolo.");
+        return;
+    }
+
     const quantita = document.getElementById('quantita').value;
     const unita = document.getElementById('unita-misura').value;
     const note = document.getElementById('note-prodotto').value;
 
-    // Rileva quale casella di spunta è attiva per definire la scadenza (Tassativa -> Rosso, Consigliata -> Giallo, Nessuna -> Senza scadenza)
     let tipoScadenza = 'consigliata';
     if (document.getElementById('chk-scad-tassativa').checked) {
-        tipoScadenza = 'tassativa';
+        tipoScadenza = 'tassativa'; // Rosso in dispensa
     } else if (document.getElementById('chk-scad-nessuna').checked) {
-        tipoScadenza = 'nessuna';
+        tipoScadenza = 'nessuna'; // Senza scadenza (es. tovaglioli/materiale)
     }
 
     let giorni = document.getElementById('stima-giorni').value;
@@ -245,7 +292,7 @@ function registraCarico(event) {
         unita,
         note,
         scadenza: {
-            tipo: tipoScadenza, // 'tassativa', 'consigliata' o 'nessuna' per gestire i colori in dispensa
+            tipo: tipoScadenza,
             giorni: giorni || null,
             mesi: mesi || null,
             dataEsatta: (gg && mm && aa) ? `${aa}-${mm}-${gg}` : null
@@ -256,10 +303,11 @@ function registraCarico(event) {
     console.log("Articolo registrato con successo in ChefStock:", articoloRegistrato);
     alert("Articolo registrato correttamente in ChefStock!");
 
-    // Reset del form
+    // Reset del form e ricarico ubicazioni aggiornate
     document.querySelector('form').reset();
     document.getElementById('preview-prodotto').style.display = 'none';
-    // Ripristina la spunta di default su "consigliata"
+    annullaNuovaUbicazione();
+    caricaUbicazioniUtente();
     document.getElementById('chk-scad-consigliata').checked = true;
     gestisciSelezioneScadenza('consigliata');
     impostaDataOdierna();
@@ -292,6 +340,6 @@ function chiudiTooltip() {
 }
 
 function apriGuidaPrincipale() {
-    document.getElementById('tooltip-text').innerText = "ChefStock Pro: Inquadra il codice a barre o inserisci l'articolo manualmente. Spunta la tipologia di scadenza (Tassativa, Consigliata o Senza Scadenza) e registra l'inventario.";
+    document.getElementById('tooltip-text').innerText = "ChefStock: Inquadra il codice a barre o inserisci l'articolo manualmente. Spunta la tipologia di scadenza (Tassativa, Consigliata o Senza Scadenza) e registra l'inventario.";
     document.getElementById('tooltip-modal').style.display = 'flex';
 }

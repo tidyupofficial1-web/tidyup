@@ -14,15 +14,6 @@
         <div class="top-bar-flex">
             <a href="menu.html" class="btn-back">← Menu Principale</a>
             <div class="right-header-controls">
-                <div id="header-lang">
-                    <select id="lingua-select" onchange="cambiaLingua(this.value)">
-                        <option value="it">🇮🇹 Italiano</option>
-                        <option value="en">🇬🇧 English</option>
-                        <option value="fr">🇫🇷 Français</option>
-                        <option value="de">🇩🇪 Deutsch</option>
-                        <option value="es">🇪🇸 Español</option>
-                    </select>
-                </div>
                 <div class="help-toggle-bar">
                     <label class="checkbox-help">
                         <input type="checkbox" id="chk-mostra-aiuti" checked onchange="toggleGlobalHelp(this.checked)"> Guida
@@ -46,7 +37,7 @@
         <!-- Input Barcode -->
         <div class="form-group" data-help="Inquadra il codice a barre o digitalo manualmente. Premi Spazio o Invio per avviare la ricerca.">
             <div class="label-flex">
-                <label>🔍 Scanner Barcode & Database Globali (Usa Spazio o Invio)</label>
+                <label>🔍 Scanner Barcode (Usa Spazio o Invio)</label>
                 <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
             </div>
             <input type="text" id="barcode-input" placeholder="Scansiona o digita il codice a barre..." onkeydown="handleBarcodeKey(event)">
@@ -92,7 +83,6 @@
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
                     <input type="text" id="nome-prodotto" maxlength="60" placeholder="Es. Cartoni pizza 33cm, Zuppa freezer..." required oninput="analizzaDescrizioneTestuale(this.value)">
-                    <small style="color: #94a3b8;">Database: <span id="inf-nome">-</span></small>
                 </div>
 
                 <!-- Marca / Origine -->
@@ -102,18 +92,21 @@
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
                     <input type="text" id="marca-prodotto" maxlength="40" placeholder="Es. Fornitore, Casalingo...">
-                    <small style="color: #94a3b8;">Brand: <span id="inf-marca">-</span></small>
                 </div>
 
-                <!-- Ubicazione Dinamica -->
-                <div class="form-group" data-help="Seleziona dove riponi l'articolo.">
+                <!-- Ubicazione Dinamica (Popolata dalle scelte utente salvate) -->
+                <div class="form-group" data-help="Seleziona o digita una nuova ubicazione. Verrà memorizzata per i prossimi carichi.">
                     <div class="label-flex">
-                        <label>Ubicazione (Dinamica)</label>
+                        <label>Ubicazione (Gestita da te)</label>
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
-                    <select id="ubicazione" required>
-                        <option value="" disabled selected>-- Seleziona o crea ubicazione --</option>
-                    </select>
+                    <div style="display: flex; gap: 8px;">
+                        <select id="ubicazione-select" onchange="gestisciCambioUbicazione(this.value)" style="flex: 2;">
+                            <option value="" disabled selected>-- Seleziona ubicazione --</option>
+                        </select>
+                        <input type="text" id="ubicazione-nuova" placeholder="O scrivi nuova..." style="flex: 2; display: none;" oninput="sincronizzaNuovaUbicazione(this.value)">
+                        <button type="button" id="btn-toggle-nuova-ub" class="btn-secondary" onclick="attivaNuovaUbicazione()" style="flex: 1; font-size: 0.8rem;">+ Nuova</button>
+                    </div>
                 </div>
 
                 <!-- Quantità e Unità -->
@@ -134,7 +127,7 @@
                     </div>
                 </div>
 
-                <!-- GESTIONE SCADENZA CON 3 CASELLA DA SPUNTARE (SELEZIONE UNICA) -->
+                <!-- GESTIONE SCADENZA CON 3 CHECKBOX A SELEZIONE ESCLUSIVA -->
                 <div class="form-group" data-help="Seleziona che tipo di scadenza ha il prodotto spuntando una sola casella.">
                     <div class="label-flex">
                         <label>Che scadenza è?</label>
@@ -143,10 +136,10 @@
                     
                     <div class="scadenza-checkbox-group">
                         <label class="check-scad-label">
-                            <input type="checkbox" id="chk-scad-tassativa" onclick="gestisciSelezioneScadenza('tassativa')"> Scadenza Tassativa
+                            <input type="checkbox" id="chk-scad-tassativa" onclick="gestisciSelezioneScadenza('tassativa')"> Scadenza Tassativa (Rosso)
                         </label>
                         <label class="check-scad-label">
-                            <input type="checkbox" id="chk-scad-consigliata" checked onclick="gestisciSelezioneScadenza('consigliata')"> Scadenza Consigliata
+                            <input type="checkbox" id="chk-scad-consigliata" checked onclick="gestisciSelezioneScadenza('consigliata')"> Scadenza Consigliata (Giallo)
                         </label>
                         <label class="check-scad-label">
                             <input type="checkbox" id="chk-scad-nessuna" onclick="gestisciSelezioneScadenza('nessuna')"> Senza Scadenza (Consumo/Materiale)
@@ -180,11 +173,6 @@
                     </div>
                 </div>
 
-                <div id="box-allergeni-nutri" class="info-allergeni-box" style="display: none;">
-                    <strong>ℹ️ Informazioni Automatiche Rilevate:</strong>
-                    <div id="testo-allergeni" style="font-size: 0.88rem; color: #cbd5e1; margin-top: 4px;"></div>
-                </div>
-
                 <img id="img-anteprima" src="" alt="Anteprima prodotto" style="display: none;">
 
                 <!-- Campi Aggiuntivi Dinamici -->
@@ -199,7 +187,7 @@
                             <input type="text" placeholder="Valore (es. L-402)" class="extra-valore">
                         </div>
                     </div>
-                    <button type="button" class="btn-add-row" onclick="aggiungiRigaExtra()">+ Aggiungi altra riga <span class="badge-premium-teaser">(Funzione Premium futura)</span></button>
+                    <button type="button" class="btn-add-row" onclick="aggiungiRigaExtra()">+ Aggiungi altra riga</button>
                 </div>
 
                 <!-- Note -->
@@ -222,8 +210,7 @@
         </div>
 
         <div class="footer">
-            <div class="footer-logo">ChefStock <span>Pro Management</span></div>
-            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Gestione professionale scorte, imballi & allergeni</div>
+            <div class="footer-logo">ChefStock</div>
         </div>
     </div>
 
