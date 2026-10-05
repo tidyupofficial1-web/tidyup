@@ -1,8 +1,12 @@
-/* Rimuove completamente qualsiasi puntino, marcatore o stile elenco dalle categorie */
+/* ==========================================
+   1. RESET ELENCHI E PULIZIA PUNTINI / SELEZIONI
+   ========================================== */
 ul, ol, li {
     list-style: none !important;
     list-style-type: none !important;
     background-image: none !important;
+    margin: 0;
+    padding: 0;
 }
 
 li::before, li::after, ::marker {
@@ -10,8 +14,85 @@ li::before, li::after, ::marker {
 }
 
 /* Rimuove qualsiasi stato attivo o evidenziazione predefinita (es. il pallino su latticini) */
-.latticini, [data-categoria="latticini"], .selected, .active, .categoria-item.active {
+.latticini, 
+[data-categoria="latticini"], 
+.selected, 
+.active, 
+.categoria-item.active {
     list-style: none !important;
     background: transparent !important;
     font-weight: normal !important;
+}
+
+
+/* ==========================================
+   2. STILI DI BASE DELLA PAGINA DI CARICO
+   ========================================== */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: #2c3e50;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#reader {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 15px;
+    display: none;
+}
+
+#preview-prodotto {
+    display: none;
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
 }
