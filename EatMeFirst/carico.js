@@ -64,7 +64,7 @@ function chiudiStreamFotocamera() {
     cameraAttiva = false;
 }
 
-// Funzione per scaricare, pulire e tradurre le informazioni del prodotto tramite Open Food Facts
+// Funzione per scaricare le informazioni del prodotto tramite Open Food Facts
 function cercaProdottoPerBarcode(barcode) {
     const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
     
@@ -74,19 +74,11 @@ function cercaProdottoPerBarcode(barcode) {
             if (data.status === 1) {
                 const p = data.product;
                 
-                // 1. Gestione prioritaria della lingua per il nome (cerca italiano, poi generico, poi inglese)
+                // Cerca prima il nome in italiano, altrimenti ripiega sulle altre lingue disponibili
                 const nome = p.product_name_it || p.product_name || p.product_name_en || '';
                 const marca = p.brands || '';
                 
-                // 2. Pulizia e formattazione della categoria (rimuove prefissi tecnici es. "en:" o "it:")
-                let categoriaGrezza = p.categories || '';
-                if (Array.isArray(p.categories_tags) && p.categories_tags.length > 0) {
-                    // Prende l'ultima categoria della gerarchia (di solito la più specifica)
-                    categoriaGrezza = p.categories_tags[p.categories_tags.length - 1];
-                }
-                const categoria = categoriaGrezza.includes(':') ? categoriaGrezza.split(':').pop() : categoriaGrezza;
-                
-                // Assegnazione ai campi del form (verifica che gli ID corrispondano al tuo HTML)
+                // Assegnazione dei campi di testo trovati
                 const nomeInput = document.getElementById('nome-prodotto');
                 if (nomeInput) {
                     nomeInput.value = nome;
@@ -97,12 +89,14 @@ function cercaProdottoPerBarcode(barcode) {
                     marcaInput.value = marca;
                 }
                 
+                // Lasciamo inalterata/vuota la categoria: sarà l'utente a sceglierla o compilarla manualmente
                 const categoriaInput = document.getElementById('categoria-prodotto');
-                if (categoriaInput) {
-                    categoriaInput.value = categoria;
+                if (categoriaInput && !categoriaInput.value) {
+                    // Eventualmente resetta a vuoto se è un input o una select senza scelta forzata
+                    // categoriaInput.value = ""; 
                 }
                 
-                // Mostra la sezione di anteprima o sblocca i campi
+                // Mostra la sezione di anteprima
                 const previewProdotto = document.getElementById('preview-prodotto');
                 if (previewProdotto) {
                     previewProdotto.style.display = 'block';
