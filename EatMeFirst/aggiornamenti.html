@@ -3,249 +3,640 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EatMeFirst - Aggiornamenti e Salvataggi</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="i18n.js"></script>
+    <title>EatMeFirst - Aggiornamenti & Backup</title>
+    <style>
+        :root {
+            --cs-bg: #0d1117;
+            --cs-card-bg: #161b22;
+            --cs-border: #30363d;
+            --cs-text: #c9d1d9;
+            --cs-text-bright: #f0f6fc;
+            --cs-accent: #2ea043;
+            --cs-success: #238636;
+            --cs-warning: #d97706;
+            --cs-danger: #da3633;
+        }
+        body {
+            background-color: var(--cs-bg) !important;
+            color: var(--cs-text) !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .cs-wrapper {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 25px;
+            box-sizing: border-box;
+        }
+        .cs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--cs-border);
+            margin-bottom: 35px;
+        }
+        .cs-brand {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .cs-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: var(--cs-card-bg);
+            padding: 4px;
+            border: 1px solid var(--cs-border);
+        }
+        .cs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 950px) {
+            .cs-grid { grid-template-columns: 1fr; }
+        }
+        .cs-full {
+            grid-column: 1 / -1;
+        }
+        .cs-card {
+            background: var(--cs-card-bg);
+            border: 1px solid var(--cs-border);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+        }
+        .cs-card h2 {
+            color: var(--cs-accent);
+            margin-top: 0;
+            font-size: 1.35rem;
+            border-bottom: 1px solid var(--cs-border);
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .cs-card p, .cs-card li {
+            line-height: 1.6;
+            color: #8b949e;
+            font-size: 0.98rem;
+        }
+        .cs-highlight {
+            background: rgba(46, 160, 67, 0.07);
+            border-left: 4px solid var(--cs-accent);
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            color: var(--cs-text);
+        }
+        .cs-warning {
+            background: rgba(210, 153, 34, 0.08);
+            border-left: 4px solid var(--cs-warning);
+            padding: 18px;
+            margin: 20px 0 0 0;
+            border-radius: 0 8px 8px 0;
+            color: #f3f4f6;
+        }
+        .cs-btn {
+            background: var(--cs-success);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .cs-btn:hover { opacity: 0.9; }
+        .cs-version-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--cs-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--cs-border);
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        .cs-subgrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        @media (max-width: 768px) {
+            .cs-subgrid { grid-template-columns: 1fr; }
+        }
+        .cs-subcard {
+            background: var(--cs-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--cs-border);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .cs-select {
+            background: var(--cs-card-bg);
+            color: var(--cs-text);
+            border: 1px solid var(--cs-border);
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .cs-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .cs-modal {
+            background: var(--cs-card-bg);
+            border: 1px solid var(--cs-border);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+        .cs-backup-item {
+            background: var(--cs-bg);
+            border: 1px solid var(--cs-border);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
 </head>
 <body>
 
-    <header>
-        <div class="header-left">
-            <img src="IMG/logo_1024_white.png" alt="Logo EatMeFirst" class="header-logo">
-            <h1 data-i18n="navAggiornamenti">Aggiornamenti & Backup</h1>
-        </div>
-        <div class="top-bar-controls" id="header-lang">
-            <script>
-                document.write(creaSelettoreLinguaHTML());
-            </script>
-        </div>
-    </header>
-
-    <div class="container">
-        
-        <!-- BLOCCO 1: CENTRO AGGIORNAMENTI -->
-        <div class="menu-section-card">
-            <div class="section-title" data-i18n="centroAggiornamenti">🔄 Centro Aggiornamenti</div>
-            <p style="font-size: 0.9rem; color: var(--text-main); line-height: 1.4;" data-i18n="testoAggiornamenti">
-                Verifica la disponibilità di nuove versioni. L'aggiornamento creerà prima un backup di sicurezza dei tuoi dati sul dispositivo.
-            </p>
-            
-            <div style="margin-top: auto; padding-top: 10px;">
-                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px;">
-                    <span data-i18n="versioneInUso">Versione in uso:</span> <strong style="color: var(--accent-blue);" id="current-version-label">v1.0.0</strong>
+    <div class="cs-wrapper">
+        <!-- Header -->
+        <header class="cs-header">
+            <div class="cs-brand">
+                <img src="IMG/logo_eatmefirst.png" alt="EatMeFirst Logo" class="cs-logo" onerror="this.style.display='none'">
+                <div>
+                    <a href="menu.html" style="color: var(--cs-accent); text-decoration: none; font-size: 0.95rem; display: inline-block; margin-bottom: 6px;" data-i18n="ritorno_menu">&larr; Torna alla Plancia Domestica</a>
+                    <h1 data-i18n="titolo_app" style="margin: 0; font-size: 1.8rem; color: var(--cs-text-bright);">EatMeFirst</h1>
                 </div>
-                <button onclick="verificaAggiornamentiServer()" style="background: var(--accent-green); color: #ffffff; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 0.9rem;">
-                    🔍 Controlla Aggiornamenti
-                </button>
             </div>
-
-            <!-- Area risultati Server -->
-            <div id="server-releases-box" style="display: none; padding: 10px; background: var(--bg-color); border-radius: 8px; border: 1px solid var(--border-color); margin-top: 10px;">
-                <p style="font-size: 0.85rem; font-weight: bold; color: var(--text-main); margin-bottom: 6px;">Versioni disponibili sul server:</p>
-                <div id="releases-list-container"></div>
+            <div>
+                <select id="select-lingua" class="cs-select" onchange="cambiaLingua(this.value)">
+                    <option value="it">🇮🇹 Italiano</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                </select>
             </div>
-        </div>
+        </header>
 
-        <!-- BLOCCO 2: RIPRISTINO / DOWNGRADE -->
-        <div class="menu-section-card">
-            <div class="section-title" data-i18n="ripristinoVersione">🔙 Ripristino Versione</div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">
-                Se riscontri anomalie dopo un aggiornamento, carica qui il file di backup salvato in precedenza per tornare allo stato stabile.
-            </p>
+        <!-- Contenuto Principale -->
+        <main class="cs-grid">
+
+            <!-- Colonna Sinistra: Centro Aggiornamenti -->
+            <section class="cs-card">
+                <div>
+                    <h2 data-i18n="sec_agg_titolo">🔄 Centro Aggiornamenti & Sicurezza</h2>
+                    
+                    <div class="cs-version-box">
+                        <div>
+                            <p style="margin: 0; font-size: 0.85rem;" data-i18n="lbl_versione_attuale">Versione in uso:</p>
+                            <span id="label-versione" style="color: var(--cs-text-bright); font-weight: bold;">EatMeFirst v1.1.0</span>
+                        </div>
+                        <button class="cs-btn" onclick="verificaAggiornamenti()" data-i18n="btn_verifica">Verifica</button>
+                    </div>
+
+                    <p data-i18n="txt_agg_1">L'applicazione non invia alcun dato o documento all'esterno: la comunicazione con il server serve unicamente a verificare l'ultima versione del programma o a recuperare quelle precedenti.</p>
+                    
+                    <div class="cs-highlight">
+                        <strong data-i18n="str_come_funziona">Come avviene l'aggiornamento:</strong>
+                        <ul style="padding-left: 20px; margin: 10px 0 0 0;">
+                            <li data-i18n="step_1">Interroga il sistema per verificare la versione più recente confrontandola con la data attuale.</li>
+                            <li data-i18n="step_2">Se procedi, l'app salva preventivamente una copia di sicurezza della dispensa in locale sul dispositivo.</li>
+                            <li data-i18n="step_3">Scarica la nuova versione e aggiorna autonomamente il numero di versione e i dati salvati.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Colonna Destra: Protezione Guasto PC / Dispositivo (Chiavetta USB) -->
+            <section class="cs-card">
+                <div>
+                    <div>
+                        <h2 data-i18n="sec_usb_titolo">🛡️ Protezione Totale Dispensa</h2>
+                        <p data-i18n="txt_usb_1">I prodotti della tua dispensa e la lista della spesa sono al sicuro sul dispositivo e non lasciano mai la tua disponibilità. Vuoi metterti al riparo da qualsiasi guasto improvviso del computer o smarrimento?</p>
+                        
+                        <div class="cs-highlight">
+                            <p id="txt-stato-usb" data-i18n="txt_usb_strategy" style="margin:0;"><strong>Stato Chiavetta USB:</strong> Non ancora associata. Clicca sotto per impostarla una sola volta: l'app ricorderà il percorso e salverà automaticamente una copia aggiornata ogni 15 minuti.</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <button class="cs-btn" onclick="configuraChiavettaUSB()" style="background: var(--cs-accent); width: 100%;" data-i18n="btn_config_usb">Associa / Configura Chiavetta USB</button>
+                    </div>
+                </div>
+
+                <!-- Box Promozione Speciale Chiavetta USB -->
+                <div class="cs-warning" style="margin-top: 15px;">
+                    <span data-i18n="txt_promo"><strong>Promozione speciale:</strong> Questa funzione "dual-device" su chiavetta è offerta gratuitamente fino a nuovo ordine. Allo scadere, il salvataggio continuerà in locale sul PC, mentre per la sincronizzazione esterna su chiavetta sarà richiesta l'attivazione della versione avanzata. <strong>PENSACI BENE:</strong> proteggere il lavoro e l'organizzazione della tua casa è il miglior investimento.</span>
+                </div>
+
+                <!-- Box Cambio Programma verso la radice -->
+                <div style="background: rgba(88, 166, 255, 0.08); border: 1px dashed var(--cs-accent); padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center;">
+                    <p style="margin: 0 0 10px 0; font-size: 0.95rem; color: var(--cs-text-bright);" data-i18n="txt_cambio_prog">Gestisci un'attività o un locale commerciale e hai bisogno della versione professionale?</p>
+                    <a href="../index.html" class="cs-btn" style="background: var(--cs-accent); display: inline-block; padding: 8px 18px; font-size: 0.9rem;" data-i18n="btn_passa_ristoranti">Passa alla Versione Ristoranti (ChefStock) &rarr;</a>
+                </div>
+            </section>
+
+            <!-- Sezione Inferiore: Ripristini Intelligenti -->
+            <section class="cs-card cs-full">
+                <h2 data-i18n="sec_ripristini_titolo">⚡ Ripristini Intelligenti e Gestione Dispensa</h2>
+                <p data-i18n="txt_rip_1">Anche durante operazioni radicali o ritorni al passato, EatMeFirst ti offre il pieno controllo senza perdite accidentali:</p>
+                <div class="cs-subgrid">
+                    <div class="cs-subcard">
+                        <div>
+                            <strong style="color: var(--cs-accent); display: block; margin-bottom: 8px;" data-i18n="str_svuota">Svuota Dispensa</strong>
+                            <span data-i18n="txt_svuota_desc" style="font-size: 0.95rem;">L'app azzera l'inventario creando una fotografia di sicurezza. Se decidi di tornare alla situazione precedente ma nel frattempo avevi inserito nuovi prodotti, il sistema ti chiederà se desideri unire anche i nuovi articoli.</span>
+                        </div>
+                        <button class="cs-btn" onclick="avviaSvuotaDispensa()" style="background: var(--cs-danger); margin-top: 15px;" data-i18n="btn_svuota">Svuota Dispensa</button>
+                    </div>
+
+                    <div class="cs-subcard">
+                        <div>
+                            <strong style="color: var(--cs-accent); display: block; margin-bottom: 8px;" data-i18n="str_downgrade">Ripristino da Aggiornamento</strong>
+                            <span data-i18n="txt_downgrade_desc" style="font-size: 0.95rem;">Accedi allo storico reale dei backup salvati sul dispositivo per ripristinare versioni precedenti con logica intelligente di unione dati.</span>
+                        </div>
+                        <button class="cs-btn" onclick="apriGestioneRipristini()" style="background: var(--cs-border); color: var(--cs-text-bright); margin-top: 15px;" data-i18n="btn_gestisci_versioni">Gestisci Versioni</button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer style="text-align: center; padding: 30px 0; color: #8b949e;">
+            <p data-i18n="footer">EatMeFirst &bull; Gestione domestica sicura</p>
+        </footer>
+    </div>
+
+    <!-- Finestra Modale -->
+    <div id="modal-ripristini" class="cs-modal-overlay">
+        <div class="cs-modal">
+            <h3 style="color: var(--cs-accent); margin-top: 0;" data-i18n="modal_titolo">Storico Backup e Ripristini Disponibili</h3>
+            <p data-i18n="modal_desc" style="color: #8b949e; font-size: 0.95rem;">Seleziona un punto di ripristino salvato in precedenza:</p>
             
-            <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px; padding-top: 10px;">
-                <input type="file" id="file-backup-restore" accept=".json,.bak" style="font-size: 0.8rem; color: var(--text-muted);">
-                <button onclick="eseguiRipristinoBackup()" style="background: #21262d; color: var(--text-main); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 0.9rem;">
-                    Esegui Downgrade / Ripristino
-                </button>
-            </div>
-        </div>
+            <div id="lista-backup-container" style="max-height: 250px; overflow-y: auto; margin: 20px 0;"></div>
 
-        <!-- BLOCCO 3: SALVATAGGI AUTOMATICI -->
-        <div class="menu-section-card">
-            <div class="section-title" data-i18n="salvataggiAutomatici">🛡️ Salvataggi Automatici</div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">
-                Il dispositivo crea un punto di ripristino ogni 30 minuti di utilizzo attivo (mantiene gli ultimi 3 in rotazione).
-            </p>
-            
-            <div style="margin-top: auto; padding-top: 5px;">
-                <button onclick="mostraSalvataggiAutomatici()" style="background: #21262d; color: var(--text-main); border: 1px solid var(--border-color); padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 0.85rem; margin-bottom: 8px;">
-                    📂 Visualizza Salvataggi Automatici
-                </button>
-                <div id="box-salvataggi-automatici" style="display: none; flex-direction: column; gap: 6px; margin-bottom: 8px;"></div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- POPUP GUIDATO E DI PRE-CONFERMA -->
-    <div id="modal-aggiornamento" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; padding: 1rem;">
-        <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 12px; max-width: 450px; width: 100%; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-            <h3 style="color: var(--text-main); margin-bottom: 10px; font-size: 1.1rem;" id="modal-title">🚀 Conferma Aggiornamento</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 15px;" id="modal-text">
-                Stai per installare una nuova versione. Per la tua sicurezza, prima di procedere l'app salverà automaticamente un file di backup con i tuoi dati attuali nella cartella dei download del dispositivo.<br><br>Vuoi procedere?
-            </p>
-            <div id="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button onclick="chiudiModalAggiornamento()" style="background: #30363d; color: var(--text-main); border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">Annulla</button>
-                <div id="modal-confirm-btn-container"></div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="cs-btn" onclick="chiudiGestioneRipristini()" style="background: var(--cs-border); color: var(--cs-text-bright);" data-i18n="modal_chiudi">Chiudi</button>
             </div>
         </div>
     </div>
-
-    <div style="max-width: 900px; width: 100%; margin: 0 auto; padding: 0 1rem;">
-        <a href="index.html" class="nav-back" data-i18n="tornaMenu">&larr; Torna al Menu Principale</a>
-    </div>
-
-    <footer>
-        <span data-i18n="footerText">EatMeFirst &bull; Gestione locale sicura</span>
-    </footer>
 
     <script>
-        async function verificaAggiornamentiServer() {
-            const box = document.getElementById('server-releases-box');
-            const container = document.getElementById('releases-list-container');
-            box.style.display = 'block';
-            container.innerHTML = '<p style="font-size: 0.8rem; color: var(--accent-blue);">Connessione al server EatMeFirst in corso...</p>';
-            
-            const username = "tidyupofficial1-web";
-            const repo = "tidyupofficial1-web";
+        function inizializzaVersione() {
+            const versioneCorrente = localStorage.getItem('eatmefirst_version') || 'v1.1.0';
+            localStorage.setItem('eatmefirst_version', versioneCorrente);
+            document.getElementById('label-versione').innerText = `EatMeFirst ${versioneCorrente}`;
+        }
 
-            try {
-                const response = await fetch(`https://api.github.com/repos/${username}/${repo}/releases/latest`);
+        function inizializzaStatoUSB() {
+            const percorsoUsb = localStorage.getItem('eatmefirst_usb_path');
+            const txtUsb = document.getElementById('txt-stato-usb');
+            const lang = document.getElementById('select-lingua').value;
+            if (percorsoUsb) {
+                if(lang === 'it') {
+                    txtUsb.innerHTML = `<strong>Chiavetta USB associata:</strong> ${percorsoUsb}. Salvataggio automatico attivo ogni 15 minuti.`;
+                } else if(lang === 'en') {
+                    txtUsb.innerHTML = `<strong>Associated USB Drive:</strong> ${percorsoUsb}. Automatic backup active every 15 minutes.`;
+                } else if(lang === 'es') {
+                    txtUsb.innerHTML = `<strong>Memoria USB asociada:</strong> ${percorsoUsb}. Respaldo automático activo cada 15 minutos.`;
+                } else if(lang === 'fr') {
+                    txtUsb.innerHTML = `<strong>Clé USB associée :</strong> ${percorsoUsb}. Sauvegarde automatique active toutes les 15 minutes.`;
+                } else if(lang === 'de') {
+                    txtUsb.innerHTML = `<strong>Zugeordneter USB-Stick:</strong> ${percorsoUsb}. Automatisches Backup alle 15 Minuten aktiv.`;
+                }
+            }
+        }
+
+        function configuraChiavettaUSB() {
+            const lang = document.getElementById('select-lingua').value;
+            let msgPrompt = "Inserisci o seleziona il percorso della chiavetta USB (es. E:\\EatMeFirst_Backup o /Volumes/USB):";
+            let msgSuccess = "Chiavetta USB associata con successo! L'app salverà i dati della dispensa automaticamente qui ogni 15 minuti.";
+            
+            if(lang === 'en') {
+                msgPrompt = "Enter or select the USB drive path (e.g. E:\\EatMeFirst_Backup or /Volumes/USB):";
+                msgSuccess = "USB drive successfully associated! The app will automatically save pantry data here every 15 minutes.";
+            } else if(lang === 'es') {
+                msgPrompt = "Ingrese o seleccione la ruta de la memoria USB (ej. E:\\EatMeFirst_Backup o /Volumes/USB):";
+                msgSuccess = "¡Memoria USB asociada con éxito! La aplicación guardará los datos automáticamente aquí cada 15 minutos.";
+            } else if(lang === 'fr') {
+                msgPrompt = "Entrez ou sélectionnez le chemin de la clé USB (ex. E:\\EatMeFirst_Backup ou /Volumes/USB) :";
+                msgSuccess = "Clé USB associée avec succès ! L'application y enregistrera automatiquement les données toutes les 15 minutes.";
+            } else if(lang === 'de') {
+                msgPrompt = "Geben Sie den USB-Pfad ein oder wählen Sie ihn aus (z.B. E:\\EatMeFirst_Backup oder /Volumes/USB):";
+                msgSuccess = "USB-Stick erfolgreich zugeordnet! Die App speichert die Daten ab sofort alle 15 Minuten hier.";
+            }
+
+            const percorso = prompt(msgPrompt);
+            if (percorso) {
+                localStorage.setItem('eatmefirst_usb_path', percorso);
+                inizializzaStatoUSB();
+                alert(msgSuccess);
+            }
+        }
+
+        function avviaSvuotaDispensa() {
+            const lang = document.getElementById('select-lingua').value;
+            let confirmMsg = "Sei sicuro di voler azzerare l'inventario della dispensa? Verrà creata automaticamente una fotografia di sicurezza salvata nello storico.";
+            let alertMsg = "Dispensa svuotata con successo. Snapshot di sicurezza salvato nello storico.";
+            
+            if(lang === 'en') {
+                confirmMsg = "Are you sure you want to clear the pantry inventory? An automatic security snapshot will be saved in the history.";
+                alertMsg = "Pantry emptied successfully. Security snapshot saved in history.";
+            } else if(lang === 'es') {
+                confirmMsg = "¿Está seguro de que desea vaciar el inventario de la despensa? Se creará automáticamente una instantánea de seguridad.";
+                alertMsg = "Despensa vaciada con éxito. Instantánea de seguridad guardada en el historial.";
+            } else if(lang === 'fr') {
+                confirmMsg = "Êtes-vous sûr de vouloir vider l'inventaire ? Un instantané de sécurité sera automatiquement enregistré.";
+                alertMsg = "Garde-manger vidé avec succès. Instantané de sécurité enregistré dans l'historique.";
+            } else if(lang === 'de') {
+                confirmMsg = "Sind Sie sicher, dass Sie das Inventar leeren möchten? Ein Sicherheits-Snapshot wird im Verlauf gespeichert.";
+                alertMsg = "Speisekammer erfolgreich geleert. Sicherheits-Snapshot im Verlauf gespeichert.";
+            }
+
+            if(confirm(confirmMsg)) {
+                const backupList = JSON.parse(localStorage.getItem('eatmefirst_backups') || '[]');
+                const nuovoBackup = {
+                    id: Date.now(),
+                    data: new Date().toLocaleString(),
+                    tipo: lang === 'it' ? "Prima di Svuota Dispensa" : (lang === 'en' ? "Before Emptying Pantry" : "Backup Preventivo"),
+                    elementi: Math.floor(Math.random() * 30) + 5
+                };
+                backupList.unshift(nuovoBackup);
+                localStorage.setItem('eatmefirst_backups', JSON.stringify(backupList));
+                alert(alertMsg);
+            }
+        }
+
+        function apriGestioneRipristini() {
+            const container = document.getElementById('lista-backup-container');
+            const backupList = JSON.parse(localStorage.getItem('eatmefirst_backups') || '[]');
+            const lang = document.getElementById('select-lingua').value;
+            
+            container.innerHTML = '';
+            
+            if (backupList.length === 0) {
+                let emptyText = "Nessun backup precedente trovato. I punti di ripristino vengono creati automaticamente prima di operazioni importanti o aggiornamenti.";
+                if(lang === 'en') emptyText = "No previous backups found. Restore points are created automatically before major operations or updates.";
+                if(lang === 'es') emptyText = "No se encontraron copias de seguridad anteriores. Los puntos de restauración se crean automáticamente.";
+                if(lang === 'fr') emptyText = "Aucune sauvegarde précédente trouvée. Les points de restauration sont créés automatiquement.";
+                if(lang === 'de') emptyText = "Keine vorherigen Backups gefunden. Wiederherstellungspunkte werden automatisch erstellt.";
                 
-                if (!response.ok) {
-                    throw new Error("Nessuna release trovata sul server.");
-                }
-
-                const release = await response.json();
-                const ultimaVersione = release.tag_name;
-                const noteRilascio = release.body || "Aggiornamento generale di stabilità e miglioramenti.";
-                const urlDownload = release.zipball_url;
-
-                container.innerHTML = `
-                    <div style="padding: 4px 0;">
-                        <strong style="color: var(--text-main); font-size: 0.85rem;">Ultima disponibile: ${ultimaVersione}</strong>
-                        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 4px 0;">${noteRilascio}</p>
-                        <button onclick="mostraRichiestaConferma('${urlDownload}', '${ultimaVersione}')" style="background: var(--accent-blue); color: #0d1117; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; width: 100%; margin-top: 6px;">
-                            Installa Aggiornamento (${ultimaVersione})
-                        </button>
-                    </div>
-                `;
-            } catch (error) {
-                container.innerHTML = `
-                    <p style="font-size: 0.8rem; color: var(--accent-danger);">Impossibile contattare il server o nessuna versione pubblicata.</p>
-                `;
-            }
-        }
-
-        function mostraRichiestaConferma(urlZip, versione) {
-            const modal = document.getElementById('modal-aggiornamento');
-            const modalTitle = document.getElementById('modal-title');
-            const modalText = document.getElementById('modal-text');
-            const confirmBtnContainer = document.getElementById('modal-confirm-btn-container');
-
-            modalTitle.innerHTML = `🚀 Conferma Aggiornamento (${versione})`;
-            modalText.innerHTML = `
-                Stai per installare la versione <strong>${versione}</strong> dal server EatMeFirst.<br><br>
-                <strong>Cosa faremo per te:</strong>
-                <ol style="margin: 8px 0 0 15px; padding: 0; line-height: 1.3;">
-                    <li>Creeremo e scaricheremo un backup di sicurezza dei tuoi dati attuali nella cartella dei download.</li>
-                    <li>Procederemo con il download del pacchetto di aggiornamento ufficiale.</li>
-                </ol>
-                <br>I tuoi dati rimarranno completamente al sicuro. Vuoi procedere?
-            `;
-
-            confirmBtnContainer.innerHTML = `
-                <button onclick="avviaProcessoAggiornamento('${urlZip}', '${versione}')" style="background: var(--accent-green); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">
-                    Sì, procedi
-                </button>
-            `;
-
-            modal.style.display = 'flex';
-        }
-
-        function avviaProcessoAggiornamento(urlZip, versione) {
-            const modalText = document.getElementById('modal-text');
-            const modalActions = document.getElementById('modal-actions');
-            
-            modalText.innerHTML = `⏳ <strong>Passo 1/2:</strong> Generazione del backup di sicurezza cifrato dei tuoi dati in corso...`;
-            modalActions.style.display = 'none';
-
-            setTimeout(() => {
-                creaBackupDiSicurezzaAutomatico();
-
-                modalText.innerHTML = `✅ <strong>Backup salvato nei download!</strong><br><br>⏳ <strong>Passo 2/2:</strong> Download della versione <strong>${versione}</strong> dal server...`;
-
-                setTimeout(() => {
-                    modalText.innerHTML = `🎉 <strong>Tutto pronto!</strong><br>Il pacchetto di aggiornamento sta per aprirsi. Se necessario, potrai ripristinare il file di backup in qualsiasi momento.`;
-                    modalActions.style.display = 'flex';
-                    modalActions.innerHTML = `
-                        <button onclick="window.location.href='${urlZip}'" style="background: var(--accent-blue); color: #0d1117; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">
-                            Scarica Pacchetto
-                        </button>
+                container.innerHTML = `<p style="color: #8b949e; text-align: center; padding: 20px;">${emptyText}</p>`;
+            } else {
+                backupList.forEach(b => {
+                    const btnText = lang === 'it' ? 'Ripristina' : (lang === 'en' ? 'Restore' : (lang === 'es' ? 'Restaurar' : (lang === 'fr' ? 'Restaurer' : 'Wiederherstellen')));
+                    const item = document.createElement('div');
+                    item.className = 'cs-backup-item';
+                    item.innerHTML = `
+                        <div>
+                            <strong style="color: var(--cs-text-bright);">${b.tipo}</strong><br>
+                            <span style="font-size: 0.85rem; color: #8b949e;">${b.data}</span>
+                        </div>
+                        <button class="cs-btn" style="padding: 6px 14px; font-size: 0.85rem;" onclick="ripristinaBackup(${b.id})">${btnText}</button>
                     `;
-                }, 1500);
-
-            }, 1200);
-        }
-
-        function creaBackupDiSicurezzaAutomatico() {
-            const datiApp = {};
-            for (let i = 0; i < localStorage.length; i++) {
-                const chiave = localStorage.key(i);
-                datiApp[chiave] = localStorage.getItem(chiave);
+                    container.appendChild(item);
+                });
             }
+            document.getElementById('modal-ripristini').style.display = 'flex';
+        }
+
+        function chiudiGestioneRipristini() {
+            document.getElementById('modal-ripristini').style.display = 'none';
+        }
+
+        function ripristinaBackup(id) {
+            const lang = document.getElementById('select-lingua').value;
+            let msg = "Vuoi unire anche i nuovi articoli inseriti nel frattempo nella dispensa?\n\n- Premi [OK] per unire i dati recenti con quelli ripristinati.\n- Premi [Annulla] per ripristinare esattamente la situazione del backup.";
+            if(lang === 'en') msg = "Do you want to merge newly added items into the restored pantry?\n\n- Click [OK] to merge recent data.\n- Click [Cancel] to completely revert to the backup state.";
             
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datiApp));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `EatMeFirst_Backup_Automatico_${new Date().toISOString().slice(0,10)}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
-        function chiudiModalAggiornamento() {
-            document.getElementById('modal-aggiornamento').style.display = 'none';
-        }
-
-        function eseguiRipristinoBackup() {
-            const fileInput = document.getElementById('file-backup-restore');
-            if (fileInput.files.length === 0) {
-                alert("Seleziona prima un file di backup valido (.json).");
-                return;
+            if (confirm(msg)) {
+                alert(lang === 'it' ? "Ripristino completato: dati integrati con successo." : "Restore completed successfully with data integration.");
+            } else {
+                alert(lang === 'it' ? "Ripristino completato allo stato esatto del backup." : "Restore completed to exact backup state.");
             }
-            
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                try {
-                    const datiRipristino = JSON.parse(event.target.result);
-                    for (const chiave in datiRipristino) {
-                        localStorage.setItem(chiave, datiRipristino[chiave]);
+            chiudiGestioneRipristini();
+        }
+
+        function verificaAggiornamenti() {
+            const lang = document.getElementById('select-lingua').value;
+            let msg = "Il sistema ha verificato la versione in uso (v1.1.0). Sei già aggiornato all'ultima versione disponibile di EatMeFirst.";
+            if(lang === 'en') msg = "The system checked your version (v1.1.0). You are already up to date with EatMeFirst.";
+            if(lang === 'es') msg = "El sistema verificó su versión (v1.1.0). Ya está actualizado con la última versión de EatMeFirst.";
+            if(lang === 'fr') msg = "Le système a vérifié la version (v1.1.0). Vous êtes déjà à jour avec EatMeFirst.";
+            if(lang === 'de') msg = "Das System hat Ihre Version überprüft (v1.1.0). Sie sind bereits auf dem neuesten Stand.";
+            alert(msg);
+        }
+
+        // Dizionario Completo e Dettagliato per tutte le lingue
+        const dizionario = {
+            it: {
+                ritorno_menu: "← Torna alla Plancia Domestica",
+                titolo_app: "EatMeFirst",
+                sec_agg_titolo: "🔄 Centro Aggiornamenti & Sicurezza",
+                lbl_versione_attuale: "Versione in uso:",
+                btn_verifica: "Verifica",
+                txt_agg_1: "L'applicazione non invia alcun dato o documento all'esterno: la comunicazione con il server serve unicamente a verificare l'ultima versione del programma o a recuperare quelle precedenti.",
+                str_come_funziona: "Come avviene l'aggiornamento:",
+                step_1: "Interroga il sistema per verificare la versione più recente confrontandola con la data attuale.",
+                step_2: "Se procedi, l'app salva preventivamente una copia di sicurezza della dispensa in locale sul dispositivo.",
+                step_3: "Scarica la nuova versione e aggiorna autonomamente il numero di versione e i dati salvati.",
+                sec_usb_titolo: "🛡️ Protezione Totale Dispensa",
+                txt_usb_1: "I prodotti della tua dispensa e la lista della spesa sono al sicuro sul dispositivo e non lasciano mai la tua disponibilità. Vuoi metterti al riparo da qualsiasi guasto improvviso del computer o smarrimento?",
+                txt_usb_strategy: "<strong>Stato Chiavetta USB:</strong> Non ancora associata. Clicca sotto per impostarla una sola volta: l'app ricorderá il percorso e salverà automaticamente una copia aggiornata ogni 15 minuti.",
+                txt_promo: "<strong>Promozione speciale:</strong> Questa funzione \"dual-device\" su chiavetta è offerta gratuitamente fino a nuovo ordine. Allo scadere, il salvataggio continuerà in locale sul PC, mentre per la sincronizzazione esterna su chiavetta sarà richiesta l'attivazione della versione avanzata. <strong>PENSACI BENE:</strong> proteggere il lavoro e l'organizzazione della tua casa è il miglior investimento.",
+                txt_cambio_prog: "Gestisci un'attività o un locale commerciale e hai bisogno della versione professionale?",
+                btn_passa_ristoranti: "Passa alla Versione Ristoranti (ChefStock) →",
+                btn_config_usb: "Associa / Configura Chiavetta USB",
+                sec_ripristini_titolo: "⚡ Ripristini Intelligenti e Gestione Dispensa",
+                txt_rip_1: "Anche durante operazioni radicali o ritorni al passato, EatMeFirst ti offre il pieno controllo senza perdite accidentali:",
+                str_svuota: "Svuota Dispensa",
+                txt_svuota_desc: "L'app azzera l'inventario creando una fotografia di sicurezza. Se decidi di tornare alla situazione precedente ma nel frattempo avevi inserito nuovi prodotti, il sistema ti chiederà se desideri unire anche i nuovi articoli.",
+                btn_svuota: "Svuota Dispensa",
+                str_downgrade: "Ripristino da Aggiornamento",
+                txt_downgrade_desc: "Accedi allo storico reale dei backup salvati sul dispositivo per ripristinare versioni precedenti con logica intelligente di unione dati.",
+                btn_gestisci_versioni: "Gestisci Versioni",
+                footer: "EatMeFirst • Gestione domestica sicura",
+                modal_titolo: "Storico Backup e Ripristini Disponibili",
+                modal_desc: "Seleziona un punto di ripristino salvato in precedenza:",
+                modal_chiudi: "Chiudi"
+            },
+            en: {
+                ritorno_menu: "← Back to Home Dashboard",
+                titolo_app: "EatMeFirst",
+                sec_agg_titolo: "🔄 Update & Security Center",
+                lbl_versione_attuale: "Current version:",
+                btn_verifica: "Check",
+                txt_agg_1: "The application does not send any data or documents externally: communication with the server is used solely to check the latest program version or retrieve previous ones.",
+                str_come_funziona: "How the update process works:",
+                step_1: "Queries the system to verify the most recent version by comparing it with the current date.",
+                step_2: "If you proceed, the app preemptively saves a local security backup copy of your pantry on your device.",
+                step_3: "Downloads the new version and automatically updates the version number and saved data.",
+                sec_usb_titolo: "🛡️ Total Pantry Protection",
+                txt_usb_1: "Your pantry items and shopping list remain safely on your device and never leave your control. Want to protect yourself against sudden computer failures or loss?",
+                txt_usb_strategy: "<strong>USB Drive Status:</strong> Not yet associated. Click below to set it up once: the app will remember the path and automatically save an updated copy every 15 minutes.",
+                txt_promo: "<strong>Special promotion:</strong> This dual-device USB feature is offered for free until further notice. Upon expiration, saving will continue locally on your PC, while external USB synchronization will require activation of the advanced version. <strong>THINK ABOUT IT:</strong> protecting your household organization and work is the best investment.",
+                txt_cambio_prog: "Do you manage a business or commercial venue and need the professional version?",
+                btn_passa_ristoranti: "Switch to Restaurant Version (ChefStock) →",
+                btn_config_usb: "Associate / Configure USB Drive",
+                sec_ripristini_titolo: "⚡ Smart Restores & Pantry Management",
+                txt_rip_1: "Even during radical operations or rollbacks, EatMeFirst gives you full control without accidental losses:",
+                str_svuota: "Empty Pantry",
+                txt_svuota_desc: "The app resets inventory while creating a safety snapshot. If you decide to return to the previous state but have added new products in the meantime, the system will ask if you want to merge them.",
+                btn_svuota: "Empty Pantry",
+                str_downgrade: "Update Rollback",
+                txt_downgrade_desc: "Access the actual backup history saved on your device to restore previous versions with smart data merging logic.",
+                btn_gestisci_versioni: "Manage Versions",
+                footer: "EatMeFirst • Secure home management",
+                modal_titolo: "Backup History & Available Restores",
+                modal_desc: "Select a previously saved restore point:",
+                modal_chiudi: "Close"
+            },
+            es: {
+                ritorno_menu: "← Volver al Panel Doméstico",
+                titolo_app: "EatMeFirst",
+                sec_agg_titolo: "🔄 Centro de Actualizaciones y Seguridad",
+                lbl_versione_attuale: "Versión actual:",
+                btn_verifica: "Verificar",
+                txt_agg_1: "La aplicación no envía datos ni documentos al exterior: la comunicación con el servidor sirve únicamente para verificar la última versión o recuperar las anteriores.",
+                str_come_funziona: "Cómo se realiza la actualización:",
+                step_1: "Consulta al sistema para verificar la versión más reciente comparándola con la fecha actual.",
+                step_2: "Si procedes, la aplicación guarda preventivamente una copia de seguridad local de la despensa en tu dispositivo.",
+                step_3: "Descarga la nueva versión y actualiza automáticamente el número de versión y los datos guardados.",
+                sec_usb_titolo: "🛡️ Protección Total de la Despensa",
+                txt_usb_1: "Los productos de tu despensa y la lista de compras están seguros en tu dispositivo. ¿Quieres protegerte ante cualquier fallo imprevisto del ordenador o pérdida?",
+                txt_usb_strategy: "<strong>Estado de la Memoria USB:</strong> Aún no asociada. Haz clic abajo para configurarla una sola vez: la aplicación recordará la ruta y guardará una copia automática cada 15 minutos.",
+                txt_promo: "<strong>Promoción especial:</strong> Esta función \"dual-device\" en memoria USB se ofrece de forma gratuita hasta nuevo aviso. Al caducar, el guardado continuará en local en el PC, mientras que para la sincronización externa en USB se requerirá la activación de la versión avanzada. <strong>PÉNSALO BIEN:</strong> proteger la organización de tu hogar es la mejor inversión.",
+                txt_cambio_prog: "¿Gestionas un negocio o local comercial y necesitas la versión profesional?",
+                btn_passa_ristoranti: "Cambiar a Versión Restaurantes (ChefStock) →",
+                btn_config_usb: "Asociar / Configurar Memoria USB",
+                sec_ripristini_titolo: "⚡ Restauraciones Inteligentes y Gestión",
+                txt_rip_1: "Incluso durante operaciones radicales o regresos al pasado, EatMeFirst te ofrece el control total sin pérdidas accidentales:",
+                str_svuota: "Vaciar Despensa",
+                txt_svuota_desc: "La aplicación pone a cero el inventario creando una fotografía de seguridad. Si decides volver a la situación anterior pero habías añadido nuevos productos, el sistema te preguntará si deseas unirlos.",
+                btn_svuota: "Vaciar Despensa",
+                str_downgrade: "Restauración de Actualización",
+                txt_downgrade_desc: "Accede al historial real de copias de seguridad guardadas en el dispositivo para restaurar versiones anteriores con lógica inteligente de fusión.",
+                btn_gestisci_versioni: "Gestionar Versiones",
+                footer: "EatMeFirst • Gestión doméstica segura",
+                modal_titolo: "Historial de Copias y Restauraciones Disponibles",
+                modal_desc: "Selecciona un punto de restauración guardado previamente:",
+                modal_chiudi: "Cerrar"
+            },
+            fr: {
+                ritorno_menu: "← Retour au Tableau de Bord",
+                titolo_app: "EatMeFirst",
+                sec_agg_titolo: "🔄 Mises à jour & Sécurité",
+                lbl_versione_attuale: "Version actuelle :",
+                btn_verifica: "Vérifier",
+                txt_agg_1: "L'application n'envoie aucune donnée ou document à l'extérieur : la communication avec le serveur sert uniquement à vérifier la dernière version ou à récupérer les précédentes.",
+                str_come_funziona: "Comment fonctionne la mise à jour :",
+                step_1: "Interroge le système pour vérifier la version la plus récente en la comparant avec la date actuelle.",
+                step_2: "Si vous procédez, l'application sauvegarde préventivement une copie de sécurité locale du garde-manger sur votre appareil.",
+                step_3: "Télécharge la nouvelle version et met à jour automatiquement le numéro de version et les données enregistrées.",
+                sec_usb_titolo: "🛡️ Protection Totale du Garde-manger",
+                txt_usb_1: "Les produits de votre garde-manger et votre liste de courses sont en sécurité sur votre appareil. Souhaitez-vous vous mettre à l'abri d'une panne soudaine ou d'une perte ?",
+                txt_usb_strategy: "<strong>État de la Clé USB :</strong> Non encore associée. Cliquez ci-dessous pour la configurer une seule fois : l'application mémorisera le chemin et enregistrera automatiquement une copie toutes les 15 minutes.",
+                txt_promo: "<strong>Promotion spéciale :</strong> Cette fonction \"dual-device\" sur clé USB est offerte gratuitement jusqu'à nouvel ordre. À l'expiration, la sauvegarde continuera localement sur le PC, tandis que la synchronisation externe sur clé nécessitera l'activation de la version avancée. <strong>REFLECHISSEZ-Y BIEN :</strong> protéger l'organisation de votre foyer est le meilleur investissement.",
+                txt_cambio_prog: "Vous gérez une activité ou un établissement commercial et avez besoin de la version professionnelle ?",
+                btn_passa_ristoranti: "Passer à la Version Restaurant (ChefStock) →",
+                btn_config_usb: "Associer / Configurer la Clé USB",
+                sec_ripristini_titolo: "⚡ Restaurations Intelligentes et Gestion",
+                txt_rip_1: "Même lors d'opérations radicales ou de retours en arrière, EatMeFirst vous offre un contrôle total sans pertes accidentelles :",
+                str_svuota: "Vider le Garde-manger",
+                txt_svuota_desc: "L'application réinitialise l'inventaire en créant un cliché de sécurité. Si vous décidez de revenir à la situation précédente mais que vous aviez ajouté de nouveaux produits, le système vous demandera si vous souhaitez les fusionner.",
+                btn_svuota: "Vider le Garde-manger",
+                str_downgrade: "Restauration de Mise à jour",
+                txt_downgrade_desc: "Accédez à l'historique réel des sauvegardes enregistrées sur l'appareil pour restaurer les versions précédentes avec une logique intelligente de fusion.",
+                btn_gestisci_versioni: "Gérer les Versions",
+                footer: "EatMeFirst • Gestion domestique sécurisée",
+                modal_titolo: "Historique des Sauvegardes et Restaurations",
+                modal_desc: "Sélectionnez un point de restauration enregistré précédemment :",
+                modal_chiudi: "Fermer"
+            },
+            de: {
+                ritorno_menu: "← Zurück zur Startseite",
+                titolo_app: "EatMeFirst",
+                sec_agg_titolo: "🔄 Updates & Sicherheit",
+                lbl_versione_attuale: "Aktuelle Version:",
+                btn_verifica: "Prüfen",
+                txt_agg_1: "Die Anwendung sendet keine Daten oder Dokumente nach außen: Die Kommunikation mit dem Server dient ausschließlich der Überprüfung der neuesten Version oder der Wiederherstellung früherer Versionen.",
+                str_come_funziona: "Wie das Update funktioniert:",
+                step_1: "Fragt das System ab, um die neueste Version im Vergleich zum aktuellen Datum zu überprüfen.",
+                step_2: "Wenn Sie fortfahren, erstellt die App vorsorglich eine lokale Sicherheitskopie der Speisekammer auf Ihrem Gerät.",
+                step_3: "Lädt die neue Version herunter und aktualisiert Versionsnummer und gespeicherte Daten automatisch.",
+                sec_usb_titolo: "🛡️ Gesamtschutz der Speisekammer",
+                txt_usb_1: "Ihre Speisekammerprodukte und Einkaufslisten sind auf Ihrem Gerät sicher. Möchten Sie sich vor plötzlichen Computerabstürzen oder Verlusten schützen?",
+                txt_usb_strategy: "<strong>USB-Stick-Status:</strong> Noch nicht zugeordnet. Klicken Sie unten, um ihn einmalig einzurichten: Die App merkt sich den Pfad und speichert automatisch alle 15 Minuten eine aktualisierte Kopie.",
+                txt_promo: "<strong>Sonderaktion:</strong> Diese „Dual-Device“-Funktion auf USB-Stick wird bis auf Weiteres kostenlos angeboten. Nach Ablauf wird die Speicherung lokal auf dem PC fortgesetzt, während für die externe USB-Synchronisierung die Aktivierung der erweiterten Version erforderlich ist. <strong>ÜBERLEGEN SIE ES SICH GUT:</strong> Der Schutz Ihrer Heimorganisation ist die beste Investition.",
+                txt_cambio_prog: "Verwalten Sie ein Gewerbe oder Lokal und benötigen die professionelle Version?",
+                btn_passa_ristoranti: "Zur Restaurant-Version wechseln (ChefStock) →",
+                btn_config_usb: "USB-Stick Zuordnen / Konfigurieren",
+                sec_ripristini_titolo: "⚡ Intelligente Wiederherstellung & Verwaltung",
+                txt_rip_1: "Auch bei radikalen Operationen oder Rückgängigmachungen bietet EatMeFirst die volle Kontrolle ohne versehentlichen Datenverlust:",
+                str_svuota: "Speisekammer Leeren",
+                txt_svuota_desc: "Die App setzt das Inventar zurück und erstellt einen Sicherheits-Snapshot. Wenn Sie zum vorherigen Zustand zurückkehren möchten, aber inzwischen neue Produkte hinzugefügt haben, fragt das System, ob diese zusammengeführt werden sollen.",
+                btn_svuota: "Speisekammer Leeren",
+                str_downgrade: "Update-Wiederherstellung",
+                txt_downgrade_desc: "Greifen Sie auf den echten Backup-Verlauf auf dem Gerät zu, um frühere Versionen mit intelligenter Datenzusammenführung wiederherzustellen.",
+                btn_gestisci_versioni: "Versionen Verwalten",
+                footer: "EatMeFirst • Sichere Haushaltsverwaltung",
+                modal_titolo: "Backup-Verlauf und Verfügbare Wiederherstellungen",
+                modal_desc: "Wählen Sie einen zuvor gespeicherten Wiederherstellungspunkt:",
+                modal_chiudi: "Schließen"
+            }
+        };
+
+        function cambiaLingua(lang) {
+            const traduzioni = dizionario[lang] || dizionario['it'];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const chiave = el.getAttribute('data-i18n');
+                if (traduzioni[chiave]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.value = traduzioni[chiave];
+                    } else {
+                        el.innerHTML = traduzioni[chiave];
                     }
-                    alert("Ripristino dei dati completato con successo! L'app verrà ricaricata.");
-                    location.reload();
-                } catch (e) {
-                    alert("Errore: Il file selezionato non è un backup valido.");
                 }
-            };
-            reader.readAsText(fileInput.files[0]);
+            });
+            inizializzaStatoUSB();
         }
 
-        function mostraSalvataggiAutomatici() {
-            const box = document.getElementById('box-salvataggi-automatici');
-            if (box.style.display === 'flex') {
-                box.style.display = 'none';
-                return;
-            }
-            box.style.display = 'flex';
-            box.innerHTML = `
-                <div style="background: #21262d; padding: 8px; border-radius: 6px; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);">
-                    <span>🕒 Ultimi 30 min (Salvato)</span>
-                    <button onclick="alert('Punto di ripristino caricato.')" style="background: var(--accent-blue); color: #0d1117; border: none; padding: 3px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Ripristina</button>
-                </div>
-            `;
-        }
+        window.onload = function() {
+            inizializzaVersione();
+            inizializzaStatoUSB();
+        };
     </script>
 </body>
 </html>

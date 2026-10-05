@@ -8,13 +8,7 @@ const dizionarioStatistiche = {
     it: {
         titoloMeta: "EatMeFirst - Agenda Scadenze",
         titoloHeader: "Agenda Scadenze",
-        menuTitolo: "Menu EatMeFirst",
-        menuDispensa: "📦 Dispensa e Frigorifero",
-        menuListe: "🛒 Lista della Spesa",
-        menuStatistiche: "📅 Agenda Scadenze",
-        menuSecImpostazioni: "Impostazioni & Dati",
-        menuBackup: "💾 Scarica Backup Database",
-        menuDetonatore: "💣 Svuota Intera Dispensa",
+        btnTornaMenu: "← Menu",
         cardTitolo: "📅 Prossimi Giorni in Scadenza",
         cardSubtitle: "Scorri la barra per visualizzare l'andamento. Clicca su una colonna per scoprire i prodotti del giorno.",
         legendaFresco: "Fresco (Tassativo)",
@@ -27,18 +21,12 @@ const dizionarioStatistiche = {
         paywallTitolo: "Funzione Extra Avanzata",
         paywallTesto: "L'Agenda Scadenze è una funzione extra attualmente offerta in uso gratuito, ma che in futuro diventerà a pagamento per lo sviluppo avanzato.",
         paywallBtnSblocca: "Accedi subito alla funzione",
-        paywallBtnIndietro: "← Torna alla Dispensa"
+        paywallBtnIndietro: "← Torna al Menu"
     },
     en: {
         titoloMeta: "EatMeFirst - Expiry Schedule",
         titoloHeader: "Expiry Schedule",
-        menuTitolo: "EatMeFirst Menu",
-        menuDispensa: "📦 Pantry & Fridge",
-        menuListe: "🛒 Shopping List",
-        menuStatistiche: "📅 Expiry Schedule",
-        menuSecImpostazioni: "Settings & Data",
-        menuBackup: "💾 Download Database Backup",
-        menuDetonatore: "💣 Clear Entire Pantry",
+        btnTornaMenu: "← Menu",
         cardTitolo: "📅 Upcoming Expiries",
         cardSubtitle: "Scroll the bar to view the trend. Click on a column to see products for that day.",
         legendaFresco: "Fresh (Strict)",
@@ -51,18 +39,12 @@ const dizionarioStatistiche = {
         paywallTitolo: "Advanced Extra Feature",
         paywallTesto: "The Expiry Schedule is an extra feature currently offered for free use, but it will become paid in the future for advanced development.",
         paywallBtnSblocca: "Access feature now",
-        paywallBtnIndietro: "← Back to Pantry"
+        paywallBtnIndietro: "← Back to Menu"
     },
     es: {
         titoloMeta: "EatMeFirst - Agenda de Caducidades",
         titoloHeader: "Agenda de Caducidades",
-        menuTitolo: "Menú EatMeFirst",
-        menuDispensa: "📦 Despensa y Nevera",
-        menuListe: "🛒 Lista de Compras",
-        menuStatistiche: "📅 Agenda de Caducidades",
-        menuSecImpostazioni: "Ajustes y Datos",
-        menuBackup: "💾 Descargar Copia de Seguridad",
-        menuDetonatore: "💣 Vaciar Toda la Despensa",
+        btnTornaMenu: "← Menú",
         cardTitolo: "📅 Próximos Días",
         cardSubtitle: "Desliza la barra para ver la tendencia. Haz clic en una columna para ver los productos.",
         legendaFresco: "Fresco (Estricto)",
@@ -75,18 +57,12 @@ const dizionarioStatistiche = {
         paywallTitolo: "Función Extra Avanzada",
         paywallTesto: "La Agenda de Caducidades es una función extra gratuita por ahora, pero en el futuro requerirá un pago para su mantenimiento.",
         paywallBtnSblocca: "Acceder a la función",
-        paywallBtnIndietro: "← Volver a la Despensa"
+        paywallBtnIndietro: "← Volver al Menú"
     },
     fr: {
         titoloMeta: "EatMeFirst - Agenda des Péremptions",
         titoloHeader: "Agenda des Péremptions",
-        menuTitolo: "Menu EatMeFirst",
-        menuDispensa: "📦 Garde-manger et Frigo",
-        menuListe: "🛒 Liste de Courses",
-        menuStatistiche: "📅 Agenda des Péremptions",
-        menuSecImpostazioni: "Paramètres et Données",
-        menuBackup: "💾 Télécharger la Sauvegarde",
-        menuDetonatore: "💣 Vider Tout le Garde-manger",
+        btnTornaMenu: "← Menu",
         cardTitolo: "📅 Prochaines Péremptions",
         cardSubtitle: "Faites défiler la barre pour voir la tendance. Cliquez sur une colonne pour voir les produits.",
         legendaFresco: "Frais (Strict)",
@@ -99,18 +75,12 @@ const dizionarioStatistiche = {
         paywallTitolo: "Fonctionnalité Extra",
         paywallTesto: "L'agenda des péremptions est une fonction extra actuellement gratuite, mais qui deviendra payante à l'avenir.",
         paywallBtnSblocca: "Accéder à la fonction",
-        paywallBtnIndietro: "← Retour au Garde-manger"
+        paywallBtnIndietro: "← Retour au Menu"
     },
     de: {
         titoloMeta: "EatMeFirst - Ablaufkalender",
         titoloHeader: "Ablaufkalender",
-        menuTitolo: "EatMeFirst Menü",
-        menuDispensa: "📦 Vorratskammer & Kühlschrank",
-        menuListe: "🛒 Einkaufsliste",
-        menuStatistiche: "📅 Ablaufkalender",
-        menuSecImpostazioni: "Einstellungen & Daten",
-        menuBackup: "💾 Datenbank-Backup herunterladen",
-        menuDetonatore: "💣 Gesamte Vorratskammer leeren",
+        btnTornaMenu: "← Menü",
         cardTitolo: "📅 Anstehende Abläufe",
         cardSubtitle: "Leiste verschieben, um den Trend zu sehen. Klicken Sie auf eine Spalte für Details.",
         legendaFresco: "Frisch (Streng)",
@@ -123,7 +93,7 @@ const dizionarioStatistiche = {
         paywallTitolo: "Erweiterte Extra-Funktion",
         paywallTesto: "Der Ablaufkalender ist eine Extra-Funktion, die derzeit kostenlos angeboten wird, aber zukünftig kostenpflichtig werden kann.",
         paywallBtnSblocca: "Funktion jetzt nutzen",
-        paywallBtnIndietro: "← Zurück zur Vorratskammer"
+        paywallBtnIndietro: "← Zum Menü zurück"
     }
 };
 
@@ -148,13 +118,7 @@ function applicaTraduzioni() {
     
     document.getElementById('titolo-pagina-meta').textContent = t.titoloMeta;
     document.getElementById('titolo-header').textContent = t.titoloHeader;
-    document.getElementById('menu-titolo').textContent = t.menuTitolo;
-    document.getElementById('menu-dispensa').textContent = t.menuDispensa;
-    document.getElementById('menu-liste').textContent = t.menuListe;
-    document.getElementById('menu-statistiche').textContent = t.menuStatistiche;
-    document.getElementById('menu-sec-impostazioni').textContent = t.menuSecImpostazioni;
-    document.getElementById('menu-backup').textContent = t.menuBackup;
-    document.getElementById('menu-detonatore').textContent = t.menuDetonatore;
+    document.getElementById('btn-torna-menu').textContent = t.btnTornaMenu;
     document.getElementById('card-titolo-calendario').textContent = t.cardTitolo;
     document.getElementById('card-subtitle-calendario').textContent = t.cardSubtitle;
     document.getElementById('legenda-fresco').textContent = t.legendaFresco;
@@ -186,28 +150,7 @@ function sbloccaFunzionePro() {
 }
 
 function tornaAlMenuPrincipale() {
-    window.location.href = 'dispensa.html';
-}
-
-function toggleMenu() {
-    const menu = document.getElementById('side-menu');
-    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-}
-
-function esportaDatabase() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `eat_me_first_backup_${new Date().toISOString().slice(0,10)}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-}
-
-function avviaDetonatore() {
-    if(confirm("ATTENZIONE: Stai per attivare il sistema di svuotamento totale della dispensa. Vuoi procedere?")) {
-        alert("Qui collegheremo la sequenza video del detonatore che abbiamo progettato!");
-    }
+    window.location.href = 'menu.html';
 }
 
 // Converte in modo sicuro sia date YYYY-MM-DD sia date italiane GG/MM/AA o GG/MM/AAAA

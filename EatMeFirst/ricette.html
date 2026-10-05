@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="ricette_title">EatMeFirst - Ricette & Idee</title>
+    <!-- Collegamento agli stili dedicati -->
+    <link rel="stylesheet" href="ricette.css">
+</head>
+<body>
+
+    <!-- BARRA SUPERIORE: MENU PAGINE + SELETTORE LINGUA -->
+    <div class="top-bar-absolute">
+        <select class="suite-select" onchange="if(this.value) window.location.href=this.value">
+            <option value="" disabled selected>📂 ☰ Menu</option>
+            <option value="menu.html">🏠 Menu Principale</option>
+            <option value="dispensa.html">📦 Dispensa</option>
+            <option value="carico.html">➕ Carico Merci</option>
+            <option value="scarico.html">📤 Scarico Prodotti</option>
+            <option value="spesa.html">🛒 Lista Spesa</option>
+            <option value="mia_lista.html">📝 Ricordarsi di</option>
+            <option value="ricette.html">🍳 Ricette & Idee</option>
+            <option value="statistiche.html">📊 Statistiche</option>
+        </select>
+
+        <select id="lingua-select" class="lang-select" onchange="cambiaLingua(this.value)">
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="de">🇩🇪 Deutsch</option>
+        </select>
+    </div>
+
+    <!-- HEADER CON LOGO E TITOLO -->
+    <div class="main-header">
+        <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="header-logo">
+        <h2 data-i18n="ricette_title">Ricette & Idee</h2>
+    </div>
+
+    <div class="container">
+        
+        <!-- CARD INSERIMENTO NUOVA RICETTA -->
+        <div class="card">
+            <h3 data-i18n="card_nuova_ricetta">Nuova Ricetta o Idea</h3>
+            <form onsubmit="aggiungiRicetta(event)">
+                <input type="text" id="ricetta-titolo" data-placeholder="placeholder_titolo" placeholder="Titolo della ricetta o idea..." required>
+                <textarea id="ricetta-testo" data-placeholder="placeholder_testo" placeholder="Scrivi qui gli ingredienti e il procedimento..." rows="4" required></textarea>
+                <button type="submit" class="btn btn-primary" data-i18n="btn_salva_ricetta">Salva Ricetta</button>
+            </form>
+        </div>
+
+        <!-- CARD CONSULTAZIONE ELENCO -->
+        <div class="card">
+            <h3 data-i18n="card_elenco_ricette">Elenco Ricette & Idee</h3>
+            <div id="lista-ricette">
+                <!-- Popolato via JavaScript -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODALE DETTAGLIO RICETTA -->
+    <div id="modal-dettaglio" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3 id="modal-titolo" style="color: var(--accent-blue); margin-top: 0;"></h3>
+            <div id="modal-testo" style="white-space: pre-wrap; line-height: 1.6; margin-bottom: 20px; font-size: 0.95rem; color: var(--text-main);"></div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-danger" onclick="eliminaRicettaCorrente()" data-i18n="btn_elimina">Elimina Ricetta</button>
+                <button class="btn btn-primary" onclick="chiudiModal()" data-i18n="btn_chiudi">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER CON LOGO -->
+    <footer>
+        <img src="IMG/logo_1024_white.png" alt="EatMeFirst Logo" class="footer-logo">
+        <span id="txt-footer" data-i18n="footer_text">EatMeFirst &bull; Dati locali su dispositivo</span>
+    </footer>
+
+    <!-- Script di gestione -->
+    <script src="ricette.js"></script>
+</body>
+</html>

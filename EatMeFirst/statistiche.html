@@ -9,7 +9,7 @@
 <body>
 
     <header>
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <a href="menu.html" class="menu-btn" id="btn-torna-menu" style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 5px 10px; border-radius: 4px; font-size: 0.85rem; text-decoration: none; font-weight: bold;">&larr; Menu</a>
         <h1 id="titolo-header">Agenda Scadenze</h1>
         <!-- Selettore della lingua in alto a destra -->
         <select id="selettore-lingua" onchange="cambiaLingua(this.value)" style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">
@@ -20,21 +20,6 @@
             <option value="de" style="color: #333;">🇩🇪 DE</option>
         </select>
     </header>
-
-    <!-- Menu a scomparsa (Hamburger) -->
-    <div id="side-menu">
-        <div class="menu-header">
-            <h2 id="menu-titolo">Menu EatMeFirst</h2>
-            <button class="close-menu" onclick="toggleMenu()">✕</button>
-        </div>
-        <a href="dispensa.html" class="menu-item" id="menu-dispensa">📦 Dispensa e Frigorifero</a>
-        <a href="liste.html" class="menu-item" id="menu-liste">🛒 Lista della Spesa</a>
-        <a href="statistiche.html" class="menu-item" id="menu-statistiche" style="background: #2a2a2a; color: #fff;">📅 Agenda Scadenze</a>
-        
-        <div style="margin: 15px 0 10px 0; font-size: 0.75rem; text-transform: uppercase; color: #888; font-weight: bold;" id="menu-sec-impostazioni">Impostazioni & Dati</div>
-        <a href="#" onclick="esportaDatabase()" class="menu-item" id="menu-backup">💾 Scarica Backup Database</a>
-        <a href="#" onclick="avviaDetonatore()" class="menu-item danger" id="menu-detonatore">💣 Svuota Intera Dispensa</a>
-    </div>
 
     <!-- Contenuto Principale -->
     <div class="container">
