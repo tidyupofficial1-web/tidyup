@@ -1,441 +1,177 @@
-let html5QrCode = null;
-let cameraAttiva = false;
-let mostraAiutiAttivo = true;
+const dizionarioTraduzioni = {
+    it: {
+        mostraAiuti: "Mostra suggerimenti",
+        titoloCarico: "Carico Merci",
+        labelScanner: "🔍 Scanner Barcode & Database Globali (Usa Spazio o Invio per cercare)",
+        btnAttivaCam: "Attiva Fotocamera / Scanner",
+        btnChiudiCam: "Chiudi Fotocamera",
+        btnManuale: "Inserimento Manuale (Mercato, Fatto in casa, No Barcode)",
+        titoloDettagli: "Dettagli Prodotto",
+        labelCategoria: "Categoria",
+        labelNome: "Descrizione / Nome Prodotto (Max 45 caratteri)",
+        labelMarca: "Marca / Origine (Opzionale, Max 30 caratteri)",
+        labelUbicazione: "Ubicazione (Dinamica basata sui tuoi inserimenti)",
+        opzioneSelezionaUbicazione: "-- Seleziona o crea un'ubicazione --",
+        notaUbicazione: "💡 Puoi aggiungere nuove ubicazioni al volo.",
+        labelQuantita: "Quantità Confezione",
+        umPezzi: "Pezzi",
+        umGrammi: "Grammi (g)",
+        umMl: "Millilitri (ml)",
+        notaConv: "💡 Unità standard singola",
+        labelScadenzaGestione: "Gestione Scadenza (Scegli come inserire)",
+        labelGiorni: "⏳ Tra quanti giorni scade?",
+        labelMesi: "📅 Tra quanti mesi scade?",
+        labelDataEsatta: "Oppure inserisci la data esatta stampata:",
+        btnRegistra: "Registra Carico in Dispensa",
+        linkTornaMenu: "← Torna al Menu Principale",
+        footerText: "Gestione locale sicura • Risparmia cibo, vivi meglio",
+        modalTitolo: "💡 Suggerimento Utile",
+        modalBtn: "Ho capito",
+        etichettaDatabase: "Database",
+        etichettaBrand: "Brand"
+    },
+    en: {
+        mostraAiuti: "Show tips",
+        titoloCarico: "Goods Intake",
+        labelScanner: "🔍 Barcode Scanner & Global Databases (Use Space or Enter to search)",
+        btnAttivaCam: "Activate Camera / Scanner",
+        btnChiudiCam: "Close Camera",
+        btnManuale: "Manual Entry (Market, Homemade, No Barcode)",
+        titoloDettagli: "Product Details",
+        labelCategoria: "Category",
+        labelNome: "Description / Product Name (Max 45 chars)",
+        labelMarca: "Brand / Origin (Optional, Max 30 chars)",
+        labelUbicazione: "Location (Dynamic based on your inputs)",
+        opzioneSelezionaUbicazione: "-- Select or create a location --",
+        notaUbicazione: "💡 You can add new locations on the fly.",
+        labelQuantita: "Package Quantity",
+        umPezzi: "Pieces",
+        umGrammi: "Grams (g)",
+        umMl: "Milliliters (ml)",
+        notaConv: "💡 Single standard unit",
+        labelScadenzaGestione: "Expiry Management (Choose input method)",
+        labelGiorni: "⏳ In how many days does it expire?",
+        labelMesi: "📅 In how many months does it expire?",
+        labelDataEsatta: "Or enter the exact date printed on package:",
+        btnRegistra: "Register Intake in Pantry",
+        linkTornaMenu: "← Back to Main Menu",
+        footerText: "Secure local management • Save food, live better",
+        modalTitolo: "💡 Useful Tip",
+        modalBtn: "Got it",
+        etichettaDatabase: "Database",
+        etichettaBrand: "Brand"
+    },
+    fr: {
+        mostraAiuti: "Afficher les conseils",
+        titoloCarico: "Entrée de Marchandises",
+        labelScanner: "🔍 Scanner Code-barres & Bases de données (Espace ou Entrée)",
+        btnAttivaCam: "Activer Caméra / Scanner",
+        btnChiudiCam: "Fermer Caméra",
+        btnManuale: "Saisie Manuelle (Marché, Fait maison, Sans code-barres)",
+        titoloDettagli: "Détails du Produit",
+        labelCategoria: "Catégorie",
+        labelNome: "Description / Nom du Produit (Max 45 car.)",
+        labelMarca: "Marque / Origine (Optionnel, Max 30 car.)",
+        labelUbicazione: "Emplacement (Dynamique selon vos saisies)",
+        opzioneSelezionaUbicazione: "-- Sélectionner ou créer un emplacement --",
+        notaUbicazione: "💡 Vous pouvez ajouter des emplacements à la volée.",
+        labelQuantita: "Quantité du Paquet",
+        umPezzi: "Pièces",
+        umGrammi: "Grammes (g)",
+        umMl: "Millilitres (ml)",
+        notaConv: "💡 Unité standard unique",
+        labelScadenzaGestione: "Gestion de la Péremption (Choisissez la méthode)",
+        labelGiorni: "⏳ Expire dans combien de jours ?",
+        labelMesi: "📅 Expire dans combien de mois ?",
+        labelDataEsatta: "Ou entrez la date exacte imprimée :",
+        btnRegistra: "Enregistrer dans le Garde-manger",
+        linkTornaMenu: "← Retour au Menu Principal",
+        footerText: "Gestion locale sécurisée • Sauvez de la nourriture",
+        modalTitolo: "💡 Astuce Utile",
+        modalBtn: "Compris",
+        etichettaDatabase: "Base de données",
+        etichettaBrand: "Marque"
+    },
+    es: {
+        mostraAiuti: "Mostrar sugerencias",
+        titoloCarico: "Entrada de Mercancías",
+        labelScanner: "🔍 Escáner de Código y Bases de Datos (Usa Espacio o Enter)",
+        btnAttivaCam: "Activar Cámara / Escáner",
+        btnChiudiCam: "Cerrar Cámara",
+        btnManuale: "Entrada Manual (Mercado, Casero, Sin código)",
+        titoloDettagli: "Detalles del Producto",
+        labelCategoria: "Categoría",
+        labelNome: "Descripción / Nombre del Producto (Máx 45 car.)",
+        labelMarca: "Marca / Origen (Opcional, Máx 30 car.)",
+        labelUbicazione: "Ubicación (Dinámica basada en tus entradas)",
+        opzioneSelezionaUbicazione: "-- Selecciona o crea una ubicación --",
+        notaUbicazione: "💡 Puedes añadir nuevas ubicaciones al vuelo.",
+        labelQuantita: "Cantidad del Paquete",
+        umPezzi: "Piezas",
+        umGrammi: "Gramos (g)",
+        umMl: "Mililitros (ml)",
+        notaConv: "💡 Unidad estándar única",
+        labelScadenzaGestione: "Gestión de Caducidad (Elige el método)",
+        labelGiorni: "⏳ ¿En cuántos días caduca?",
+        labelMesi: "📅 ¿En cuántos meses caduca?",
+        labelDataEsatta: "O introduce la fecha exacta impresa:",
+        btnRegistra: "Registrar Entrada en Despensa",
+        linkTornaMenu: "← Volver al Menú Principal",
+        footerText: "Gestión local segura • Ahorra comida, vive mejor",
+        modalTitolo: "💡 Consejo Útil",
+        modalBtn: "Entendido",
+        etichettaDatabase: "Base de datos",
+        etichettaBrand: "Marca"
+    },
+    de: {
+        mostraAiuti: "Tipps anzeigen",
+        titoloCarico: "Wareneingang",
+        labelScanner: "🔍 Barcode-Scanner & Globale Datenbanken (Leertaste oder Enter)",
+        btnAttivaCam: "Kamera / Scanner aktivieren",
+        btnChiudiCam: "Kamera schließen",
+        btnManuale: "Manuelle Eingabe (Markt, Selbstgemacht, Kein Barcode)",
+        titoloDettagli: "Produktdetails",
+        labelCategoria: "Kategorie",
+        labelNome: "Beschreibung / Produktname (Max. 45 Zeichen)",
+        labelMarca: "Marke / Herkunft (Optional, Max. 30 Zeichen)",
+        labelUbicazione: "Standort (Dynamisch basierend auf Eingaben)",
+        opzioneSelezionaUbicazione: "-- Standort auswählen oder erstellen --",
+        notaUbicazione: "💡 Sie können neue Standorte direkt hinzufügen.",
+        labelQuantita: "Verpackungsmenge",
+        umPezzi: "Stück",
+        umGrammi: "Gramm (g)",
+        umMl: "Milliliter (ml)",
+        notaConv: "💡 Einzelne Standardeinheit",
+        labelScadenzaGestione: "Verwaltung des Verfallsdatums (Methode wählen)",
+        labelGiorni: "⏳ In wie vielen Tagen läuft es ab?",
+        labelMesi: "📅 In wie vielen Monaten läuft es ab?",
+        labelDataEsatta: "Oder geben Sie das genaue gedruckte Datum ein:",
+        btnRegistra: "In Speisekammer eintragen",
+        linkTornaMenu: "← Zurück zum Hauptmenü",
+        footerText: "Sichere lokale Verwaltung • Essen sparen, besser leben",
+        modalTitolo: "💡 Nützlicher Tipp",
+        modalBtn: "Verstanden",
+        etichettaDatabase: "Datenbank",
+        etichettaBrand: "Marke"
+    }
+};
 
+function cambiaLingua(lang) {
+    localStorage.setItem('eat_me_first_lang', lang);
+    const traduzioni = dizionarioTraduzioni[lang] || dizionarioTraduzioni['it'];
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const chiave = el.getAttribute('data-i18n');
+        if (traduzioni[chiave]) {
+            el.textContent = traduzioni[chiave];
+        }
+    });
+}
+
+// All'avvio della pagina, applica la lingua salvata
 document.addEventListener('DOMContentLoaded', () => {
-    const savedHelpPref = localStorage.getItem('eat_me_first_help');
-    if (savedHelpPref === 'false') {
-        mostraAiutiAttivo = false;
-        document.getElementById('chk-mostra-aiuti').checked = false;
-    }
-
-    const barcodeInput = document.getElementById('barcode-input');
-    if (barcodeInput) barcodeInput.focus();
-    
-    inizializzaListenerCampi();
-    impostaDataOdierna();
+    const savedLang = localStorage.getItem('eat_me_first_lang') || 'it';
+    const selectLang = document.getElementById('lingua-select');
+    if (selectLang) selectLang.value = savedLang;
+    cambiaLingua(savedLang);
 });
-
-function toggleGlobalHelp(stato) {
-    mostraAiutiAttivo = stato;
-    localStorage.setItem('eat_me_first_help', stato);
-}
-
-function inizializzaListenerCampi() {
-    const gruppi = document.querySelectorAll('.form-group');
-    gruppi.forEach((gruppo, index) => {
-        const input = gruppo.querySelector('input, select');
-        if (input && gruppo.dataset.help) {
-            const campoId = input.id || `campo_${index}`;
-            
-            input.addEventListener('focus', () => {
-                if (!mostraAiutiAttivo) return;
-
-                const oggi = new Date().toISOString().split('T')[0];
-                const ultimiAiutiLetti = JSON.parse(localStorage.getItem('eat_me_first_visti') || "{}");
-
-                if (ultimiAiutiLetti[campoId] === oggi) return;
-
-                mostraTooltipModal(gruppo.dataset.help, campoId);
-            });
-        }
-    });
-}
-
-function mostraTooltipModal(testo, campoId) {
-    let modal = document.getElementById('tooltip-modal');
-    if (!modal) return;
-
-    document.getElementById('tooltip-text').textContent = testo;
-    modal.dataset.campoAttivo = campoId;
-    modal.style.display = 'flex';
-}
-
-function chiudiTooltip() {
-    const modal = document.getElementById('tooltip-modal');
-    if (!modal) return;
-
-    const campoId = modal.dataset.campoAttivo;
-
-    if (campoId) {
-        const oggi = new Date().toISOString().split('T')[0];
-        let ultimiAiutiLetti = JSON.parse(localStorage.getItem('eat_me_first_visti') || "{}");
-        ultimiAiutiLetti[campoId] = oggi;
-        localStorage.setItem('eat_me_first_visti', JSON.stringify(ultimiAiutiLetti));
-    }
-
-    modal.style.display = 'none';
-}
-
-function impostaDataOdierna() {
-    const oggi = new Date().toISOString().split('T')[0];
-    const campoData = document.getElementById('data-carico');
-    if(campoData) campoData.value = oggi;
-}
-
-function handleBarcodeKey(event) {
-    if (event.key === 'Enter' || event.code === 'Space') {
-        event.preventDefault();
-        cercaBarcodeMultiplo();
-    }
-}
-
-async function toggleFotocamera() {
-    const readerDiv = document.getElementById('reader');
-    const btnCam = document.getElementById('btn-toggle-cam');
-
-    if (!cameraAttiva) {
-        readerDiv.style.display = 'block';
-        btnCam.textContent = "⏳ Apertura fotocamera in corso...";
-        cameraAttiva = true;
-
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                video: { facingMode: { exact: "environment" } } 
-            }).catch(async () => {
-                return await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-            });
-
-            stream.getTracks().forEach(track => track.stop());
-
-            html5QrCode = new Html5Qrcode("reader");
-            await html5QrCode.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 220, height: 140 } },
-                async (decodedText) => {
-                    document.getElementById('barcode-input').value = decodedText;
-                    await chiudiFotocamera();
-                    cercaBarcodeMultiplo();
-                },
-                (errorMessage) => {}
-            );
-
-            btnCam.textContent = "🛑 Chiudi Fotocamera";
-        } catch (err) {
-            console.error("Errore accesso fotocamera:", err);
-            alert("Impossibile accedere alla fotocamera. Verifica i permessi nel browser.");
-            await chiudiFotocamera();
-        }
-    } else {
-        await chiudiFotocamera();
-    }
-}
-
-async function chiudiFotocamera() {
-    if (html5QrCode) {
-        try {
-            if (html5QrCode.isScanning) {
-                await html5QrCode.stop();
-            }
-            html5QrCode.clear();
-        } catch (e) {}
-    }
-    html5QrCode = null;
-    const reader = document.getElementById('reader');
-    if (reader) reader.style.display = 'none';
-    const btnCam = document.getElementById('btn-toggle-cam');
-    if (btnCam) btnCam.textContent = "📷 Attiva Fotocamera / Scanner";
-    cameraAttiva = false;
-}
-
-async function cercaBarcodeMultiplo() {
-    if (cameraAttiva) await chiudiFotocamera();
-
-    const barcodeInput = document.getElementById('barcode-input');
-    if (!barcodeInput) return;
-    const barcode = barcodeInput.value.trim();
-    if (!barcode) return;
-
-    let fonteTrovata = "alimentari";
-
-    try {
-        let response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
-        let data = await response.json();
-
-        if (!data || data.status !== 1) {
-            response = await fetch(`https://world.openbeautyfacts.org/api/v0/product/${barcode}.json`);
-            data = await response.json();
-            if (data && data.status === 1) fonteTrovata = "igiene";
-        }
-
-        if (!data || data.status !== 1) {
-            response = await fetch(`https://world.openproductsfacts.org/api/v0/product/${barcode}.json`);
-            data = await response.json();
-            if (data && data.status === 1) fonteTrovata = "casa";
-        }
-
-        if (data && data.status === 1) {
-            const prodotto = data.product;
-            let nome = prodotto.product_name || prodotto.product_name_it || "";
-            if (nome.length > 45) nome = nome.substring(0, 42) + '...';
-
-            const marca = (prodotto.brands || "").substring(0, 30);
-            const immagine = prodotto.image_front_url || "";
-
-            if(nome) document.getElementById('nome-prodotto').value = nome;
-            if(marca) document.getElementById('marca-prodotto').value = marca;
-
-            document.getElementById('inf-nome').textContent = nome || "Trovato";
-            document.getElementById('inf-marca').textContent = marca || "Non specificata";
-
-            impostaCategoriaIntelligente(fonteTrovata, nome);
-            impostaUbicazioneStorica(barcode, nome);
-            gestisciQuantitaPezzoSingolo(prodotto.quantity || "");
-
-            // PULIZIA TOTALE DEI CAMPI SCADENZA: NESSUNA STIMA PRECOMPILATA
-            pulisciTuttiCampiScadenza();
-
-            const imgEl = document.getElementById('img-anteprima');
-            if(immagine && imgEl) {
-                imgEl.src = immagine;
-                imgEl.style.display = 'block';
-            } else if (imgEl) {
-                imgEl.style.display = 'none';
-            }
-
-            document.getElementById('preview-prodotto').style.display = 'block';
-            
-            // Focus immediato sul campo giorni per procedere subito all'inserimento
-            document.getElementById('stima-giorni').focus();
-        } else {
-            gestisciProdottoNonTrovato(barcode);
-        }
-    } catch (error) {
-        gestisciProdottoNonTrovato(barcode);
-    }
-}
-
-function impostaCategoriaIntelligente(fonte, nomeProdotto) {
-    const selectCat = document.getElementById('categoria-prodotto');
-    if (!selectCat) return;
-    const t = nomeProdotto.toLowerCase();
-
-    if (fonte === "igiene" || t.includes('dentifricio') || t.includes('shampoo') || t.includes('sapone') || t.includes('bagnoschiuma') || t.includes('deodorante')) {
-        selectCat.value = "Igiene";
-    } else if (fonte === "casa" || t.includes('pile') || t.includes('batterie') || t.includes('piatti') || t.includes('bicchieri') || t.includes('tovaglioli') || t.includes('carta igienica') || t.includes('scottex') || t.includes('alluminio')) {
-        selectCat.value = "Casa & Varie";
-    } else if (t.includes('detersivo') || t.includes('candeggina') || t.includes('sgrassatore') || t.includes('ammorbidente') || t.includes('pavimenti')) {
-        selectCat.value = "Pulizia";
-    } else if (t.includes('latte') || t.includes('yogurt') || t.includes('formaggio') || t.includes('mozzarella') || t.includes('burro')) {
-        selectCat.value = "Latticini";
-    } else if (t.includes('acqua') || t.includes('bibita') || t.includes('succo') || t.includes('vino')  || t.includes('birra')) {
-        selectCat.value = "Bevande";
-    } else if (t.includes('prosciutto') || t.includes('salame') || t.includes('bresaola') || t.includes('speck')) {
-        selectCat.value = "Salumeria";
-    } else {
-        selectCat.value = "Dispensa / Generi alimentari";
-    }
-}
-
-function pulisciTuttiCampiScadenza() {
-    document.getElementById('stima-giorni').value = '';
-    document.getElementById('stima-mesi').value = '';
-    document.getElementById('scad-gg').value = '';
-    document.getElementById('scad-mm').value = '';
-    document.getElementById('scad-aa').value = '';
-}
-
-function pulisciAltriCampiScadenza(origine) {
-    if (origine === 'giorni') {
-        document.getElementById('stima-mesi').value = '';
-        document.getElementById('scad-gg').value = '';
-        document.getElementById('scad-mm').value = '';
-        document.getElementById('scad-aa').value = '';
-    } else if (origine === 'mesi') {
-        document.getElementById('stima-giorni').value = '';
-        document.getElementById('scad-gg').value = '';
-        document.getElementById('scad-mm').value = '';
-        document.getElementById('scad-aa').value = '';
-    } else if (origine === 'data') {
-        document.getElementById('stima-giorni').value = '';
-        document.getElementById('stima-mesi').value = '';
-    }
-}
-
-function saltoAutomatico(corrente, prossimoId, maxLunghezza) {
-    if (corrente.value.length >= maxLunghezza) {
-        document.getElementById(prossimoId).focus();
-    }
-}
-
-function aggiornaListaUbicazioniDinamiche(ubicazioneSelezionata = "") {
-    let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [], spesa: [] };
-    const selectUbicazione = document.getElementById('ubicazione');
-    if (!selectUbicazione) return;
-    
-    const ubicazioniSalvate = [...new Set((db.dispensa || []).map(item => item.ubicazione).filter(Boolean))];
-    
-    selectUbicazione.innerHTML = '<option value="" disabled selected>-- Seleziona un\'ubicazione --</option>';
-    
-    ubicazioniSalvate.forEach(ub => {
-        const opt = document.createElement('option');
-        opt.value = ub;
-        opt.textContent = ub;
-        selectUbicazione.appendChild(opt);
-    });
-
-    const optNuova = document.createElement('option');
-    optNuova.value = "__nuova__";
-    optNuova.textContent = "➕ Aggiungi nuova ubicazione...";
-    selectUbicazione.appendChild(optNuova);
-
-    if (ubicazioneSelezionata && ubicazioniSalvate.includes(ubicazioneSelezionata)) {
-        selectUbicazione.value = ubicazioneSelezionata;
-    }
-
-    selectUbicazione.onchange = function() {
-        if (this.value === "__nuova__") {
-            const nuovoLuogo = prompt("Inserisci il nome della nuova ubicazione (es. Frigo alto, Cantina scaffale 2):");
-            if (nuovoLuogo && nuovoLuogo.trim() !== "") {
-                const nomeNuovo = nuovoLuogo.trim();
-                const optNew = document.createElement('option');
-                optNew.value = nomeNuovo;
-                optNew.textContent = nomeNuovo;
-                selectUbicazione.insertBefore(optNew, selectUbicazione.lastElementChild);
-                selectUbicazione.value = nomeNuovo;
-            } else {
-                selectUbicazione.value = "";
-            }
-        }
-    };
-}
-
-function impostaUbicazioneStorica(barcode, nome) {
-    let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [], spesa: [] };
-    const storicoItem = (db.dispensa || []).reverse().find(item => (barcode && item.barcode === barcode) || item.name === nome);
-    const ubicazioneTrovata = storicoItem ? storicoItem.ubicazione : "";
-    aggiornaListaUbicazioniDinamiche(ubicazioneTrovata);
-}
-
-function gestisciQuantitaPezzoSingolo(rawQuantity) {
-    document.getElementById('quantita').value = "1";
-    document.getElementById('unita-misura').value = "pezzi";
-    const infConv = document.getElementById('inf-conversione');
-    if (infConv) {
-        infConv.textContent = rawQuantity ? `💡 Confezione singola (${rawQuantity})` : `💡 Confezione singola`;
-    }
-}
-
-function abilitaCompilazioneManuale() {
-    if (cameraAttiva) chiudiFotocamera();
-    aggiornaListaUbicazioniDinamiche("");
-    
-    const preview = document.getElementById('preview-prodotto');
-    if (preview) preview.style.display = 'block';
-    
-    const nomeProd = document.getElementById('nome-prodotto');
-    if (nomeProd) {
-        nomeProd.value = "";
-        nomeProd.focus();
-    }
-    const marcaProd = document.getElementById('marca-prodotto');
-    if (marcaProd) marcaProd.value = "";
-    
-    const infNome = document.getElementById('inf-nome');
-    if (infNome) infNome.textContent = "Inserimento manuale";
-    const infMarca = document.getElementById('inf-marca');
-    if (infMarca) infMarca.textContent = "Locale";
-    
-    const imgAnt = document.getElementById('img-anteprima');
-    if (imgAnt) imgAnt.style.display = 'none';
-
-    pulisciTuttiCampiScadenza();
-    impostaDataOdierna();
-}
-
-function gestisciProdottoNonTrovato(barcode) {
-    document.getElementById('inf-nome').textContent = "Non catalogato";
-    document.getElementById('inf-marca').textContent = "Inserimento manuale";
-    const imgAnt = document.getElementById('img-anteprima');
-    if (imgAnt) imgAnt.style.display = 'none';
-    
-    aggiornaListaUbicazioniDinamiche("");
-    
-    const preview = document.getElementById('preview-prodotto');
-    if (preview) preview.style.display = 'block';
-    
-    const nomeProd = document.getElementById('nome-prodotto');
-    if (nomeProd) {
-        nomeProd.value = `Prodotto [${barcode}]`;
-        nomeProd.focus();
-    }
-    const marcaProd = document.getElementById('marca-prodotto');
-    if (marcaProd) marcaProd.value = "";
-    const quantita = document.getElementById('quantita');
-    if (quantita) quantita.value = "1";
-
-    pulisciTuttiCampiScadenza();
-}
-
-function registraCarico(event) {
-    event.preventDefault();
-
-    const nome = document.getElementById('nome-prodotto').value.trim();
-    const barcode = document.getElementById('barcode-input').value.trim();
-    const ubicazioneScelta = document.getElementById('ubicazione').value;
-    const quantitaInput = document.getElementById('quantita');
-
-    if (!ubicazioneScelta || ubicazioneScelta === "__nuova__") {
-        alert("Attenzione: seleziona o crea un'ubicazione valida per il prodotto.");
-        document.getElementById('ubicazione').focus();
-        return;
-    }
-
-    if (!quantitaInput || !quantitaInput.value.trim() || parseInt(quantitaInput.value) <= 0) {
-        alert("Attenzione: inserisci una quantità valida.");
-        quantitaInput.focus();
-        return;
-    }
-
-    // Calcolo della scadenza basato esclusivamente sull'input scelto dall'utente
-    let scadenzaVal = "";
-    const giorniInput = document.getElementById('stima-giorni').value.trim();
-    const mesiInput = document.getElementById('stima-mesi').value.trim();
-    
-    const gg = document.getElementById('scad-gg').value.trim();
-    const mm = document.getElementById('scad-mm').value.trim();
-    const aa = document.getElementById('scad-aa').value.trim();
-
-    const oggi = new Date();
-
-    if (gg && mm && aa) {
-        const annoPieno = aa.length === 2 ? `20${aa}` : aa;
-        scadenzaVal = `${annoPieno}-${mm.padStart(2, '0')}-${gg.padStart(2, '0')}`;
-    } else if (giorniInput) {
-        oggi.setDate(oggi.getDate() + parseInt(giorniInput));
-        scadenzaVal = oggi.toISOString().split('T')[0];
-    } else if (mesiInput) {
-        oggi.setMonth(oggi.getMonth() + parseInt(mesiInput));
-        scadenzaVal = oggi.toISOString().split('T')[0];
-    } else {
-        scadenzaVal = "Nessuna scadenza";
-    }
-
-    const confermaMessaggio = `Confermi il carico di "${nome}" con scadenza al ${scadenzaVal}?`;
-    if (!confirm(confermaMessaggio)) {
-        return; 
-    }
-
-    const nuovoArticolo = {
-        id: Date.now(),
-        barcode: barcode,
-        categoria: document.getElementById('categoria-prodotto').value,
-        nome: nome,
-        marca: document.getElementById('marca-prodotto').value.trim(),
-        ubicazione: ubicazioneScelta,
-        scadenza: scadenzaVal,
-        quantita: parseInt(quantitaInput.value) || 1,
-        unitaMisura: document.getElementById('unita-misura').value,
-        immagine: document.getElementById('img-anteprima').src || "",
-        dataCarico: document.getElementById('data-carico').value
-    };
-
-    let db = JSON.parse(localStorage.getItem('eat_me_first_db')) || { dispensa: [], spesa: [] };
-    if (!db.dispensa) db.dispensa = [];
-    
-    db.dispensa.push(nuovoArticolo);
-    localStorage.setItem('eat_me_first_db', JSON.stringify(db));
-
-    alert("Articolo caricato con successo nella dispensa!");
-    window.location.href = "dispensa.html";
-}
