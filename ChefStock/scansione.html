@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="title_page">ChefStock - Entrata & Scansione Merci</title>
+    <title>ChefStock - Entrata & Scansione Merci</title>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <link rel="stylesheet" href="scansione.css">
 </head>
 <body>
 
     <div class="container">
-        <!-- Barra Superiore con Indietro, Selettore Lingua e Aiuto -->
+        <!-- Barra Superiore -->
         <div class="top-bar-flex">
-            <a href="menu.html" class="btn-back" data-i18n="btn_back">← Menu Principale</a>
+            <a href="menu.html" class="btn-back">← Menu Principale</a>
             <div class="right-header-controls">
                 <div id="header-lang">
                     <select id="lingua-select" onchange="cambiaLingua(this.value)">
@@ -25,7 +25,7 @@
                 </div>
                 <div class="help-toggle-bar">
                     <label class="checkbox-help">
-                        <input type="checkbox" id="chk-mostra-aiuti" checked onchange="toggleGlobalHelp(this.checked)"> <span data-i18n="lbl_guida">Guida</span>
+                        <input type="checkbox" id="chk-mostra-aiuti" checked onchange="toggleGlobalHelp(this.checked)"> Guida
                     </label>
                     <button class="btn-help-icon" onclick="apriGuidaPrincipale()" title="Aiuto">?</button>
                 </div>
@@ -35,206 +35,203 @@
         <!-- Box Guida Iniziale -->
         <div id="intro-guide-box" class="intro-guide">
             <div class="guide-header">
-                <h2 data-i18n="guide_title">💡 Come funziona l'Entrata Merci</h2>
+                <h2>💡 Come funziona l'Entrata Merci</h2>
                 <button class="btn-close-guide" onclick="chiudiGuidaIniziale()">×</button>
             </div>
-            <p data-i18n="guide_text">Inquadra qualsiasi codice a barre (alimentari, bevande, detergenti, cartoni pizza, tovaglioli) o digitalo manualmente. Per i prodotti fatti in casa o del contadino, scrivi la descrizione: l'app riconoscerà la categoria. Gestisci le scadenze in modo pulito e aggiungi campi extra personalizzati!</p>
+            <p>Inquadra qualsiasi codice a barre o digitalo manualmente. Compila i dati del prodotto, seleziona la modalità di scadenza pulita e registra l'articolo nel tuo inventario!</p>
         </div>
 
-        <h1 data-i18n="main_heading">Entrata & Scansione Merci</h1>
+        <h1>Entrata & Scansione Merci</h1>
         
-        <!-- Input Barcode e Ricerca -->
-        <div class="form-group" data-help="Inquadra il codice a barre (alimenti, bevande, detergenti o materiale come cartoni pizza e tovaglioli) o digitalo manualmente. Premi Spazio o Invio per avviare la ricerca nei database globali.">
+        <!-- Input Barcode -->
+        <div class="form-group" data-help="Inquadra il codice a barre o digitalo manualmente. Premi Spazio o Invio per avviare la ricerca.">
             <div class="label-flex">
-                <label data-i18n="lbl_barcode">🔍 Scanner Barcode & Database Globali (Usa Spazio o Invio per cercare)</label>
+                <label>🔍 Scanner Barcode & Database Globali (Usa Spazio o Invio)</label>
                 <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
             </div>
-            <input type="text" id="barcode-input" placeholder="Scansiona o digita il codice a barre..." onkeydown="handleBarcodeKey(event)" data-i18n-placeholder="ph_barcode">
+            <input type="text" id="barcode-input" placeholder="Scansiona o digita il codice a barre..." onkeydown="handleBarcodeKey(event)">
         </div>
 
-        <button type="button" class="btn-camera" onclick="toggleFotocamera()" id="btn-toggle-cam" data-i18n="btn_camera">📷 Attiva Fotocamera / Scanner</button>
+        <button type="button" class="btn-camera" onclick="toggleFotocamera()" id="btn-toggle-cam">📷 Attiva Fotocamera / Scanner</button>
         <div id="reader"></div>
 
-        <button type="button" class="btn-manuale" onclick="abilitaCompilazioneManuale()" data-i18n="btn_manual">✏️ Inserimento Manuale / Senza Barcode (Fatto in casa, Contadino, Materiali)</button>
+        <button type="button" class="btn-manuale" onclick="abilitaCompilazioneManuale()">✏️ Inserimento Manuale / Senza Barcode (Fatto in casa, Contadino, Materiali)</button>
 
         <!-- Preview / Modulo Dettagli Prodotto -->
         <div id="preview-prodotto" style="display: none;">
-            <h2 data-i18n="details_heading">Dettagli Articolo / Prodotto</h2>
+            <h2>Dettagli Articolo / Prodotto</h2>
             <form onsubmit="registraCarico(event)">
                 
                 <input type="hidden" id="data-carico">
 
                 <!-- Categoria -->
-                <div class="form-group" data-help="Seleziona la categoria merceologica. L'app la compila in automatico in base al codice o alla descrizione testuale.">
+                <div class="form-group" data-help="Seleziona la categoria merceologica.">
                     <div class="label-flex">
-                        <label data-i18n="lbl_category">Categoria</label>
+                        <label>Categoria</label>
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
                     <select id="categoria-prodotto" required>
-                        <option value="Latticini" data-i18n="cat_dairy">🥛 Latticini & Freschi</option>
-                        <option value="Ortofrutta" data-i18n="cat_fruit">🍎 Ortofrutta & Mercato</option>
-                        <option value="Salumeria & Carni" data-i18n="cat_meat">🥓 Salumeria & Carni</option>
-                        <option value="Dispensa / Generi alimentari" data-i18n="cat_pantry">🥫 Dispensa / Alimentari</option>
-                        <option value="Surgelati" data-i18n="cat_frozen">❄️ Surgelati & Piatti Pronti</option>
-                        <option value="Bevande" data-i18n="cat_drinks">🧃 Bevande</option>
-                        <option value="Packaging & Asporto" data-i18n="cat_packaging">📦 Packaging (Cartoni pizza, sacchetti)</option>
-                        <option value="Sala & Consumo" data-i18n="cat_hall">🍽️ Sala (Tovaglioli, tovaglie, bicchieri)</option>
-                        <option value="Pulizia & Detergenti" data-i18n="cat_cleaning">🧹 Pulizia & Detergenti</option>
-                        <option value="Igiene & Bagno" data-i18n="cat_hygiene">🧴 Igiene & Carta</option>
-                        <option value="Altro / Varie" data-i18n="cat_other">⚡ Altro / Varie</option>
+                        <option value="Latticini">🥛 Latticini & Freschi</option>
+                        <option value="Ortofrutta">🍎 Ortofrutta & Mercato</option>
+                        <option value="Salumeria & Carni">🥓 Salumeria & Carni</option>
+                        <option value="Dispensa / Generi alimentari">🥫 Dispensa / Alimentari</option>
+                        <option value="Surgelati">❄️ Surgelati & Piatti Pronti</option>
+                        <option value="Bevande">🧃 Bevande</option>
+                        <option value="Packaging & Asporto">📦 Packaging (Cartoni pizza, sacchetti)</option>
+                        <option value="Sala & Consumo">🍽️ Sala (Tovaglioli, tovaglie, bicchieri)</option>
+                        <option value="Pulizia & Detergenti">🧹 Pulizia & Detergenti</option>
+                        <option value="Igiene & Bagno">🧴 Igiene & Carta</option>
+                        <option value="Altro / Varie">⚡ Altro / Varie</option>
                     </select>
                 </div>
 
                 <!-- Descrizione -->
-                <div class="form-group" data-help="Nome o descrizione dell'articolo. Per prodotti fatti in casa o non catalogati, scrivi chiaramente cosa sono.">
+                <div class="form-group" data-help="Nome o descrizione dell'articolo.">
                     <div class="label-flex">
-                        <label data-i18n="lbl_name">Descrizione / Nome Articolo (Max 60 caratteri)</label>
+                        <label>Descrizione / Nome Articolo (Max 60 caratteri)</label>
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
-                    <input type="text" id="nome-prodotto" maxlength="60" placeholder="Es. Cartoni pizza 33cm, Zuppa freezer..." required oninput="analizzaDescrizioneTestuale(this.value)" data-i18n-placeholder="ph_name">
+                    <input type="text" id="nome-prodotto" maxlength="60" placeholder="Es. Cartoni pizza 33cm, Zuppa freezer..." required oninput="analizzaDescrizioneTestuale(this.value)">
                     <small style="color: #94a3b8;">Database: <span id="inf-nome">-</span></small>
                 </div>
 
                 <!-- Marca / Origine -->
-                <div class="form-group" data-help="Marca del produttore, fornitore o origine. Opzionale.">
+                <div class="form-group" data-help="Marca del produttore o fornitore.">
                     <div class="label-flex">
-                        <label data-i18n="lbl_brand">Marca / Origine (Opzionale, Max 40 caratteri)</label>
+                        <label>Marca / Origine (Opzionale, Max 40 caratteri)</label>
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
-                    <input type="text" id="marca-prodotto" maxlength="40" placeholder="Es. Fornitore, Casalingo..." data-i18n-placeholder="ph_brand">
+                    <input type="text" id="marca-prodotto" maxlength="40" placeholder="Es. Fornitore, Casalingo...">
                     <small style="color: #94a3b8;">Brand: <span id="inf-marca">-</span></small>
                 </div>
 
                 <!-- Ubicazione Dinamica -->
-                <div class="form-group" data-help="Seleziona dove riponi l'articolo o creane una nuova.">
+                <div class="form-group" data-help="Seleziona dove riponi l'articolo.">
                     <div class="label-flex">
-                        <label data-i18n="lbl_location">Ubicazione (Dinamica basata sui tuoi inserimenti)</label>
+                        <label>Ubicazione (Dinamica)</label>
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
                     <select id="ubicazione" required>
-                        <option value="" disabled selected data-i18n="opt_select_location">-- Seleziona o crea ubicazione --</option>
+                        <option value="" disabled selected>-- Seleziona o crea ubicazione --</option>
                     </select>
                 </div>
 
                 <!-- Quantità e Unità -->
                 <div class="form-group" data-help="Inserisci la quantità e l'unità di misura.">
                     <div class="label-flex">
-                        <label data-i18n="lbl_qty">Quantità & Unità</label>
+                        <label>Quantità & Unità</label>
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
                     <div style="display: flex; gap: 10px;">
                         <input type="number" id="quantita" value="1" min="1" required style="flex: 2;">
                         <select id="unita-misura" style="flex: 1;">
-                            <option value="pezzi" data-i18n="unit_pieces">Pezzi</option>
-                            <option value="confezioni" data-i18n="unit_packs">Confezioni</option>
-                            <option value="kg" data-i18n="unit_kg">Chilogrammi (kg)</option>
-                            <option value="g" data-i18n="unit_g">Grammi (g)</option>
-                            <option value="litri" data-i18n="unit_liters">Litri (L)</option>
+                            <option value="pezzi">Pezzi</option>
+                            <option value="confezioni">Confezioni</option>
+                            <option value="kg">Chilogrammi (kg)</option>
+                            <option value="g">Grammi (g)</option>
+                            <option value="litri">Litri (L)</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Gestione Scadenza Pulita (Giorni, Mesi o Data Esatta) -->
-                <div class="form-group" data-help="Inserisci i giorni, i mesi mancanti alla scadenza, oppure compila direttamente la data esatta stampata sulla confezione.">
+                <!-- GESTIONE SCADENZA PULITA E LINEARE -->
+                <div class="form-group" data-help="Scegli il tipo di scadenza e compila giorni, mesi o data esatta.">
                     <div class="label-flex">
-                        <label data-i18n="lbl_expiry">Gestione Scadenza (Scegli come inserire)</label>
+                        <label>Gestione Scadenza</label>
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
                     
                     <div class="tipo-scadenza-selector">
-                        <label><input type="radio" name="tipo-scadenza" value="tassativa" onclick="impostaTipoScadenza('tassativa')"> <span data-i18n="exp_strict">🔴 Tassativa</span></label>
-                        <label><input type="radio" name="tipo-scadenza" value="consigliata" checked onclick="impostaTipoScadenza('consigliata')"> <span data-i18n="exp_recommended">🟡 Consigliata</span></label>
-                        <label><input type="radio" name="tipo-scadenza" value="nessuna" onclick="impostaTipoScadenza('nessuna')"> <span data-i18n="exp_none">⚪ Senza Scadenza</span></label>
+                        <label><input type="radio" name="tipo-scadenza" value="tassativa" onclick="impostaTipoScadenza('tassativa')"> 🔴 Tassativa</label>
+                        <label><input type="radio" name="tipo-scadenza" value="consigliata" checked onclick="impostaTipoScadenza('consigliata')"> 🟡 Consigliata</label>
+                        <label><input type="radio" name="tipo-scadenza" value="nessuna" onclick="impostaTipoScadenza('nessuna')"> ⚪ Senza Scadenza</label>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 12px; background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 10px;">
-                        
+                    <div class="scadenza-box-container">
                         <!-- 1. Giorni -->
-                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-                            <label style="font-size: 13px; font-weight: normal; color: var(--text-main); margin-bottom: 0; flex: 1;">⏳ Tra quanti giorni scade?</label>
-                            <input type="number" id="stima-giorni" placeholder="Es. 3" min="1" oninput="pulisciAltriCampiScadenza('giorni')" style="width: 110px; background-color: #ffffff; color: #0f172a; text-align: center; font-weight: bold;">
+                        <div class="scadenza-riga-input">
+                            <label>⏳ Tra quanti giorni scade?</label>
+                            <input type="number" id="stima-giorni" placeholder="Es. 3" min="1" oninput="pulisciAltriCampiScadenza('giorni')">
                         </div>
 
                         <!-- 2. Mesi -->
-                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-                            <label style="font-size: 13px; font-weight: normal; color: var(--text-main); margin-bottom: 0; flex: 1;">📅 Tra quanti mesi scade?</label>
-                            <input type="number" id="stima-mesi" placeholder="Es. 6" min="1" oninput="pulisciAltriCampiScadenza('mesi')" style="width: 110px; background-color: #ffffff; color: #0f172a; text-align: center; font-weight: bold;">
+                        <div class="scadenza-riga-input">
+                            <label>📅 Tra quanti mesi scade?</label>
+                            <input type="number" id="stima-mesi" placeholder="Es. 6" min="1" oninput="pulisciAltriCampiScadenza('mesi')">
                         </div>
 
                         <!-- 3. Data Esatta Manuale (GG / MM / AAAA) -->
-                        <div style="border-top: 1px dashed var(--border-color); padding-top: 10px; text-align: center;">
-                            <label style="font-size: 13px; font-weight: normal; margin-bottom: 6px; color: var(--text-main); display: block;">Oppure inserisci la data esatta stampata:</label>
-                            <div style="display: flex; gap: 8px; align-items: center; justify-content: center;">
-                                <input type="text" id="scad-gg" placeholder="GG" maxlength="2" style="width: 60px; text-align: center; background-color: #ffffff; color: #0f172a; font-weight: bold;" oninput="pulisciAltriCampiScadenza('data'); saltoAutomatico(this, 'scad-mm', 2)">
-                                <span style="font-weight: bold; font-size: 18px; color: var(--text-main);">/</span>
-                                <input type="text" id="scad-mm" placeholder="MM" maxlength="2" style="width: 60px; text-align: center; background-color: #ffffff; color: #0f172a; font-weight: bold;" oninput="pulisciAltriCampiScadenza('data'); saltoAutomatico(this, 'scad-aa', 2)">
-                                <span style="font-weight: bold; font-size: 18px; color: var(--text-main);">/</span>
-                                <input type="text" id="scad-aa" placeholder="AAAA" maxlength="4" style="width: 80px; text-align: center; background-color: #ffffff; color: #0f172a; font-weight: bold;" oninput="pulisciAltriCampiScadenza('data')">
+                        <div class="scadenza-data-esatta-wrapper">
+                            <label>Oppure inserisci la data esatta stampata:</label>
+                            <div class="data-inputs-flex">
+                                <input type="text" id="scad-gg" placeholder="GG" maxlength="2" oninput="pulisciAltriCampiScadenza('data'); saltoAutomatico(this, 'scad-mm', 2)">
+                                <span class="data-slash">/</span>
+                                <input type="text" id="scad-mm" placeholder="MM" maxlength="2" oninput="pulisciAltriCampiScadenza('data'); saltoAutomatico(this, 'scad-aa', 2)">
+                                <span class="data-slash">/</span>
+                                <input type="text" id="scad-aa" placeholder="AAAA" maxlength="4" oninput="pulisciAltriCampiScadenza('data')">
                             </div>
                         </div>
-
                     </div>
                 </div>
 
                 <div id="box-allergeni-nutri" class="info-allergeni-box" style="display: none;">
-                    <strong data-i18n="info_auto">ℹ️ Informazioni Automatiche Rilevate:</strong>
+                    <strong>ℹ️ Informazioni Automatiche Rilevate:</strong>
                     <div id="testo-allergeni" style="font-size: 0.88rem; color: #cbd5e1; margin-top: 4px;"></div>
                 </div>
 
-                <img id="img-anteprima" src="" alt="Anteprima prodotto">
+                <img id="img-anteprima" src="" alt="Anteprima prodotto" style="display: none;">
 
                 <!-- Campi Aggiuntivi Dinamici -->
                 <div class="form-group dynamic-extra-section" data-help="Aggiungi ulteriori informazioni personalizzate.">
                     <div class="label-flex">
-                        <label data-i18n="lbl_extra">➕ Informazioni Extra Personalizzate</label>
+                        <label>➕ Informazioni Extra Personalizzate</label>
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
                     <div id="container-campi-extra">
                         <div class="extra-row">
-                            <input type="text" placeholder="Etichetta (es. Lotto)" class="extra-label" data-i18n-placeholder="ph_extra_label">
-                            <input type="text" placeholder="Valore (es. L-402)" class="extra-valore" data-i18n-placeholder="ph_extra_val">
+                            <input type="text" placeholder="Etichetta (es. Lotto)" class="extra-label">
+                            <input type="text" placeholder="Valore (es. L-402)" class="extra-valore">
                         </div>
                     </div>
-                    <button type="button" class="btn-add-row" onclick="aggiungiRigaExtra()">+ <span data-i18n="btn_add_row">Aggiungi altra riga</span> <span class="badge-premium-teaser" data-i18n="badge_premium">(Funzione Premium futura)</span></button>
+                    <button type="button" class="btn-add-row" onclick="aggiungiRigaExtra()">+ Aggiungi altra riga <span class="badge-premium-teaser">(Funzione Premium futura)</span></button>
                 </div>
 
                 <!-- Note -->
                 <div class="form-group" data-help="Spazio per annotare ricette, istruzioni o note.">
                     <div class="label-flex">
-                        <label data-i18n="lbl_notes">📝 Note, Ricette o Istruzioni (Testo Lungo)</label>
+                        <label>📝 Note, Ricette o Istruzioni (Testo Lungo)</label>
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
-                    <textarea id="note-prodotto" rows="3" placeholder="Es. Scongelare lentamente in frigo..." data-i18n-placeholder="ph_notes"></textarea>
+                    <textarea id="note-prodotto" rows="3" placeholder="Es. Scongelare lentamente in frigo..."></textarea>
                 </div>
 
                 <div class="form-submit-wrapper">
-                    <button type="submit" class="btn-registra" data-i18n="btn_submit">Conferma e Registra in ChefStock</button>
+                    <button type="submit" class="btn-registra">Conferma e Registra in ChefStock</button>
                 </div>
             </form>
         </div>
 
         <div class="menu-link">
-            <a href="menu.html" data-i18n="link_back_menu">← Torna al Pannello di Controllo</a>
+            <a href="menu.html">← Torna al Pannello di Controllo</a>
         </div>
 
         <div class="footer">
             <div class="footer-logo">ChefStock <span>Pro Management</span></div>
-            <div data-i18n="footer_sub">Gestione professionale scorte, imballi & allergeni</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Gestione professionale scorte, imballi & allergeni</div>
         </div>
     </div>
 
     <!-- Modale Tooltip -->
     <div id="tooltip-modal" class="modal-overlay" style="display: none;">
         <div class="modal-card">
-            <h3 data-i18n="modal_help_title">💡 Suggerimento Utile</h3>
+            <h3>💡 Suggerimento Utile</h3>
             <p id="tooltip-text"></p>
             <div class="modal-footer right">
-                <button type="button" class="btn-secondary" onclick="chiudiTooltip()" data-i18n="btn_understood">Ho capito</button>
+                <button type="button" class="btn-secondary" onclick="chiudiTooltip()">Ho capito</button>
             </div>
         </div>
     </div>
 
-    <!-- Logo Corretto ChefStock in Basso a Destra -->
     <img src="IMG/logo_chefstock.png" alt="ChefStock Logo" class="footer-logo-fixed">
 
     <script src="scansione.js"></script>
