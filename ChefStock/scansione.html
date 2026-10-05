@@ -38,7 +38,7 @@
                 <h2 data-i18n="guide_title">💡 Come funziona l'Entrata Merci</h2>
                 <button class="btn-close-guide" onclick="chiudiGuidaIniziale()">×</button>
             </div>
-            <p data-i18n="guide_text">Inquadra qualsiasi codice a barre (alimentari, bevande, detergenti, cartoni pizza, tovaglioli) o digitalo manualmente. Per i prodotti fatti in casa o del contadino, scrivi la descrizione: l'app riconoscerà la categoria. Gestisci le scadenze con le caselle rapide e aggiungi campi extra personalizzati!</p>
+            <p data-i18n="guide_text">Inquadra qualsiasi codice a barre (alimentari, bevande, detergenti, cartoni pizza, tovaglioli) o digitalo manualmente. Per i prodotti fatti in casa o del contadino, scrivi la descrizione: l'app riconoscerà la categoria. Gestisci le scadenze in modo pulito e aggiungi campi extra personalizzati!</p>
         </div>
 
         <h1 data-i18n="main_heading">Entrata & Scansione Merci</h1>
@@ -46,7 +46,7 @@
         <!-- Input Barcode e Ricerca -->
         <div class="form-group" data-help="Inquadra il codice a barre (alimenti, bevande, detergenti o materiale come cartoni pizza e tovaglioli) o digitalo manualmente. Premi Spazio o Invio per avviare la ricerca nei database globali.">
             <div class="label-flex">
-                <label data-i18n="lbl_barcode">🔍 Scanner Barcode & Database Globali</label>
+                <label data-i18n="lbl_barcode">🔍 Scanner Barcode & Database Globali (Usa Spazio o Invio per cercare)</label>
                 <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
             </div>
             <input type="text" id="barcode-input" placeholder="Scansiona o digita il codice a barre..." onkeydown="handleBarcodeKey(event)" data-i18n-placeholder="ph_barcode">
@@ -88,27 +88,27 @@
                 <!-- Descrizione -->
                 <div class="form-group" data-help="Nome o descrizione dell'articolo. Per prodotti fatti in casa o non catalogati, scrivi chiaramente cosa sono.">
                     <div class="label-flex">
-                        <label data-i18n="lbl_name">Descrizione / Nome Articolo</label>
+                        <label data-i18n="lbl_name">Descrizione / Nome Articolo (Max 60 caratteri)</label>
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
                     <input type="text" id="nome-prodotto" maxlength="60" placeholder="Es. Cartoni pizza 33cm, Zuppa freezer..." required oninput="analizzaDescrizioneTestuale(this.value)" data-i18n-placeholder="ph_name">
-                    <small>Fonte: <span id="inf-nome">-</span></small>
+                    <small style="color: #94a3b8;">Database: <span id="inf-nome">-</span></small>
                 </div>
 
                 <!-- Marca / Origine -->
                 <div class="form-group" data-help="Marca del produttore, fornitore o origine. Opzionale.">
                     <div class="label-flex">
-                        <label data-i18n="lbl_brand">Marca / Origine (Opzionale)</label>
+                        <label data-i18n="lbl_brand">Marca / Origine (Opzionale, Max 40 caratteri)</label>
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
                     <input type="text" id="marca-prodotto" maxlength="40" placeholder="Es. Fornitore, Casalingo..." data-i18n-placeholder="ph_brand">
-                    <small>Brand: <span id="inf-marca">-</span></small>
+                    <small style="color: #94a3b8;">Brand: <span id="inf-marca">-</span></small>
                 </div>
 
                 <!-- Ubicazione Dinamica -->
                 <div class="form-group" data-help="Seleziona dove riponi l'articolo o creane una nuova.">
                     <div class="label-flex">
-                        <label data-i18n="lbl_location">Ubicazione (Dinamica)</label>
+                        <label data-i18n="lbl_location">Ubicazione (Dinamica basata sui tuoi inserimenti)</label>
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
                     <select id="ubicazione" required>
@@ -134,10 +134,10 @@
                     </div>
                 </div>
 
-                <!-- Gestione Scadenza -->
-                <div class="form-group" data-help="Scegli il tipo di scadenza e inserisci giorno, mese e anno nelle caselle dedicate.">
+                <!-- Gestione Scadenza Pulita (Giorni, Mesi o Data Esatta) -->
+                <div class="form-group" data-help="Inserisci i giorni, i mesi mancanti alla scadenza, oppure compila direttamente la data esatta stampata sulla confezione.">
                     <div class="label-flex">
-                        <label data-i18n="lbl_expiry">Gestione Scadenza</label>
+                        <label data-i18n="lbl_expiry">Gestione Scadenza (Scegli come inserire)</label>
                         <button class="btn-help-mini" onclick="mostraTooltipDaHelp(this)">?</button>
                     </div>
                     
@@ -147,12 +147,32 @@
                         <label><input type="radio" name="tipo-scadenza" value="nessuna" onclick="impostaTipoScadenza('nessuna')"> <span data-i18n="exp_none">⚪ Senza Scadenza</span></label>
                     </div>
 
-                    <div id="container-date-ggmmaa" class="date-inputs-container">
-                        <input type="text" id="gg" placeholder="GG" maxlength="2" oninput="saltaAlCampo(this, 'mm')">
-                        <span class="date-sep">/</span>
-                        <input type="text" id="mm" placeholder="MM" maxlength="2" oninput="saltaAlCampo(this, 'aa')">
-                        <span class="date-sep">/</span>
-                        <input type="text" id="aa" placeholder="AA" maxlength="2" oninput="saltaAlCampo(this, null)">
+                    <div style="display: flex; flex-direction: column; gap: 12px; background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 10px;">
+                        
+                        <!-- 1. Giorni -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                            <label style="font-size: 13px; font-weight: normal; color: var(--text-main); margin-bottom: 0; flex: 1;">⏳ Tra quanti giorni scade?</label>
+                            <input type="number" id="stima-giorni" placeholder="Es. 3" min="1" oninput="pulisciAltriCampiScadenza('giorni')" style="width: 110px; background-color: #ffffff; color: #0f172a; text-align: center; font-weight: bold;">
+                        </div>
+
+                        <!-- 2. Mesi -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                            <label style="font-size: 13px; font-weight: normal; color: var(--text-main); margin-bottom: 0; flex: 1;">📅 Tra quanti mesi scade?</label>
+                            <input type="number" id="stima-mesi" placeholder="Es. 6" min="1" oninput="pulisciAltriCampiScadenza('mesi')" style="width: 110px; background-color: #ffffff; color: #0f172a; text-align: center; font-weight: bold;">
+                        </div>
+
+                        <!-- 3. Data Esatta Manuale (GG / MM / AAAA) -->
+                        <div style="border-top: 1px dashed var(--border-color); padding-top: 10px; text-align: center;">
+                            <label style="font-size: 13px; font-weight: normal; margin-bottom: 6px; color: var(--text-main); display: block;">Oppure inserisci la data esatta stampata:</label>
+                            <div style="display: flex; gap: 8px; align-items: center; justify-content: center;">
+                                <input type="text" id="scad-gg" placeholder="GG" maxlength="2" style="width: 60px; text-align: center; background-color: #ffffff; color: #0f172a; font-weight: bold;" oninput="pulisciAltriCampiScadenza('data'); saltoAutomatico(this, 'scad-mm', 2)">
+                                <span style="font-weight: bold; font-size: 18px; color: var(--text-main);">/</span>
+                                <input type="text" id="scad-mm" placeholder="MM" maxlength="2" style="width: 60px; text-align: center; background-color: #ffffff; color: #0f172a; font-weight: bold;" oninput="pulisciAltriCampiScadenza('data'); saltoAutomatico(this, 'scad-aa', 2)">
+                                <span style="font-weight: bold; font-size: 18px; color: var(--text-main);">/</span>
+                                <input type="text" id="scad-aa" placeholder="AAAA" maxlength="4" style="width: 80px; text-align: center; background-color: #ffffff; color: #0f172a; font-weight: bold;" oninput="pulisciAltriCampiScadenza('data')">
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
