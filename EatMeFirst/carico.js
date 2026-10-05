@@ -6,7 +6,9 @@ function toggleFotocamera() {
     const readerDiv = document.getElementById('reader');
 
     if (!cameraAttiva) {
-        readerDiv.style.display = 'block';
+        if (readerDiv) {
+            readerDiv.style.display = 'block';
+        }
         cameraAttiva = true;
 
         html5QrCode = new Html5Qrcode("reader");
@@ -14,20 +16,17 @@ function toggleFotocamera() {
             { facingMode: "environment" },
             { fps: 10, qrbox: { width: 250, height: 150 } },
             (decodedText) => {
-                // Azione eseguita alla lettura corretta del codice a barre
-                document.getElementById('barcode-input').value = decodedText;
+                // 1. Il numero viene rilevato e caricato nella casella
+                const barcodeInput = document.getElementById('barcode-input');
+                if (barcodeInput) {
+                    barcodeInput.value = decodedText;
+                }
+                
+                // Ferma la fotocamera dopo la scansione riuscita
                 fermaFotocamera();
                 
-                // Mostra la sezione di anteprima del prodotto (assicurati che esista l'elemento nel tuo HTML)
-                const previewProdotto = document.getElementById('preview-prodotto');
-                if (previewProdotto) {
-                    previewProdotto.style.display = 'block';
-                }
-                
-                const nomeProdotto = document.getElementById('nome-prodotto');
-                if (nomeProdotto) {
-                    nomeProdotto.focus();
-                }
+                // 2. Avvia lo scaricamento delle informazioni dal database
+                cercaProdottoPerBarcode(decodedText);
             },
             (errorMessage) => {
                 // Eventuali errori di scansione fotogramma (ignorati per evitare log superflui)
@@ -65,9 +64,48 @@ function chiudiStreamFotocamera() {
     cameraAttiva = false;
 }
 
-// Eventuale logica aggiuntiva di gestione del form o del caricamento dati
+// Funzione per scaricare le informazioni del prodotto tramite Open Food Facts
+function cercaProdottoPerBarcode(barcode) {
+    const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 1) {
+                const prodotto = data.product;
+                
+                // Compila i campi del form (adatta gli ID se nel tuo HTML si chiamano diversamente)
+                const nomeProdotto = document.getElementById('nome-prodotto');
+                if (nomeProdotto) {
+                    nomeProdotto.value = prodotto.product_name || '';
+                }
+                
+                const marcaProdotto = document.getElementById('marca-prodotto');
+                if (marcaProdotto) {
+                    marcaProdotto.value = prodotto.brands || '';
+                }
+                
+                // Mostra la sezione di anteprima o sblocca i campi se nascosti
+                const previewProdotto = document.getElementById('preview-prodotto');
+                if (previewProdotto) {
+                    previewProdotto.style.display = 'block';
+                }
+            } else {
+                alert("Prodotto non trovato nel database. Puoi inserire i dati manualmente.");
+                const previewProdotto = document.getElementById('preview-prodotto');
+                if (previewProdotto) {
+                    previewProdotto.style.display = 'block';
+                }
+            }
+        })
+        .catch(error => {
+            console.error("Errore di connessione al database:", error);
+            alert("Errore durante il recupero delle informazioni.");
+        });
+}
+
+// Inizializzazione al caricamento della pagina
 document.addEventListener('DOMContentLoaded', () => {
-    // Esempio di associazione automatica se il pulsante ha un id specifico (es. btn-fotocamera)
     const btnFotocamera = document.getElementById('btn-fotocamera');
     if (btnFotocamera) {
         btnFotocamera.addEventListener('click', toggleFotocamera);
