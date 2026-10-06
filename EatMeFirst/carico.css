@@ -1,32 +1,5 @@
 /* ==========================================
-   1. RESET ELENCHI E PULIZIA PUNTINI / SELEZIONI
-   ========================================== */
-ul, ol, li {
-    list-style: none !important;
-    list-style-type: none !important;
-    background-image: none !important;
-    margin: 0;
-    padding: 0;
-}
-
-li::before, li::after, ::marker {
-    content: none !important;
-}
-
-/* Rimuove qualsiasi stato attivo o evidenziazione predefinita (es. il pallino su latticini) */
-.latticini, 
-[data-categoria="latticini"], 
-.selected, 
-.active, 
-.categoria-item.active {
-    list-style: none !important;
-    background: transparent !important;
-    font-weight: normal !important;
-}
-
-
-/* ==========================================
-   2. STILI DI BASE DELLA PAGINA DI CARICO
+   STILI DI BASE DELLA PAGINA DI CARICO
    ========================================== */
 body {
     font-family: Arial, sans-serif;
