@@ -5,26 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carico Prodotto - Dispensa</title>
     <style>
-        /* CSS per azzerare elenchi, puntini e selezioni indesiderate */
-        ul, ol, li {
-            list-style: none !important;
-            list-style-type: none !important;
-            background-image: none !important;
-            margin: 0;
-            padding: 0;
-        }
-
-        li::before, li::after, ::marker {
-            content: none !important;
-        }
-
-        .latticini, [data-categoria="latticini"], .selected, .active, .categoria-item.active {
-            list-style: none !important;
-            background: transparent !important;
-            font-weight: normal !important;
-        }
-
-        /* Stili di base per la pagina */
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -112,6 +92,15 @@
             <div class="form-group">
                 <label for="marca-prodotto">Marca:</label>
                 <input type="text" id="marca-prodotto">
+            </div>
+
+            <!-- Campo Categoria con memoria intelligente tramite datalist -->
+            <div class="form-group">
+                <label for="categoria-prodotto">Categoria:</label>
+                <input type="text" id="categoria-prodotto" list="storico-categorie" placeholder="Scrivi o seleziona una categoria">
+                <datalist id="storico-categorie">
+                    <!-- Le categorie memorizzate verranno inserite qui dinamicamente -->
+                </datalist>
             </div>
         </div>
     </div>
