@@ -23,7 +23,9 @@ function toggleFotocamera() {
                 fermaFotocamera();
                 cercaProdottoPerBarcode(decodedText);
             },
-            (errorMessage) => {}
+            (errorMessage) => {
+                // Errori di scansione fotogramma ignorati per pulizia log
+            }
         ).catch(err => {
             console.error("Errore avvio fotocamera:", err);
             alert("Impossibile avviare la fotocamera.");
@@ -64,66 +66,40 @@ function cercaProdottoPerBarcode(barcode) {
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            const previewProdotto = document.getElementById('preview-prodotto');
-            if (previewProdotto) {
-                previewProdotto.style.display = 'block';
-            }
-
-            const nomeInput = document.getElementById('nome-prodotto');
-            const marcaInput = document.getElementById('marca-prodotto');
-            const categoriaInput = document.getElementById('categoria-prodotto');
-
-            // Pulisce preventivamente i campi per non lasciare residui
-            if (nomeInput) nomeInput.value = '';
-            if (marcaInput) marcaInput.value = '';
-            if (categoriaInput) categoriaInput.value = ''; // Nessun "latticini" forzato
-
             if (data.status === 1) {
                 const p = data.product;
+                
+                // Estrae nome e marca (nessuna manipolazione di categorie)
                 const nome = p.product_name_it || p.product_name || p.product_name_en || '';
                 const marca = p.brands || '';
                 
-                if (nomeInput) nomeInput.value = nome;
-                if (marcaInput) marcaInput.value = marca;
+                const nomeInput = document.getElementById('nome-prodotto');
+                if (nomeInput) {
+                    nomeInput.value = nome;
+                }
+                
+                const marcaInput = document.getElementById('marca-prodotto');
+                if (marcaInput) {
+                    marcaInput.value = marca;
+                }
+                
+                const previewProdotto = document.getElementById('preview-prodotto');
+                if (previewProdotto) {
+                    previewProdotto.style.display = 'block';
+                }
             } else {
                 alert("Prodotto non trovato nel database. Inserisci i dati manualmente.");
+                
+                const previewProdotto = document.getElementById('preview-prodotto');
+                if (previewProdotto) {
+                    previewProdotto.style.display = 'block';
+                }
             }
         })
         .catch(error => {
             console.error("Errore di connessione al database:", error);
             alert("Errore durante il recupero delle informazioni.");
-            const previewProdotto = document.getElementById('preview-prodotto');
-            if (previewProdotto) previewProdotto.style.display = 'block';
         });
-}
-
-// Gestione della memoria delle categorie (LocalStorage)
-function caricaCategorieMemorizzate() {
-    const datalist = document.getElementById('storico-categorie');
-    if (!datalist) return;
-
-    let categorie = JSON.parse(localStorage.getItem('dispensa_categorie')) || [];
-    
-    datalist.innerHTML = '';
-    categorie.forEach(cat => {
-        const option = document.createElement('option');
-        option.value = cat;
-        datalist.appendChild(option);
-    });
-}
-
-function memorizzaCategoria(nuovaCategoria) {
-    if (!nuovaCategoria || nuovaCategoria.trim() === '') return;
-    nuovaCategoria = nuovaCategoria.trim();
-
-    let categorie = JSON.parse(localStorage.getItem('dispensa_categorie')) || [];
-    
-    // Aggiunge la categoria se non esiste già nella lista
-    if (!categorie.includes(nuovaCategoria)) {
-        categorie.push(nuovaCategoria);
-        localStorage.setItem('dispensa_categorie', JSON.stringify(categorie));
-        caricaCategorieMemorizzate();
-    }
 }
 
 // Inizializzazione all'avvio della pagina
@@ -133,14 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
         btnFotocamera.addEventListener('click', toggleFotocamera);
     }
 
-    // Carica le categorie salvate in precedenza nei suggerimenti
-    caricaCategorieMemorizzate();
-
-    // Esempio: se hai un pulsante di salvataggio prodotto, puoi chiamare memorizzaCategoria(categoriaInput.value)
-    const categoriaInput = document.getElementById('categoria-prodotto');
-    if (categoriaInput) {
-        categoriaInput.addEventListener('change', (e) => {
-            memorizzaCategoria(e.target.value);
-        });
-    }
+    // Pulizia di sicurezza all'avvio contro classi di selezione residue
+    const elementiCategorie = document.querySelectorAll('ul, ol, li, .latticini, [data-categoria], .categoria-item');
+    elementiCategorie.forEach(el => {
+        el.classList.remove('active', 'selected', 'evidenziato', 'latticini');
+        if (el.style) {
+            el.style.listStyleType = 'none';
+        }
+    });
 });
